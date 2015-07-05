@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Learn English Words</string>
+    <string name="title_new_dictionary">New Dictionary</string>
+    <string name="hint_title">title</string>
+    <string name="hint_description">description</string>
+    <string name="title_dictionaries">Dictionaries</string>
+    <string name="added">Added</string>
+    <string name="add">Add</string>
+    <string name="start">Start</string>
+    <string name="back">back</string>
+    <string name="front">front</string>
+    <string name="no_cards">No cards</string>
+    <string name="right">Right =)</string>
+    <string name="wrong">Wrong =(</string>
+</resources>
