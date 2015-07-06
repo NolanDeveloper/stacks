@@ -5,17 +5,23 @@
         android:label="@string/app_name"
         android:icon="@mipmap/ic_launcher"
         android:theme="@style/AppTheme">
-        <activity android:name=".activities.CreateDictionaryActivity"/>
-        <activity android:name=".activities.CreateFirstDictionaryActivity"
+        <activity android:name=".controller.activities.CreateDictionaryActivity"/>
+        <activity android:name=".controller.activities.CreateFirstDictionaryActivity"
             android:noHistory="true"/>
-        <activity android:name=".activities.AddCardActivity"/>
-        <activity android:name=".activities.TrainingActivity"/>
-        <activity android:name=".activities.LauncherActivity"
+        <activity android:name=".controller.activities.AddCardActivity"/>
+        <activity android:name=".controller.activities.TrainingActivity"/>
+        <activity android:name=".controller.activities.LauncherActivity"
             android:noHistory="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
+        <provider
+            android:authorities="com.nolan.learnenglishwords.provider"
+            android:name=".model.CardsProvider"
+            android:exported="false"
+            android:readPermission="com.nolan.learnenglishwords.provider.READ"
+            android:writePermission="com.nolan.learnenglishwords.provider.WRITE"/>
     </application>
 </manifest>

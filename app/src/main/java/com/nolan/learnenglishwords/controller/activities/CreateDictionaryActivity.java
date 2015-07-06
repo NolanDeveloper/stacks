@@ -1,8 +1,8 @@
-package com.nolan.learnenglishwords.activities;
+package com.nolan.learnenglishwords.controller.activities;
 
 import android.os.Bundle;
 
-import com.nolan.learnenglishwords.fragments.CreateDictionaryFragment;
+import com.nolan.learnenglishwords.controller.fragments.CreateDictionaryFragment;
 
 public class CreateDictionaryActivity extends BaseNavigationDrawerActivity {
     @Override

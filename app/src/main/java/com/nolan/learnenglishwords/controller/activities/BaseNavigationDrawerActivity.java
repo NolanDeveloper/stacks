@@ -1,4 +1,4 @@
-package com.nolan.learnenglishwords.activities;
+package com.nolan.learnenglishwords.controller.activities;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -12,8 +12,7 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.nolan.learnenglishwords.R;
-import com.nolan.learnenglishwords.fragments.NavigationFragment;
-
+import com.nolan.learnenglishwords.controller.fragments.NavigationFragment;
 
 public abstract class BaseNavigationDrawerActivity extends Activity {
     private NavigationFragment navigationFragment;
@@ -27,7 +26,8 @@ public abstract class BaseNavigationDrawerActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.create_dictionary_activity);
+        setContentView(R.layout.activity_with_navigation_drawer);
+
         ActionBar actionBar = getActionBar();
         if (null != actionBar)
             actionBar.setTitle(getString(R.string.title_new_dictionary));
@@ -98,9 +98,5 @@ public abstract class BaseNavigationDrawerActivity extends Activity {
                 .beginTransaction()
                 .replace(R.id.fl_main_content, fragment)
                 .commit();
-    }
-
-    public void updateNavigation() {
-        navigationFragment.updateList();
     }
 }

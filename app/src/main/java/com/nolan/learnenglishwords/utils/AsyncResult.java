@@ -1,8 +1,8 @@
 package com.nolan.learnenglishwords.utils;
 
 public class AsyncResult<ResultT> {
-    public ResultT result;
-    public Throwable exception;
+    public final ResultT result;
+    public final Throwable exception;
 
     public AsyncResult(ResultT result) {
         this.result = result;
