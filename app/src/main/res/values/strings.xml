@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Learn English Words</string>
+    <string name="app_name">Stacks</string>
     <string name="title_new_dictionary">New Dictionary</string>
     <string name="hint_title">title</string>
     <string name="hint_description">description</string>
