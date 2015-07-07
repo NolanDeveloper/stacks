@@ -1,8 +1,8 @@
-# Learn English Words
+# Stacks
 
 This project was created for educational purposes. (probably not only)
 
-**Learn English Words** is application for Android. It is similar to anki droid, but I am going to
+**Stacks** is application for Android. It is similar to anki droid, but I am going to
 create a better design and another algorithm of studying and probably support of different ways of
 studying like in LinguaLeo.
 
