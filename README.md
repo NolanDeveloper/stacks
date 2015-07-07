@@ -20,4 +20,4 @@ So when a user opens app with intent to repeat cards what happens. The app shows
 Build
 ---
 
-I use Android Studio and nothing unusual. Hence you can easily import this project using menu File>Open Project. I have not tried yet but it seems so. Anyway if you have any trouble in importing it write me email and I will try to help you.
+I use Android Studio and nothing unusual. Hence you can easily import this project using menu File>Open Project. I have not tried yet but it seems so. Anyway if you have any trouble in importing write me email and I will try to help you.
