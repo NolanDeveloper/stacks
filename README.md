@@ -16,3 +16,8 @@ You create dictionaries which collect cards. Cards are cards in other words  som
 So when a user opens app with intent to repeat cards what happens. The app shows the front side to user. And the user needs to write down in the editable field below the variant of the back side inscription. Accoding to the equality or not of his answer with the actual back side insciption app changes scrutiny of the shown card.
 
 *Glad to hear opinions and ideas.*
+
+Build
+---
+
+I use Android Studio and nothing unusual. Hence you can easily import this project using menu File>Open Project. I have not tried yet but it seems so. Anyway if you have any trouble in importing it write me email and I will try to help you.
