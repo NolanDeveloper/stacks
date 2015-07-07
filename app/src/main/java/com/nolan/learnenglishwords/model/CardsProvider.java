@@ -17,10 +17,13 @@ import java.util.Arrays;
 import com.nolan.learnenglishwords.model.CardsContract.*;
 
 public class CardsProvider extends ContentProvider {
+    // Tag for logging. (e.g. Log.i(LOG_TAG, "all right!"))
     private static final String LOG_TAG = CardsProvider.class.getName();
 
+    // Codes for uri matcher.
     private static final int DICTIONARIES_TABLE = 100;
     private static final int DICTIONARIES_ID = 101;
+
     private static final int CARDS_TABLE = 200;
     private static final int CARDS_OF_DICTIONARY = 201;
     private static final int CARDS_ID = 202;
@@ -45,6 +48,10 @@ public class CardsProvider extends ContentProvider {
             Log.d(LOG_TAG, "Provider was created.");
             return true;
         } catch (SQLiteException e) {
+            // This can happen for example if there is no free memory. This case definitely
+            // must be tested but I don't know any way to do it except of making tons of
+            // garbage in memory of my phone which is definitely wrong.
+            // fixme: create test case
             e.printStackTrace();
             return false;
         }
@@ -59,7 +66,6 @@ public class CardsProvider extends ContentProvider {
         Log.d(LOG_TAG, "selectionArgs: " + ((null != selectionArgs) ? Arrays.deepToString(selectionArgs) : "null"));
         Log.d(LOG_TAG, "sortOrder: " + sortOrder);
 
-        String table = uri.getPathSegments().get(0);
         switch (URI_MATCHER.match(uri)) {
             case UriMatcher.NO_MATCH:
                 return null;
@@ -77,6 +83,9 @@ public class CardsProvider extends ContentProvider {
                 selection = DatabaseUtils.concatenateWhere(selection, Card.CARD_DICTIONARY_ID + " = " + id);
             }
         }
+        // The first part of uri is always table name. In other words all table
+        // names are at the top of uri hierarchy providing by #URI_MATCHER.
+        String table = uri.getPathSegments().get(0);
         Cursor cursor = db.getReadableDatabase().query(table, projection, selection, selectionArgs, null, null, sortOrder);
         if ((null != cursor) && (null != getContext()))
             cursor.setNotificationUri(getContext().getContentResolver(), uri);
@@ -108,6 +117,7 @@ public class CardsProvider extends ContentProvider {
         Log.d(LOG_TAG, "uri: " + uri.toString());
         Log.d(LOG_TAG, "values: " + ((null != values) ? values.toString() : "null"));
 
+        checkOrThrow(uri, values);
         switch (URI_MATCHER.match(uri)) {
             case UriMatcher.NO_MATCH:
                 return null;
@@ -121,7 +131,6 @@ public class CardsProvider extends ContentProvider {
                 break;
         }
         String table = uri.getPathSegments().get(0);
-        checkInsertOrUpdate(uri, values);
         long id = db.getWritableDatabase().insert(table, null, values);
         if (-1 == id)
             return null;
@@ -166,6 +175,7 @@ public class CardsProvider extends ContentProvider {
         Log.d(LOG_TAG, "selection: " + selection);
         Log.d(LOG_TAG, "selectionArgs: " + ((null != selectionArgs) ? Arrays.deepToString(selectionArgs) : "null"));
 
+        checkOrThrow(uri, values);
         switch (URI_MATCHER.match(uri)) {
             case UriMatcher.NO_MATCH:
                 return 0;
@@ -181,14 +191,21 @@ public class CardsProvider extends ContentProvider {
             }
         }
         String table = uri.getPathSegments().get(0);
-        checkInsertOrUpdate(uri, values);
         int count = db.getReadableDatabase().update(table, values, selection, selectionArgs);
         if (0 < count)
             getContext().getContentResolver().notifyChange(uri, null);
         return count;
     }
 
-    public void checkInsertOrUpdate(Uri uri, ContentValues values) {
+    /**
+     * Checks values before updating and inserting and throws {@code IllegalArgumentException}
+     * in case of any mistake in parameters.
+     * @param uri Uri argument of {@link #insert} or {@link #update}.
+     * @param values ContentValues argument of {@link #insert} or {@link #update}.
+     * @throws IllegalArgumentException This is thrown in case of failing check. It also provides
+     * message describing the reason of failing.
+     */
+    private void checkOrThrow(Uri uri, ContentValues values) throws IllegalArgumentException {
         switch (URI_MATCHER.match(uri)) {
             case DICTIONARIES_TABLE:
             case DICTIONARIES_ID:

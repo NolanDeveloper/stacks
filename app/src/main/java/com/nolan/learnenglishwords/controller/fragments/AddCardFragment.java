@@ -21,14 +21,21 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.nolan.learnenglishwords.R;
+import com.nolan.learnenglishwords.controller.activities.AddCardActivity;
 import com.nolan.learnenglishwords.model.CardsContract;
 
-public class AddCardFragment extends Fragment implements View.OnClickListener, LoaderManager.LoaderCallbacks<Object> {
+/**
+ * This fragment is for adding new cards to existing dictionary. It is used with
+ * conjunction with {@link AddCardActivity}.
+ */
+public class AddCardFragment extends Fragment implements View.OnClickListener, LoaderManager.LoaderCallbacks<Cursor> {
+    // Uri pointing to dictionary where to put new cards to.
     private Uri dictionary;
 
+    // Id of the specified dictionary.
     private long dictionaryId;
-    private String dictionaryTitle;
 
+    // UI elements.
     private TextView tvTitle;
     private EditText etFront;
     private EditText etBack;
@@ -38,6 +45,7 @@ public class AddCardFragment extends Fragment implements View.OnClickListener, L
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         dictionary = getActivity().getIntent().getData();
+        dictionaryId = Long.parseLong(dictionary.getLastPathSegment());
     }
 
     @Nullable
@@ -48,14 +56,29 @@ public class AddCardFragment extends Fragment implements View.OnClickListener, L
         etFront = (EditText) view.findViewById(R.id.et_front);
         etBack = (EditText) view.findViewById(R.id.et_back);
         btnDone = (Button) view.findViewById(R.id.btn_done);
+
+        if (null == savedInstanceState) {
+            InputFilter[] filters = new InputFilter[1];
+            filters[0] = new InputFilter.LengthFilter(CardsContract.Card.MAX_FRONT_LEN);
+            etFront.setFilters(filters);
+
+            filters = new InputFilter[1];
+            filters[0] = new InputFilter.LengthFilter(CardsContract.Card.MAX_BACK_LEN);
+            etBack.setFilters(filters);
+        }
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         if (savedInstanceState == null)
-            getLoaderManager().initLoader(DictionaryQuery.TOKEN, null, this).forceLoad();
+            getLoaderManager().initLoader(DictionaryQuery._TOKEN, null, this);
     }
 
     @Override
@@ -85,45 +108,46 @@ public class AddCardFragment extends Fragment implements View.OnClickListener, L
         etBack.getText().clear();
     }
 
+    // Interface holding data about loader which
+    // queries the title of the specified dictionary.
     private interface DictionaryQuery {
-        int TOKEN = 0;
+        // The identifier of loader which is passed to LoaderManager.
+        int _TOKEN = 0;
 
+        // Columns which we need.
         String[] COLUMNS = {
-                CardsContract.Dictionary.DICTIONARY_ID,
                 CardsContract.Dictionary.DICTIONARY_TITLE
         };
 
-        int ID = 0;
-        int TITLE = 1;
+        // Here should be the list of ids. These ids are used in Cursor to get
+        // values from certain column of a row. Their names must be equal to
+        // name of column without a table in order to easier remember what the
+        // id each column corresponds to and to see in the code from which column
+        // we are trying to get the value.
+        int TITLE = 0;
     }
 
     @Override
-    public Loader onCreateLoader(int id, Bundle args) {
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        // Note: When the loader is the only we do not use switch on #id.
+        // Because it is simpler to read.
         return new CursorLoader(getActivity(), dictionary, DictionaryQuery.COLUMNS, null, null, CardsContract.Dictionary.SORT_DEFAULT);
     }
 
     @Override
-    public void onLoadFinished(Loader<Object> loader, Object data) {
-        Cursor query = (Cursor) data;
+    public void onLoadFinished(Loader<Cursor> loader, Cursor query) {
+        // Note: When the loader is the only we do not use switch on #loader.getId().
+        // Because it is simpler to read.
+        if (null == query)
+            throw new IllegalArgumentException("Loader was failed. (query = null)");
         query.moveToFirst();
-        dictionaryId = query.getLong(DictionaryQuery.ID);
-        dictionaryTitle = query.getString(DictionaryQuery.TITLE);
-        initUi();
+        String title = query.getString(DictionaryQuery.TITLE);
+        tvTitle.setText(title);
+        btnDone.setOnClickListener(this);
     }
 
     @Override
-    public void onLoaderReset(Loader<Object> loader) {
+    public void onLoaderReset(Loader<Cursor> loader) {
 
-    }
-
-    private void initUi() {
-        tvTitle.setText(dictionaryTitle);
-        btnDone.setOnClickListener(this);
-        InputFilter[] filters = new InputFilter[1];
-        filters[0] = new InputFilter.LengthFilter(CardsContract.Card.MAX_FRONT_LEN);
-        etFront.setFilters(filters);
-        filters = new InputFilter[1];
-        filters[0] = new InputFilter.LengthFilter(CardsContract.Card.MAX_BACK_LEN);
-        etBack.setFilters(filters);
     }
 }

@@ -18,19 +18,27 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.nolan.learnenglishwords.R;
+import com.nolan.learnenglishwords.controller.activities.TrainingActivity;
 import com.nolan.learnenglishwords.model.CardsContract;
 
-public class TrainingIntroFragment extends Fragment implements View.OnClickListener, LoaderManager.LoaderCallbacks<Object> {
-
+/**
+ * This fragment is used to show preview of training. Preview is dictionary title and description.
+ * In future we are going to add more useful information here. It is user in conjunction with
+ * {@link TrainingActivity}.
+ */
+public class TrainingIntroFragment extends Fragment implements View.OnClickListener, LoaderManager.LoaderCallbacks<Cursor> {
+    // Interface that Activity must implement.
     public interface TrainingStarter {
         void startTraining(@NonNull String dictionaryTitle);
     }
 
+    // UI elements.
     private TextView tvTitle;
     private TextView tvDescription;
     private Button btnStart;
     private TrainingStarter activity;
 
+    // Flag showing if the specified dictionary if empty.
     private boolean isDictionaryEmpty;
 
     @Override
@@ -49,8 +57,11 @@ public class TrainingIntroFragment extends Fragment implements View.OnClickListe
         return view;
     }
 
+    /**
+     * Query for dictionary title and description.
+     */
     private interface DictionaryQuery {
-        int TOKEN = 0;
+        int _TOKEN = 0;
 
         String[] COLUMNS = new String[] {
                 CardsContract.Dictionary.DICTIONARY_TITLE,
@@ -61,8 +72,11 @@ public class TrainingIntroFragment extends Fragment implements View.OnClickListe
         int DESCRIPTION = 1;
     }
 
+    /**
+     * Query for card ids to see if dictionary is empty.
+     */
     private interface CardQuery {
-        int TOKEN = 1;
+        int _TOKEN = 1;
 
         String[] COLUMNS = new String[] {
                 CardsContract.Card.CARD_ID
@@ -74,17 +88,17 @@ public class TrainingIntroFragment extends Fragment implements View.OnClickListe
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        getLoaderManager().initLoader(DictionaryQuery.TOKEN, null, this);
-        getLoaderManager().initLoader(CardQuery.TOKEN, null, this);
+        getLoaderManager().initLoader(DictionaryQuery._TOKEN, null, this);
+        getLoaderManager().initLoader(CardQuery._TOKEN, null, this);
     }
 
     @Override
-    public Loader onCreateLoader(int id, Bundle args) {
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         switch (id) {
-            case DictionaryQuery.TOKEN:
+            case DictionaryQuery._TOKEN:
                 return new CursorLoader(getActivity(), getActivity().getIntent().getData(),
                         DictionaryQuery.COLUMNS, null, null, null);
-            case CardQuery.TOKEN:
+            case CardQuery._TOKEN:
                 String dictionaryId = getActivity().getIntent().getData().getLastPathSegment();
                 Uri uri = CardsContract.Card.buildUriToCardsOfDictionary(Long.parseLong(dictionaryId));
                 return new CursorLoader(getActivity(), uri, CardQuery.COLUMNS, null, null, null);
@@ -93,17 +107,18 @@ public class TrainingIntroFragment extends Fragment implements View.OnClickListe
     }
 
     @Override
-    public void onLoadFinished(Loader<Object> loader, Object data) {
-        Cursor query = (Cursor) data;
+    public void onLoadFinished(Loader<Cursor> loader, Cursor query) {
+        if (null == query)
+            throw new IllegalArgumentException("Loader was failed. (query = null)");
         switch (loader.getId()) {
-            case DictionaryQuery.TOKEN:
+            case DictionaryQuery._TOKEN:
                 query.moveToFirst();
                 String title = query.getString(DictionaryQuery.TITLE);
                 String description = query.getString(DictionaryQuery.DESCRIPTION);
                 tvTitle.setText(title);
                 tvDescription.setText(description);
                 break;
-            case CardQuery.TOKEN:
+            case CardQuery._TOKEN:
                 query.moveToFirst();
                 isDictionaryEmpty = 0 == query.getCount();
                 btnStart.setOnClickListener(this);
@@ -112,7 +127,7 @@ public class TrainingIntroFragment extends Fragment implements View.OnClickListe
     }
 
     @Override
-    public void onLoaderReset(Loader<Object> loader) {
+    public void onLoaderReset(Loader<Cursor> loader) {
 
     }
 

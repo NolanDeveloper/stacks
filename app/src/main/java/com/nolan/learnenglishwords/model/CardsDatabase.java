@@ -9,13 +9,17 @@ import com.nolan.learnenglishwords.model.CardsContract.*;
 public class CardsDatabase extends SQLiteOpenHelper {
     public static final String DATABASE_NAME = "cards";
 
+    // Current version of data base. It must be updated for each new scheme.
+    // We can use this value to correctly update db in #onUpdate.
     public static final int CURRENT_VERSION = 1;
 
+    // Contractions for Tables. It is easier to keep in memory.
     interface Tables {
         String DICTIONARIES = CardsContract.PATH_DICTIONARIES;
         String CARDS = CardsContract.PATH_CARDS;
     }
 
+    // Contractions for REFERENCES clause.
     interface References {
         String DICTIONARIES_ID = "REFERENCES " + Tables.DICTIONARIES + "(" + DictionariesColumns.DICTIONARY_ID + ")";
     }
@@ -48,6 +52,6 @@ public class CardsDatabase extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
-        // there is only one version of this db for now
+        // There is only one version of this db for now. Nowhere to update.
     }
 }

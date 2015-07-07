@@ -14,12 +14,28 @@ import android.view.View;
 import com.nolan.learnenglishwords.R;
 import com.nolan.learnenglishwords.controller.fragments.NavigationFragment;
 
+/**
+ * This activity is base class for activities with navigation drawer. It assumes all
+ * responsibilities for the processing of the navigation drawer including action
+ * bar toggle.
+ * <p>
+ * The ui of it consists of two fragments: navigation fragment and main content fragment.
+ * <p>
+ * Navigation fragment is {@link NavigationFragment} class. So if you want to change
+ * navigation drawer look there.
+ * <p>
+ * Main content fragment places on the whole screen. Derivative classes can specify it using
+ * {@link #setMainFragment(Fragment)}.
+ */
 public abstract class BaseNavigationDrawerActivity extends Activity {
+    // Fragment that places in the navigation area. It shows up
+    // when user swipes from the left side of the screen.
     private NavigationFragment navigationFragment;
+
     private DrawerLayout dlRoot;
     private ActionBarDrawerToggle actionBarDrawerToggle;
 
-    public BaseNavigationDrawerActivity() {
+    protected BaseNavigationDrawerActivity() {
         super();
     }
 
@@ -85,7 +101,7 @@ public abstract class BaseNavigationDrawerActivity extends Activity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Pass the event to ActionBarDrawerToggle, if it returns
-        // true, then it has handled the app icon touch event
+        // true, then it has handled the app icon touch event.
         if (actionBarDrawerToggle.onOptionsItemSelected(item)) {
             return true;
         }
@@ -93,6 +109,11 @@ public abstract class BaseNavigationDrawerActivity extends Activity {
         return super.onOptionsItemSelected(item);
     }
 
+    /**
+     * Sets the main fragment of the activity. This function should be used by derivative
+     * classes to specify main fragment.
+     * @param fragment Fragment to placed as main.
+     */
     public void setMainFragment(@NonNull Fragment fragment) {
         getFragmentManager()
                 .beginTransaction()

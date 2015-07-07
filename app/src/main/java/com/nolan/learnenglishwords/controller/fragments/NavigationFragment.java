@@ -21,14 +21,18 @@ import com.nolan.learnenglishwords.R;
 import com.nolan.learnenglishwords.controller.activities.TrainingActivity;
 import com.nolan.learnenglishwords.model.CardsContract;
 
-public class NavigationFragment extends Fragment implements LoaderManager.LoaderCallbacks<Object>, View.OnClickListener, AdapterView.OnItemClickListener {
+/**
+ * This fragment is used for navigation drawer.
+ */
+public class NavigationFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, View.OnClickListener, AdapterView.OnItemClickListener {
+    // UI elements.
     private ListView lvNavigation;
     private Button btnAdd;
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        getLoaderManager().initLoader(DictionariesQuery.TOKEN, null, this);
+        getLoaderManager().initLoader(DictionariesQuery._TOKEN, null, this);
     }
 
     @Nullable
@@ -55,8 +59,12 @@ public class NavigationFragment extends Fragment implements LoaderManager.Loader
         startActivity(intent);
     }
 
+    /**
+     * Query for all dictionaries in conjunction with _id. _id is required when we start
+     * {@link TrainingActivity} by clicking at dictionary in the list.
+     */
     private interface DictionariesQuery {
-        int TOKEN = 0;
+        int _TOKEN = 0;
 
         String[] COLUMNS = {
                 CardsContract.Dictionary.DICTIONARY_ID,
@@ -68,7 +76,7 @@ public class NavigationFragment extends Fragment implements LoaderManager.Loader
     }
 
     @Override
-    public Loader onCreateLoader(int id, Bundle args) {
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         return new CursorLoader(
                 getActivity(),
                 CardsContract.Dictionary.CONTENT_URI,
@@ -79,8 +87,9 @@ public class NavigationFragment extends Fragment implements LoaderManager.Loader
     }
 
     @Override
-    public void onLoadFinished(Loader<Object> loader, Object data) {
-        Cursor dictionaries = (Cursor) data;
+    public void onLoadFinished(Loader<Cursor> loader, Cursor dictionaries) {
+        if (null == dictionaries)
+            throw new IllegalArgumentException("Loader was failed. (dictionaries = null)");
         lvNavigation.setAdapter(new SimpleCursorAdapter(getActivity(), R.layout.navigation_drawer_item, dictionaries,
                 new String[]{CardsContract.Dictionary.DICTIONARY_TITLE},
                 new int[]{android.R.id.text1},
@@ -88,7 +97,7 @@ public class NavigationFragment extends Fragment implements LoaderManager.Loader
     }
 
     @Override
-    public void onLoaderReset(Loader<Object> loader) {
+    public void onLoaderReset(Loader<Cursor> loader) {
 
     }
 }

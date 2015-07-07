@@ -15,13 +15,20 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.nolan.learnenglishwords.R;
 import com.nolan.learnenglishwords.controller.activities.AddCardActivity;
+import com.nolan.learnenglishwords.controller.activities.CreateDictionaryActivity;
+import com.nolan.learnenglishwords.controller.activities.CreateFirstDictionaryActivity;
 import com.nolan.learnenglishwords.model.CardsContract;
 
-public class CreateDictionaryFragment extends Fragment implements View.OnClickListener, LoaderManager.LoaderCallbacks<Object> {
+/**
+ * This fragment is for creating new dictionaries.
+ * <p>
+ * {@link CreateDictionaryActivity} and {@link CreateFirstDictionaryActivity} use this.
+ */
+public class CreateDictionaryFragment extends Fragment implements View.OnClickListener, LoaderManager.LoaderCallbacks<Uri> {
+    // UI elements.
     private EditText etTitle;
     private EditText etDescription;
     private Button btnDone;
@@ -29,46 +36,50 @@ public class CreateDictionaryFragment extends Fragment implements View.OnClickLi
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        ViewGroup root = (ViewGroup) inflater.inflate(R.layout.create_dictionary_fragment, container, false);
+        View view = inflater.inflate(R.layout.create_dictionary_fragment, container, false);
 
-        etTitle = (EditText) root.findViewById(R.id.et_title);
-        assert null != etTitle;
-        etDescription = (EditText) root.findViewById(R.id.et_description);
-        assert null != etDescription;
-        btnDone = (Button) root.findViewById(R.id.btn_done);
-        assert null != btnDone;
-
-        InputFilter[] filterArray = new InputFilter[1];
-        filterArray[0] = new InputFilter.LengthFilter(CardsContract.Dictionary.MAX_TITLE_LEN);
-        etTitle.setFilters(filterArray);
-
-        filterArray = new InputFilter[1];
-        filterArray[0] = new InputFilter.LengthFilter(CardsContract.Dictionary.MAX_DESCRIPTION_LEN);
-        etDescription.setFilters(filterArray);
+        etTitle = (EditText) view.findViewById(R.id.et_title);
+        etDescription = (EditText) view.findViewById(R.id.et_description);
+        btnDone = (Button) view.findViewById(R.id.btn_done);
 
         btnDone.setOnClickListener(this);
-        return root;
+
+        if (null == savedInstanceState) {
+            InputFilter[] filterArray = new InputFilter[1];
+            filterArray[0] = new InputFilter.LengthFilter(CardsContract.Dictionary.MAX_TITLE_LEN);
+            etTitle.setFilters(filterArray);
+
+            filterArray = new InputFilter[1];
+            filterArray[0] = new InputFilter.LengthFilter(CardsContract.Dictionary.MAX_DESCRIPTION_LEN);
+            etDescription.setFilters(filterArray);
+        }
+        return view;
     }
+
+    private static final String VALUES = "values";
 
     @Override
     public void onClick(View v) {
         btnDone.setOnClickListener(null);
         String title = etTitle.getText().toString();
         String description = etDescription.getText().toString();
-
-        // That's the easiest way I could find to pass ContentValues through Bundle.
+        // If you know better way to pass values though Bundle please,
+        // make pull request on https://github.com/Nolane/learn-english-words
         Bundle args = new Bundle();
         ContentValues values = new ContentValues();
         values.put(CardsContract.Dictionary.DICTIONARY_TITLE, title);
         values.put(CardsContract.Dictionary.DICTIONARY_DESCRIPTION, description);
-        args.putParcelable("values", values);
+        args.putParcelable(VALUES, values);
         getLoaderManager().initLoader(0, args, this).forceLoad();
     }
 
     @Override
-    public Loader onCreateLoader(int id, Bundle args) {
-        final ContentValues values = args.getParcelable("values");
-        return new AsyncTaskLoader(getActivity()) {
+    public Loader<Uri> onCreateLoader(int id, Bundle args) {
+        // Here we use AsyncTaskLoader instead of simple AsyncTask because we need
+        // to start another activity after inserting even if this activity was recreated during
+        // inserting.
+        final ContentValues values = args.getParcelable(VALUES);
+        return new AsyncTaskLoader<Uri>(getActivity()) {
             @Override
             public Uri loadInBackground() {
                 return getContext().getContentResolver().insert(CardsContract.Dictionary.CONTENT_URI, values);
@@ -77,19 +88,16 @@ public class CreateDictionaryFragment extends Fragment implements View.OnClickLi
     }
 
     @Override
-    public void onLoadFinished(Loader<Object> loader, Object data) {
-        if (null == data) {
-            btnDone.setOnClickListener(this);
-            Toast.makeText(getActivity(), getString(R.string.failed), Toast.LENGTH_SHORT).show();
-            return;
-        }
+    public void onLoadFinished(Loader<Uri> loader, Uri uri) {
+        if (null == uri)
+            throw new IllegalArgumentException("Loader was failed. (uri = null)");
         Intent intent = new Intent(getActivity().getBaseContext(), AddCardActivity.class);
-        intent.setData((Uri) data);
+        intent.setData(uri);
         startActivity(intent);
     }
 
     @Override
-    public void onLoaderReset(Loader<Object> loader) {
+    public void onLoaderReset(Loader<Uri> loader) {
 
     }
 }
