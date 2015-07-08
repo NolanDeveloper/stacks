@@ -30,15 +30,15 @@ public class LauncherActivity extends Activity implements LoaderManager.LoaderCa
         if (null != actionBar || actionBar.isShowing())
             actionBar.hide();
         // todo: show big logo
-        getLoaderManager().initLoader(DictionariesQuery._TOKEN, null, this);
+        getLoaderManager().initLoader(StacksQuery._TOKEN, null, this);
     }
 
-    private interface DictionariesQuery {
+    private interface StacksQuery {
         int _TOKEN = 0;
 
         // Columns which we need.
         String[] COLUMNS = {
-                CardsContract.Dictionary.DICTIONARY_ID
+                CardsContract.Stacks.STACK_ID
         };
 
         int ID = 0;
@@ -46,23 +46,23 @@ public class LauncherActivity extends Activity implements LoaderManager.LoaderCa
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return new CursorLoader(this, CardsContract.Dictionary.CONTENT_URI, DictionariesQuery.COLUMNS, null, null, null);
+        return new CursorLoader(this, CardsContract.Stacks.CONTENT_URI, StacksQuery.COLUMNS, null, null, null);
     }
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor query) {
         if (null == query)
             throw new IllegalArgumentException("Loader was failed. (query = null)");
-        // The logic is simple. If there is no dictionaries we start CreateFirstDictionaryActivity
+        // The logic is simple. If there is no stacks we start CreateFirstStackActivity
         // otherwise we start TrainingActivity.
         if (0 == query.getCount()) {
-            Intent intent = new Intent(getBaseContext(), CreateFirstDictionaryActivity.class);
+            Intent intent = new Intent(getBaseContext(), CreateFirstStackActivity.class);
             startActivity(intent);
         } else {
             Intent intent = new Intent(getBaseContext(), TrainingActivity.class);
             query.moveToFirst();
             Uri data = ContentUris.withAppendedId(
-                    CardsContract.Dictionary.CONTENT_URI, query.getLong(DictionariesQuery.ID));
+                    CardsContract.Stacks.CONTENT_URI, query.getLong(StacksQuery.ID));
             intent.setData(data);
             startActivity(intent);
         }

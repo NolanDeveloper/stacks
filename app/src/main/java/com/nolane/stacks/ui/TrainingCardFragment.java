@@ -31,8 +31,8 @@ import java.util.Random;
  * {@link TrainingActivity}.
  */
 public class TrainingCardFragment extends Fragment implements View.OnClickListener, LoaderCallbacks<Object> {
-    // String which identifies dictionary title argument passing to this fragment.
-    private static final String EXTRA_DICTIONARY_TITLE = "dictionary.title";
+    // String which identifies stack title argument passing to this fragment.
+    private static final String EXTRA_STACK_TITLE = "stack.title";
     // Strings corresponding to the values saved in onSaveInstanceState().
     private static final String EXTRA_CARD_ID = "card.id";
     private static final String EXTRA_CARD_FRONT = "card.front";
@@ -56,13 +56,13 @@ public class TrainingCardFragment extends Fragment implements View.OnClickListen
 
     /**
      * Creates instance of this fragment passing correct arguments to it.
-     * @param dictionaryTitle The title of the specified dictionary.
+     * @param stackTitle The title of the specified stack.
      * @return TrainingCardFragment with correct arguments.
      */
-    public static TrainingCardFragment getInstance(@NonNull String dictionaryTitle) {
+    public static TrainingCardFragment getInstance(@NonNull String stackTitle) {
         TrainingCardFragment fragment = new TrainingCardFragment();
         Bundle arguments = new Bundle();
-        arguments.putString(EXTRA_DICTIONARY_TITLE, dictionaryTitle);
+        arguments.putString(EXTRA_STACK_TITLE, stackTitle);
         fragment.setArguments(arguments);
         return fragment;
     }
@@ -100,7 +100,7 @@ public class TrainingCardFragment extends Fragment implements View.OnClickListen
         etBack = (EditText) view.findViewById(R.id.et_back);
         btnDone = (Button) view.findViewById(R.id.btn_done);
 
-        tvTitle.setText(getArguments().getString(EXTRA_DICTIONARY_TITLE));
+        tvTitle.setText(getArguments().getString(EXTRA_STACK_TITLE));
         return view;
     }
 
@@ -143,18 +143,18 @@ public class TrainingCardFragment extends Fragment implements View.OnClickListen
 
     @Override
     public Loader onCreateLoader(int id, Bundle args) {
-        long dictionaryId = Long.parseLong(getActivity().getIntent().getData().getLastPathSegment());
+        long stackId = Long.parseLong(getActivity().getIntent().getData().getLastPathSegment());
         switch (id) {
             case PickCardQuery._TOKEN: {
-                final Uri cardsOfDictionary = CardsContract.Card.buildUriToCardsOfDictionary(dictionaryId);
+                final Uri cardsOfStack = CardsContract.Card.buildUriToCardsOfStack(stackId);
                 return new AsyncTaskLoader(getActivity()) {
                     @Override
                     public Object loadInBackground() {
-                        return getActivity().getContentResolver().query(cardsOfDictionary, PickCardQuery.COLUMNS, null, null, CardsContract.Card.SORT_LAST_SEEN);
+                        return getActivity().getContentResolver().query(cardsOfStack, PickCardQuery.COLUMNS, null, null, CardsContract.Card.SORT_LAST_SEEN);
                     }
                 };
             } case UpdateScrutinyQuery._TOKEN: {
-                final Uri uri = ContentUris.withAppendedId(CardsContract.Card.buildUriToCardsOfDictionary(dictionaryId), cardId);
+                final Uri uri = ContentUris.withAppendedId(CardsContract.Card.buildUriToCardsOfStack(stackId), cardId);
                 final ContentValues values = args.getParcelable(VALUES);
                 return new AsyncTaskLoader<Object>(getActivity()) {
                     @Override
@@ -177,7 +177,7 @@ public class TrainingCardFragment extends Fragment implements View.OnClickListen
                 }
                 int count = query.getCount();
                 if (0 == count) {
-                    throw new IllegalArgumentException("The specified dictionary does not have cards.");
+                    throw new IllegalArgumentException("The specified stack does not have cards.");
                 }
                 if (1 == count) {
                     query.moveToFirst();

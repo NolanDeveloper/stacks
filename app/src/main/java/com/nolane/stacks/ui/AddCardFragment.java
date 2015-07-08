@@ -24,15 +24,15 @@ import com.nolane.stacks.R;
 import com.nolane.stacks.provider.CardsContract;
 
 /**
- * This fragment is for adding new cards to existing dictionary. It is used with
+ * This fragment is for adding new cards to existing stack. It is used with
  * conjunction with {@link AddCardActivity}.
  */
 public class AddCardFragment extends Fragment implements View.OnClickListener, LoaderManager.LoaderCallbacks<Cursor> {
-    // Uri pointing to dictionary where to put new cards to.
-    private Uri dictionary;
+    // Uri pointing to stack where to put new cards to.
+    private Uri stack;
 
-    // Id of the specified dictionary.
-    private long dictionaryId;
+    // Id of the specified stack.
+    private long stackId;
 
     // UI elements.
     private TextView tvTitle;
@@ -43,8 +43,8 @@ public class AddCardFragment extends Fragment implements View.OnClickListener, L
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        dictionary = getActivity().getIntent().getData();
-        dictionaryId = Long.parseLong(dictionary.getLastPathSegment());
+        stack = getActivity().getIntent().getData();
+        stackId = Long.parseLong(stack.getLastPathSegment());
     }
 
     @Nullable
@@ -77,7 +77,7 @@ public class AddCardFragment extends Fragment implements View.OnClickListener, L
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         if (savedInstanceState == null)
-            getLoaderManager().initLoader(DictionaryQuery._TOKEN, null, this);
+            getLoaderManager().initLoader(StackQuery._TOKEN, null, this);
     }
 
     @Override
@@ -88,7 +88,7 @@ public class AddCardFragment extends Fragment implements View.OnClickListener, L
         final ContentValues values = new ContentValues();
         values.put(CardsContract.Card.CARD_FRONT, front);
         values.put(CardsContract.Card.CARD_BACK, back);
-        values.put(CardsContract.Card.CARD_DICTIONARY_ID, dictionaryId);
+        values.put(CardsContract.Card.CARD_STACK_ID, stackId);
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... params) {
@@ -110,15 +110,15 @@ public class AddCardFragment extends Fragment implements View.OnClickListener, L
 
     /**
      * Interface holding data about loader which
-     * queries the title of the specified dictionary.
+     * queries the title of the specified stack.
      */
-    private interface DictionaryQuery {
+    private interface StackQuery {
         // The identifier of loader which is passed to LoaderManager.
         int _TOKEN = 0;
 
         // Columns which we need.
         String[] COLUMNS = {
-                CardsContract.Dictionary.DICTIONARY_TITLE
+                CardsContract.Stacks.STACK_TITLE
         };
 
         // Here should be the list of ids. These ids are used in Cursor to get
@@ -133,7 +133,7 @@ public class AddCardFragment extends Fragment implements View.OnClickListener, L
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         // Note: When the loader is the only we do not use switch on #id.
         // Because it is simpler to read.
-        return new CursorLoader(getActivity(), dictionary, DictionaryQuery.COLUMNS, null, null, CardsContract.Dictionary.SORT_DEFAULT);
+        return new CursorLoader(getActivity(), stack, StackQuery.COLUMNS, null, null, CardsContract.Stacks.SORT_DEFAULT);
     }
 
     @Override
@@ -143,7 +143,7 @@ public class AddCardFragment extends Fragment implements View.OnClickListener, L
         if (null == query)
             throw new IllegalArgumentException("Loader was failed. (query = null)");
         query.moveToFirst();
-        String title = query.getString(DictionaryQuery.TITLE);
+        String title = query.getString(StackQuery.TITLE);
         tvTitle.setText(title);
         btnDone.setOnClickListener(this);
     }

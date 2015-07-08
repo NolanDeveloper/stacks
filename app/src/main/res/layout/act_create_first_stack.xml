@@ -5,5 +5,5 @@
     android:id="@+id/fr_root"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:name="com.nolane.stacks.ui.CreateDictionaryFragment"
-    tools:layout="@layout/frag_create_dictionary" />
+    android:name="com.nolane.stacks.ui.CreateStackFragment"
+    tools:layout="@layout/frag_create_stack" />

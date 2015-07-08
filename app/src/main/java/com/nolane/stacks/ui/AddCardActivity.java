@@ -6,8 +6,8 @@ import android.os.Bundle;
 import com.nolane.stacks.provider.CardsContract;
 
 /**
- * This activity is for adding new cards into existing dictionary. You must specify uri for
- * the dictionary using {@link android.content.Intent#setData(Uri)}.
+ * This activity is for adding new cards into existing stack. You must specify uri for
+ * the stack using {@link android.content.Intent#setData(Uri)}.
  */
 public class AddCardActivity extends BaseNavigationDrawerActivity {
     @Override
@@ -17,10 +17,10 @@ public class AddCardActivity extends BaseNavigationDrawerActivity {
         // Firstly it should exist.
         final Uri data = getIntent().getData();
         if (null == data)
-            throw new IllegalArgumentException("You must specify data(uri to dictionary) to start this activity.");
+            throw new IllegalArgumentException("You must specify data(uri to stack) to start this activity.");
         // Secondly it should have proper type.
         final String dataType = getContentResolver().getType(data);
-        final String requiredType = CardsContract.Dictionary.CONTENT_ITEM_TYPE;
+        final String requiredType = CardsContract.Stacks.CONTENT_ITEM_TYPE;
         if (!requiredType.equals(dataType))
             throw new IllegalArgumentException("Specified data has unknown type. Must be \"" + requiredType + "\".");
         setMainFragment(new AddCardFragment());

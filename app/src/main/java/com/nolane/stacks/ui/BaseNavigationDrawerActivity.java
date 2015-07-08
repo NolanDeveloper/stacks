@@ -45,7 +45,7 @@ public abstract class BaseNavigationDrawerActivity extends Activity {
 
         ActionBar actionBar = getActionBar();
         if (null != actionBar)
-            actionBar.setTitle(getString(R.string.title_new_dictionary));
+            actionBar.setTitle(getString(R.string.title_new_stack));
 
         navigationFragment = new NavigationFragment();
         getFragmentManager()
@@ -66,7 +66,7 @@ public abstract class BaseNavigationDrawerActivity extends Activity {
                 super.onDrawerClosed(view);
                 ActionBar actionBar = getActionBar();
                 if (null != actionBar)
-                    actionBar.setTitle(getString(R.string.title_new_dictionary));
+                    actionBar.setTitle(getString(R.string.title_new_stack));
             }
 
             /** Called when a drawer has settled in a completely open state. */
@@ -74,7 +74,7 @@ public abstract class BaseNavigationDrawerActivity extends Activity {
                 super.onDrawerOpened(drawerView);
                 ActionBar actionBar = getActionBar();
                 if (null != actionBar)
-                    actionBar.setTitle(getString(R.string.title_dictionaries));
+                    actionBar.setTitle(getString(R.string.title_stacks));
             }
         };
         dlRoot.setDrawerListener(actionBarDrawerToggle);

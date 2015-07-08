@@ -18,13 +18,13 @@ imagine.
 How I see it for now
 ---
 
-You create dictionaries which collect cards. Cards are cards in other words  some objects that
+You create stacks which collect cards. Cards are cards in other words  some objects that
 have two sides where user can write on. User will see only one side of card. It is called front
 side. Another side which user will not see has translation of front side and is called back side.
 Each card has property called scrutiny. This value symbolizes the degree of knowing of each card.
 It is integer value belonging to some neighbourhood of zero(e.g. -25 <= scrutiny <= 25). Initial
 value is 0. If scrutiny is on the bottom limit it cannot become less. And if scrutiny becomes equal
-to the top limit the card disappears from dictionary and moves into the extra dictionary of learned
+to the top limit the card disappears from stack and moves into the extra stack of learned
 cards. Each time user guesses back side of card scrutiny increases. Each time user makes mistake
 it decreases. But this happens only once per day. So user can be training cards for the whole day
 but it will not make application to think that the user have learned all cards. It's logical and

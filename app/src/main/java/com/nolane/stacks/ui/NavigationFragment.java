@@ -31,7 +31,7 @@ public class NavigationFragment extends Fragment implements LoaderManager.Loader
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        getLoaderManager().initLoader(DictionariesQuery._TOKEN, null, this);
+        getLoaderManager().initLoader(StacksQuery._TOKEN, null, this);
     }
 
     @Nullable
@@ -47,27 +47,27 @@ public class NavigationFragment extends Fragment implements LoaderManager.Loader
 
     @Override
     public void onClick(View v) {
-        Intent intent = new Intent(getActivity().getBaseContext(), CreateDictionaryFragment.class);
+        Intent intent = new Intent(getActivity().getBaseContext(), CreateStackFragment.class);
         startActivity(intent);
     }
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Intent intent = new Intent(getActivity().getBaseContext(), TrainingActivity.class);
-        intent.setData(ContentUris.withAppendedId(CardsContract.Dictionary.CONTENT_URI, id));
+        intent.setData(ContentUris.withAppendedId(CardsContract.Stacks.CONTENT_URI, id));
         startActivity(intent);
     }
 
     /**
-     * Query for all dictionaries in conjunction with _id. _id is required when we start
-     * {@link TrainingActivity} by clicking at dictionary in the list.
+     * Query for all stacks in conjunction with _id. _id is required when we start
+     * {@link TrainingActivity} by clicking at stack in the list.
      */
-    private interface DictionariesQuery {
+    private interface StacksQuery {
         int _TOKEN = 0;
 
         String[] COLUMNS = {
-                CardsContract.Dictionary.DICTIONARY_ID,
-                CardsContract.Dictionary.DICTIONARY_TITLE
+                CardsContract.Stacks.STACK_ID,
+                CardsContract.Stacks.STACK_TITLE
         };
 
         int ID = 0;
@@ -78,19 +78,19 @@ public class NavigationFragment extends Fragment implements LoaderManager.Loader
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         return new CursorLoader(
                 getActivity(),
-                CardsContract.Dictionary.CONTENT_URI,
-                DictionariesQuery.COLUMNS,
+                CardsContract.Stacks.CONTENT_URI,
+                StacksQuery.COLUMNS,
                 null,
                 null,
-                CardsContract.Dictionary.SORT_DEFAULT);
+                CardsContract.Stacks.SORT_DEFAULT);
     }
 
     @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor dictionaries) {
-        if (null == dictionaries)
-            throw new IllegalArgumentException("Loader was failed. (dictionaries = null)");
-        lvNavigation.setAdapter(new SimpleCursorAdapter(getActivity(), R.layout.item_navigation, dictionaries,
-                new String[]{CardsContract.Dictionary.DICTIONARY_TITLE},
+    public void onLoadFinished(Loader<Cursor> loader, Cursor stacks) {
+        if (null == stacks)
+            throw new IllegalArgumentException("Loader was failed. (stacks = null)");
+        lvNavigation.setAdapter(new SimpleCursorAdapter(getActivity(), R.layout.item_navigation, stacks,
+                new String[]{CardsContract.Stacks.STACK_TITLE},
                 new int[]{android.R.id.text1},
                 SimpleCursorAdapter.NO_SELECTION));
     }

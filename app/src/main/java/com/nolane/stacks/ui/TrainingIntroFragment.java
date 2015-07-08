@@ -21,14 +21,14 @@ import com.nolane.stacks.R;
 import com.nolane.stacks.provider.CardsContract;
 
 /**
- * This fragment is used to show preview of training. Preview is dictionary title and description.
+ * This fragment is used to show preview of training. Preview is stack title and description.
  * In future we are going to add more useful information here. It is user in conjunction with
  * {@link TrainingActivity}.
  */
 public class TrainingIntroFragment extends Fragment implements View.OnClickListener, LoaderManager.LoaderCallbacks<Cursor> {
     // Interface that Activity must implement.
     public interface TrainingStarter {
-        void startTraining(@NonNull String dictionaryTitle);
+        void startTraining(@NonNull String stackTitle);
     }
 
     // UI elements.
@@ -37,8 +37,8 @@ public class TrainingIntroFragment extends Fragment implements View.OnClickListe
     private Button btnStart;
     private TrainingStarter activity;
 
-    // Flag showing if the specified dictionary if empty.
-    private boolean isDictionaryEmpty;
+    // Flag showing if the specified stack if empty.
+    private boolean isStackEmpty;
 
     @Override
     public void onAttach(Activity activity) {
@@ -57,14 +57,14 @@ public class TrainingIntroFragment extends Fragment implements View.OnClickListe
     }
 
     /**
-     * Query for dictionary title and description.
+     * Query for stack title and description.
      */
-    private interface DictionaryQuery {
+    private interface StackQuery {
         int _TOKEN = 0;
 
         String[] COLUMNS = new String[] {
-                CardsContract.Dictionary.DICTIONARY_TITLE,
-                CardsContract.Dictionary.DICTIONARY_DESCRIPTION
+                CardsContract.Stacks.STACK_TITLE,
+                CardsContract.Stacks.STACK_DESCRIPTION
         };
 
         int TITLE = 0;
@@ -72,7 +72,7 @@ public class TrainingIntroFragment extends Fragment implements View.OnClickListe
     }
 
     /**
-     * Query for card ids to see if dictionary is empty.
+     * Query for card ids to see if stack is empty.
      */
     private interface CardQuery {
         int _TOKEN = 1;
@@ -87,19 +87,19 @@ public class TrainingIntroFragment extends Fragment implements View.OnClickListe
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        getLoaderManager().initLoader(DictionaryQuery._TOKEN, null, this);
+        getLoaderManager().initLoader(StackQuery._TOKEN, null, this);
         getLoaderManager().initLoader(CardQuery._TOKEN, null, this);
     }
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         switch (id) {
-            case DictionaryQuery._TOKEN:
+            case StackQuery._TOKEN:
                 return new CursorLoader(getActivity(), getActivity().getIntent().getData(),
-                        DictionaryQuery.COLUMNS, null, null, null);
+                        StackQuery.COLUMNS, null, null, null);
             case CardQuery._TOKEN:
-                String dictionaryId = getActivity().getIntent().getData().getLastPathSegment();
-                Uri uri = CardsContract.Card.buildUriToCardsOfDictionary(Long.parseLong(dictionaryId));
+                String stackId = getActivity().getIntent().getData().getLastPathSegment();
+                Uri uri = CardsContract.Card.buildUriToCardsOfStack(Long.parseLong(stackId));
                 return new CursorLoader(getActivity(), uri, CardQuery.COLUMNS, null, null, null);
         }
         return null;
@@ -110,16 +110,16 @@ public class TrainingIntroFragment extends Fragment implements View.OnClickListe
         if (null == query)
             throw new IllegalArgumentException("Loader was failed. (query = null)");
         switch (loader.getId()) {
-            case DictionaryQuery._TOKEN:
+            case StackQuery._TOKEN:
                 query.moveToFirst();
-                String title = query.getString(DictionaryQuery.TITLE);
-                String description = query.getString(DictionaryQuery.DESCRIPTION);
+                String title = query.getString(StackQuery.TITLE);
+                String description = query.getString(StackQuery.DESCRIPTION);
                 tvTitle.setText(title);
                 tvDescription.setText(description);
                 break;
             case CardQuery._TOKEN:
                 query.moveToFirst();
-                isDictionaryEmpty = 0 == query.getCount();
+                isStackEmpty = 0 == query.getCount();
                 btnStart.setOnClickListener(this);
                 break;
         }
@@ -132,8 +132,8 @@ public class TrainingIntroFragment extends Fragment implements View.OnClickListe
 
     @Override
     public void onClick(View v) {
-        if (isDictionaryEmpty)
-            // todo: replace it with offer to add words into dictionary
+        if (isStackEmpty)
+            // todo: replace it with offer to add words into stack
             Toast.makeText(getActivity(), getString(R.string.no_cards), Toast.LENGTH_SHORT).show();
         else
             activity.startTraining(tvTitle.getText().toString());

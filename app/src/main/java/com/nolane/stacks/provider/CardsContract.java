@@ -14,13 +14,13 @@ public class CardsContract {
     static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
 
     // Columns for creating table and making queries.
-    interface DictionariesColumns {
+    interface StacksColumns {
         // Id column.
-        String DICTIONARY_ID = BaseColumns._ID;
+        String STACK_ID = BaseColumns._ID;
         // Title.
-        String DICTIONARY_TITLE = "DICTIONARY_TITLE";
+        String STACK_TITLE = "STACK_TITLE";
         // Brief description.
-        String DICTIONARY_DESCRIPTION = "DICTIONARY_DESCRIPTION";
+        String STACK_DESCRIPTION = "STACK_DESCRIPTION";
     }
     interface CardsColumns {
         // Id column.
@@ -34,30 +34,29 @@ public class CardsContract {
         // Unix time when this card was answered last time.
         // Format is integer meaning the number of seconds since 1970-01-01 00:00:00 UTC.
         String CARD_LAST_SEEN = "CARD_LAST_SEEN";
-        // Id of the dictionary this card belongs to.
-        String CARD_DICTIONARY_ID = "CARD_DICTIONARY_ID";
+        // Id of the stack this card belongs to.
+        String CARD_STACK_ID = "CARD_STACK_ID";
     }
 
     // Paths for uris. They are also table names.
-    public static final String PATH_DICTIONARIES = "DICTIONARIES";
+    public static final String PATH_STACKS = "STACKS";
     public static final String PATH_CARDS = "CARDS";
 
     /**
-     * This class holds fields and methods to easily make requests to dictionaries table of  CardsProvider.
+     * This class holds fields and methods to easily make requests to stacks table of CardsProvider.
      * */
-    public static class Dictionary implements DictionariesColumns {
-        // Uri pointing to the table of dictionaries.
+    public static class Stacks implements StacksColumns {
+        // Uri pointing to the table of stacks.
         public static final Uri CONTENT_URI =
-                BASE_CONTENT_URI.buildUpon().appendPath(PATH_DICTIONARIES).build();
+                BASE_CONTENT_URI.buildUpon().appendPath(PATH_STACKS).build();
 
         public static final String CONTENT_TYPE =
-                ContentResolver.CURSOR_DIR_BASE_TYPE + "/vnd." + CONTENT_AUTHORITY + ".dictionary";
+                ContentResolver.CURSOR_DIR_BASE_TYPE + "/vnd." + CONTENT_AUTHORITY + ".stack";
         public static final String CONTENT_ITEM_TYPE =
-                ContentResolver.CURSOR_ITEM_BASE_TYPE + "/vnd." + CONTENT_AUTHORITY + ".dictionary";
+                ContentResolver.CURSOR_ITEM_BASE_TYPE + "/vnd." + CONTENT_AUTHORITY + ".stack";
 
         // Default sort order for this table. If no order is specified this will be used.
-        public static final String SORT_DEFAULT =
-                DictionariesColumns.DICTIONARY_TITLE + " DESC";
+        public static final String SORT_DEFAULT = StacksColumns.STACK_TITLE + " DESC";
 
         // Maximum length of title.
         public static final int MAX_TITLE_LEN = 35;
@@ -81,10 +80,10 @@ public class CardsContract {
                 BASE_CONTENT_URI.buildUpon().appendPath(PATH_CARDS).build();
         /**
          * Creates uri for all cards that belongs to the {@code id}.
-         * @param id Id of the dictionary.
+         * @param id Id of the stack.
          * @return uri for all cards that belong to the {@code id}.
          * */
-        public static Uri buildUriToCardsOfDictionary(long id) {
+        public static Uri buildUriToCardsOfStack(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
         }
 

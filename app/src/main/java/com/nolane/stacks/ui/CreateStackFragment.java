@@ -20,11 +20,11 @@ import com.nolane.stacks.R;
 import com.nolane.stacks.provider.CardsContract;
 
 /**
- * This fragment is for creating new dictionaries.
+ * This fragment is for creating new stacks.
  * <p>
- * {@link CreateDictionaryActivity} and {@link CreateFirstDictionaryActivity} use this.
+ * {@link CreateStackActivity} and {@link CreateFirstStackActivity} use this.
  */
-public class CreateDictionaryFragment extends Fragment implements View.OnClickListener, LoaderManager.LoaderCallbacks<Uri> {
+public class CreateStackFragment extends Fragment implements View.OnClickListener, LoaderManager.LoaderCallbacks<Uri> {
     // UI elements.
     private EditText etTitle;
     private EditText etDescription;
@@ -33,7 +33,7 @@ public class CreateDictionaryFragment extends Fragment implements View.OnClickLi
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.frag_create_dictionary, container, false);
+        View view = inflater.inflate(R.layout.frag_create_stack, container, false);
 
         etTitle = (EditText) view.findViewById(R.id.et_title);
         etDescription = (EditText) view.findViewById(R.id.et_description);
@@ -43,11 +43,11 @@ public class CreateDictionaryFragment extends Fragment implements View.OnClickLi
 
         if (null == savedInstanceState) {
             InputFilter[] filterArray = new InputFilter[1];
-            filterArray[0] = new InputFilter.LengthFilter(CardsContract.Dictionary.MAX_TITLE_LEN);
+            filterArray[0] = new InputFilter.LengthFilter(CardsContract.Stacks.MAX_TITLE_LEN);
             etTitle.setFilters(filterArray);
 
             filterArray = new InputFilter[1];
-            filterArray[0] = new InputFilter.LengthFilter(CardsContract.Dictionary.MAX_DESCRIPTION_LEN);
+            filterArray[0] = new InputFilter.LengthFilter(CardsContract.Stacks.MAX_DESCRIPTION_LEN);
             etDescription.setFilters(filterArray);
         }
         return view;
@@ -64,8 +64,8 @@ public class CreateDictionaryFragment extends Fragment implements View.OnClickLi
         // make pull request on https://github.com/Nolane/learn-english-words
         Bundle args = new Bundle();
         ContentValues values = new ContentValues();
-        values.put(CardsContract.Dictionary.DICTIONARY_TITLE, title);
-        values.put(CardsContract.Dictionary.DICTIONARY_DESCRIPTION, description);
+        values.put(CardsContract.Stacks.STACK_TITLE, title);
+        values.put(CardsContract.Stacks.STACK_DESCRIPTION, description);
         args.putParcelable(VALUES, values);
         getLoaderManager().initLoader(0, args, this).forceLoad();
     }
@@ -79,7 +79,7 @@ public class CreateDictionaryFragment extends Fragment implements View.OnClickLi
         return new AsyncTaskLoader<Uri>(getActivity()) {
             @Override
             public Uri loadInBackground() {
-                return getContext().getContentResolver().insert(CardsContract.Dictionary.CONTENT_URI, values);
+                return getContext().getContentResolver().insert(CardsContract.Stacks.CONTENT_URI, values);
             }
         };
     }

@@ -5,8 +5,8 @@
         android:label="@string/app_name"
         android:icon="@mipmap/ic_launcher"
         android:theme="@style/AppTheme">
-        <activity android:name=".ui.CreateDictionaryActivity"/>
-        <activity android:name=".ui.CreateFirstDictionaryActivity"
+        <activity android:name=".ui.CreateStackActivity"/>
+        <activity android:name=".ui.CreateFirstStackActivity"
             android:noHistory="true"/>
         <activity android:name=".ui.AddCardActivity"/>
         <activity android:name=".ui.TrainingActivity"/>

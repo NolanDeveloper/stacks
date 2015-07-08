@@ -15,13 +15,13 @@ public class CardsDatabase extends SQLiteOpenHelper {
 
     // Contractions for Tables. It is easier to keep in memory.
     interface Tables {
-        String DICTIONARIES = CardsContract.PATH_DICTIONARIES;
+        String STACKS = CardsContract.PATH_STACKS;
         String CARDS = CardsContract.PATH_CARDS;
     }
 
     // Contractions for REFERENCES clause.
     interface References {
-        String DICTIONARIES_ID = "REFERENCES " + Tables.DICTIONARIES + "(" + DictionariesColumns.DICTIONARY_ID + ")";
+        String STACKS_ID = "REFERENCES " + Tables.STACKS + "(" + StacksColumns.STACK_ID + ")";
     }
 
     public CardsDatabase(Context context) {
@@ -36,10 +36,10 @@ public class CardsDatabase extends SQLiteOpenHelper {
 
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL("CREATE TABLE " + Tables.DICTIONARIES  + "(" +
-                DictionariesColumns.DICTIONARY_ID + " INTEGER PRIMARY KEY, " +
-                DictionariesColumns.DICTIONARY_TITLE + " TEXT NOT NULL, " +
-                DictionariesColumns.DICTIONARY_DESCRIPTION + " TEXT NOT NULL)");
+        db.execSQL("CREATE TABLE " + Tables.STACKS + "(" +
+                StacksColumns.STACK_ID + " INTEGER PRIMARY KEY, " +
+                StacksColumns.STACK_TITLE + " TEXT NOT NULL, " +
+                StacksColumns.STACK_DESCRIPTION + " TEXT NOT NULL)");
 
         db.execSQL("CREATE TABLE " + Tables.CARDS + "(" +
                 CardsColumns.CARD_ID + " INTEGER PRIMARY KEY, " +
@@ -47,7 +47,7 @@ public class CardsDatabase extends SQLiteOpenHelper {
                 CardsColumns.CARD_BACK + " TEXT NOT NULL, " +
                 CardsColumns.CARD_SCRUTINY + " INTEGER DEFAULT 0, " +
                 CardsColumns.CARD_LAST_SEEN + " INTEGER DEFAULT 0, " +
-                CardsColumns.CARD_DICTIONARY_ID + " INTEGER " + References.DICTIONARIES_ID + ")");
+                CardsColumns.CARD_STACK_ID + " INTEGER " + References.STACKS_ID + ")");
     }
 
     @Override
