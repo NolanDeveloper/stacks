@@ -11,7 +11,7 @@ import android.os.AsyncTask;
  * {@link AsyncTaskLoader} otherwise store here exception to indicate failure and what is more
  * important specify failure.
  * <p>
- * You probably don't need to use this wrapper if your AsyncTask do not throw exceptions or
+ * You probably don't need to use this wrapper if your AsyncTask does not throw exceptions or
  * if error can be notified as null return value.
  * */
 public class AsyncResult<T> {
