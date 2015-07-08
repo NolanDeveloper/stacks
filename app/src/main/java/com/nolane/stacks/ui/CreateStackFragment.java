@@ -24,7 +24,8 @@ import com.nolane.stacks.provider.CardsContract;
  * <p>
  * {@link CreateStackActivity} and {@link CreateFirstStackActivity} use this.
  */
-public class CreateStackFragment extends Fragment implements View.OnClickListener, LoaderManager.LoaderCallbacks<Uri> {
+public class CreateStackFragment extends Fragment
+        implements View.OnClickListener, LoaderManager.LoaderCallbacks<Uri> {
     // UI elements.
     private EditText etTitle;
     private EditText etDescription;

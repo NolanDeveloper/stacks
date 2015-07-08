@@ -29,7 +29,8 @@ import java.util.Random;
  * This fragment is used for training process. It is user in conjunction with
  * {@link TrainingActivity}.
  */
-public class TrainingCardsFragment extends Fragment implements View.OnClickListener, LoaderCallbacks<Object> {
+public class TrainingCardsFragment extends Fragment
+        implements View.OnClickListener, LoaderCallbacks<Object> {
     // Strings corresponding to the values saved in onSaveInstanceState().
     private static final String EXTRA_CARD_ID = "card.id";
     private static final String EXTRA_CARD_FRONT = "card.front";

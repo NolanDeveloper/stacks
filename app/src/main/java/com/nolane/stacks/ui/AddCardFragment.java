@@ -28,7 +28,8 @@ import com.nolane.stacks.utils.UriUtils;
  * This fragment is for adding new cards to existing stack. It is used with
  * conjunction with {@link AddCardActivity}.
  */
-public class AddCardFragment extends Fragment implements View.OnClickListener, LoaderManager.LoaderCallbacks<Cursor> {
+public class AddCardFragment extends Fragment
+        implements View.OnClickListener, LoaderManager.LoaderCallbacks<Cursor> {
     // Uri pointing to stack where to put new cards to.
     private Uri stack;
 

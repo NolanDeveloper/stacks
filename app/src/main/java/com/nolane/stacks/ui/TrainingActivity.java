@@ -14,7 +14,8 @@ import com.nolane.stacks.utils.UriUtils;
  * Training is the process when activity is showing the front of card to the user and
  * the user is trying to guess what is on the back of the card.
  */
-public class TrainingActivity extends BaseNavigationDrawerActivity implements TrainingIntroFragment.TrainingStarter {
+public class TrainingActivity extends BaseNavigationDrawerActivity
+        implements TrainingIntroFragment.TrainingStarter {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

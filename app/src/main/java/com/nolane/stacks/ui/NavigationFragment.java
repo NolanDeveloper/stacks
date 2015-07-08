@@ -23,7 +23,9 @@ import com.nolane.stacks.provider.CardsContract;
 /**
  * This fragment is used for navigation drawer.
  */
-public class NavigationFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, View.OnClickListener, AdapterView.OnItemClickListener {
+public class NavigationFragment extends Fragment
+        implements LoaderManager.LoaderCallbacks<Cursor>, View.OnClickListener,
+        AdapterView.OnItemClickListener {
     // UI elements.
     private ListView lvNavigation;
     private Button btnAdd;
