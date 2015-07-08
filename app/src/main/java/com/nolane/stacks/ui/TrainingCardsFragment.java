@@ -19,7 +19,6 @@ import android.widget.TextView;
 
 import com.nolane.stacks.R;
 import com.nolane.stacks.provider.CardsContract;
-import com.nolane.stacks.utils.UriUtils;
 
 import java.util.Random;
 
@@ -30,7 +29,7 @@ import java.util.Random;
  * This fragment is used for training process. It is user in conjunction with
  * {@link TrainingActivity}.
  */
-public class TrainingCardFragment extends Fragment implements View.OnClickListener, LoaderCallbacks<Object> {
+public class TrainingCardsFragment extends Fragment implements View.OnClickListener, LoaderCallbacks<Object> {
     // Strings corresponding to the values saved in onSaveInstanceState().
     private static final String EXTRA_CARD_ID = "card.id";
     private static final String EXTRA_CARD_FRONT = "card.front";
@@ -38,7 +37,6 @@ public class TrainingCardFragment extends Fragment implements View.OnClickListen
     private static final String EXTRA_CARD_SCRUTINY = "card.scrutiny";
 
     // UI elements.
-    private TextView tvTitle;
     private TextView tvFront;
     private EditText etBack;
     private Button btnDone;
@@ -64,9 +62,6 @@ public class TrainingCardFragment extends Fragment implements View.OnClickListen
         } else {
             getLoaderManager().restartLoader(PickCardQuery._TOKEN, null, this).forceLoad();
         }
-        UriUtils.checkSpecifiesParameterOrThrow(getActivity(), CardsContract.Stacks.STACK_TITLE);
-        String title = getActivity().getIntent().getData().getQueryParameter(CardsContract.Stacks.STACK_TITLE);
-        tvTitle.setText(title);
     }
 
     @Override
@@ -82,8 +77,7 @@ public class TrainingCardFragment extends Fragment implements View.OnClickListen
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
-        View view = inflater.inflate(R.layout.frag_training_card, container, false);
-        tvTitle = (TextView) view.findViewById(R.id.tv_title);
+        View view = inflater.inflate(R.layout.frag_training_cards, container, false);
         tvFront = (TextView) view.findViewById(R.id.tv_front);
         etBack = (EditText) view.findViewById(R.id.et_back);
         btnDone = (Button) view.findViewById(R.id.btn_done);

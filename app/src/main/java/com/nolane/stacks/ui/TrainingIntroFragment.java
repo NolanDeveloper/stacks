@@ -33,7 +33,6 @@ public class TrainingIntroFragment extends Fragment
     }
 
     // UI elements.
-    private TextView tvTitle;
     private TextView tvDescription;
     private Button btnStart;
     private TrainingStarter activity;
@@ -51,7 +50,6 @@ public class TrainingIntroFragment extends Fragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.frag_training_intro, container, false);
-        tvTitle = (TextView) view.findViewById(R.id.tv_title);
         tvDescription = (TextView) view.findViewById(R.id.tv_description);
         btnStart = (Button) view.findViewById(R.id.btn_start);
         return view;
@@ -116,9 +114,9 @@ public class TrainingIntroFragment extends Fragment
                 query.moveToFirst();
                 String title = query.getString(StackQuery.TITLE);
                 String description = query.getString(StackQuery.DESCRIPTION);
-                tvTitle.setText(title);
+                getActivity().setTitle(title);
                 tvDescription.setText(description);
-                UriUtils.insertParameter(getActivity(), CardsContract.Stacks.STACK_TITLE, tvTitle.getText().toString());
+                UriUtils.insertParameter(getActivity(), CardsContract.Stacks.STACK_TITLE, title);
                 break;
             case CardQuery._TOKEN:
                 query.moveToFirst();

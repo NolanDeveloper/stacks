@@ -6,16 +6,6 @@
     android:layout_height="match_parent">
 
     <TextView
-        android:id="@+id/tv_title"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="@android:color/black"
-        android:textSize="@dimen/abc_text_size_large_material"
-        android:layout_gravity="center_horizontal"
-        android:gravity="center_horizontal"
-        android:layout_margin="24dp"/>
-
-    <TextView
         android:id="@+id/tv_description"
         android:layout_width="match_parent"
         android:layout_height="200dp"

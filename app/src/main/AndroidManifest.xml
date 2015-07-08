@@ -9,7 +9,8 @@
         <activity android:name=".ui.CreateFirstStackActivity"
             android:noHistory="true"/>
         <activity android:name=".ui.AddCardActivity"/>
-        <activity android:name=".ui.TrainingActivity"/>
+        <activity android:name=".ui.TrainingActivity"
+            android:windowSoftInputMode="adjustResize"/>
         <activity android:name=".ui.LauncherActivity"
             android:noHistory="true">
             <intent-filter>

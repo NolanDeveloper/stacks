@@ -73,7 +73,7 @@ public abstract class BaseNavigationDrawerActivity extends Activity {
                 super.onDrawerClosed(view);
                 ActionBar actionBar = getActionBar();
                 if (null != actionBar) {
-                    actionBar.setTitle(getString(R.string.title_new_stack));
+                    actionBar.setTitle(getTitle());
                 }
                 isDrawerOpened = false;
             }
@@ -95,10 +95,20 @@ public abstract class BaseNavigationDrawerActivity extends Activity {
             if (isDrawerOpened) {
                 actionBar.setTitle(getString(R.string.title_stacks));
             } else {
-                actionBar.setTitle(getString(R.string.title_new_stack));
+                actionBar.setTitle(getTitle());
             }
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setHomeButtonEnabled(true);
+        }
+    }
+
+    @Override
+    public void setTitle(CharSequence title) {
+        super.setTitle(title);
+        if (!isDrawerOpened) {
+            ActionBar actionBar = getActionBar();
+            if (null != actionBar)
+                actionBar.setTitle(title);
         }
     }
 

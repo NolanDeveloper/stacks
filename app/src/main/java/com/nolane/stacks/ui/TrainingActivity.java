@@ -28,7 +28,7 @@ public class TrainingActivity extends BaseNavigationDrawerActivity implements Tr
     public void startTraining() {
         getFragmentManager()
                 .beginTransaction()
-                .replace(R.id.fl_main_content, new TrainingCardFragment())
+                .replace(R.id.fl_main_content, new TrainingCardsFragment())
                 .addToBackStack(null)
                 .commit();
     }
