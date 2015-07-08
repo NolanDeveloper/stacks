@@ -1,4 +1,4 @@
-package com.nolane.stacks.model;
+package com.nolane.stacks.provider;
 
 import android.content.ContentResolver;
 import android.content.ContentUris;

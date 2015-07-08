@@ -1,4 +1,4 @@
-package com.nolane.stacks.controller.activities;
+package com.nolane.stacks.ui;
 
 import android.app.Activity;
 import android.app.LoaderManager;
@@ -10,7 +10,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 
-import com.nolane.stacks.model.CardsContract;
+import com.nolane.stacks.provider.CardsContract;
 
 /**
  * This activity is required to start different activities on launch by condition.

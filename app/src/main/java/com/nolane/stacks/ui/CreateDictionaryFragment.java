@@ -1,4 +1,4 @@
-package com.nolane.stacks.controller.fragments;
+package com.nolane.stacks.ui;
 
 import android.app.Fragment;
 import android.app.LoaderManager;
@@ -17,10 +17,7 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.nolane.stacks.R;
-import com.nolane.stacks.controller.activities.AddCardActivity;
-import com.nolane.stacks.controller.activities.CreateDictionaryActivity;
-import com.nolane.stacks.controller.activities.CreateFirstDictionaryActivity;
-import com.nolane.stacks.model.CardsContract;
+import com.nolane.stacks.provider.CardsContract;
 
 /**
  * This fragment is for creating new dictionaries.

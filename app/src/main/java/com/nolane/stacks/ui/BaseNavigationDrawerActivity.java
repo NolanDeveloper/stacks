@@ -1,4 +1,4 @@
-package com.nolane.stacks.controller.activities;
+package com.nolane.stacks.ui;
 
 import android.app.ActionBar;
 import android.app.Activity;
@@ -12,7 +12,6 @@ import android.view.MenuItem;
 import android.view.View;
 
 import com.nolane.stacks.R;
-import com.nolane.stacks.controller.fragments.NavigationFragment;
 
 /**
  * This activity is base class for activities with navigation drawer. It assumes all

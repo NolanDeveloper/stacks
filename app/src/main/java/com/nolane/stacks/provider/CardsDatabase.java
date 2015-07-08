@@ -1,10 +1,10 @@
-package com.nolane.stacks.model;
+package com.nolane.stacks.provider;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.nolane.stacks.model.CardsContract.*;
+import com.nolane.stacks.provider.CardsContract.*;
 
 public class CardsDatabase extends SQLiteOpenHelper {
     public static final String DATABASE_NAME = "cards";

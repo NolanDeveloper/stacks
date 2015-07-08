@@ -1,8 +1,6 @@
-package com.nolane.stacks.controller.activities;
+package com.nolane.stacks.ui;
 
 import android.os.Bundle;
-
-import com.nolane.stacks.controller.fragments.CreateDictionaryFragment;
 
 /**
  * This activity is for creating new dictionaries.

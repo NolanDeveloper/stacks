@@ -1,13 +1,11 @@
-package com.nolane.stacks.controller.activities;
+package com.nolane.stacks.ui;
 
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 
 import com.nolane.stacks.R;
-import com.nolane.stacks.controller.fragments.TrainingCardFragment;
-import com.nolane.stacks.controller.fragments.TrainingIntroFragment;
-import com.nolane.stacks.model.CardsContract;
+import com.nolane.stacks.provider.CardsContract;
 
 /**
  * This activity is for training in cards of certain dictionary. You must specify uri for

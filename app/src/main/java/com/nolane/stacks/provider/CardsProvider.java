@@ -1,4 +1,4 @@
-package com.nolane.stacks.model;
+package com.nolane.stacks.provider;
 
 import android.content.ContentProvider;
 import android.content.ContentUris;
@@ -14,7 +14,7 @@ import android.util.Log;
 
 import java.util.Arrays;
 
-import com.nolane.stacks.model.CardsContract.*;
+import com.nolane.stacks.provider.CardsContract.*;
 
 public class CardsProvider extends ContentProvider {
     // Tag for logging. (e.g. Log.i(LOG_TAG, "all right!"))

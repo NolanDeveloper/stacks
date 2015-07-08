@@ -1,4 +1,4 @@
-package com.nolane.stacks.controller.fragments;
+package com.nolane.stacks.ui;
 
 import android.app.Fragment;
 import android.app.LoaderManager;
@@ -18,8 +18,7 @@ import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
 
 import com.nolane.stacks.R;
-import com.nolane.stacks.controller.activities.TrainingActivity;
-import com.nolane.stacks.model.CardsContract;
+import com.nolane.stacks.provider.CardsContract;
 
 /**
  * This fragment is used for navigation drawer.

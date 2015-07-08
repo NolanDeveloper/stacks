@@ -1,10 +1,9 @@
-package com.nolane.stacks.controller.activities;
+package com.nolane.stacks.ui;
 
 import android.net.Uri;
 import android.os.Bundle;
 
-import com.nolane.stacks.controller.fragments.AddCardFragment;
-import com.nolane.stacks.model.CardsContract;
+import com.nolane.stacks.provider.CardsContract;
 
 /**
  * This activity is for adding new cards into existing dictionary. You must specify uri for

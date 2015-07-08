@@ -1,4 +1,4 @@
-package com.nolane.stacks.controller.fragments;
+package com.nolane.stacks.ui;
 
 import android.app.Fragment;
 import android.app.LoaderManager;
@@ -21,8 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.nolane.stacks.R;
-import com.nolane.stacks.controller.activities.AddCardActivity;
-import com.nolane.stacks.model.CardsContract;
+import com.nolane.stacks.provider.CardsContract;
 
 /**
  * This fragment is for adding new cards to existing dictionary. It is used with

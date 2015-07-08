@@ -1,4 +1,4 @@
-package com.nolane.stacks.controller.activities;
+package com.nolane.stacks.ui;
 
 import android.app.Activity;
 import android.os.Bundle;
