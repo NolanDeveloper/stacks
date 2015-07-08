@@ -25,6 +25,7 @@
             android:layout_marginTop="16dp"
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
+            android:inputType="textCapSentences"
             android:maxLines="5"
             android:gravity="top"
             android:hint="@string/hint_description"
