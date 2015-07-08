@@ -37,7 +37,7 @@ public class NavigationFragment extends Fragment implements LoaderManager.Loader
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        ViewGroup view = (ViewGroup) inflater.inflate(R.layout.navigation_drawer, container, false);
+        ViewGroup view = (ViewGroup) inflater.inflate(R.layout.frag_navigation, container, false);
         lvNavigation = (ListView) view.findViewById(R.id.lv_navigation);
         lvNavigation.setOnItemClickListener(this);
         btnAdd = (Button) view.findViewById(R.id.btn_add);
@@ -89,7 +89,7 @@ public class NavigationFragment extends Fragment implements LoaderManager.Loader
     public void onLoadFinished(Loader<Cursor> loader, Cursor dictionaries) {
         if (null == dictionaries)
             throw new IllegalArgumentException("Loader was failed. (dictionaries = null)");
-        lvNavigation.setAdapter(new SimpleCursorAdapter(getActivity(), R.layout.navigation_drawer_item, dictionaries,
+        lvNavigation.setAdapter(new SimpleCursorAdapter(getActivity(), R.layout.item_navigation, dictionaries,
                 new String[]{CardsContract.Dictionary.DICTIONARY_TITLE},
                 new int[]{android.R.id.text1},
                 SimpleCursorAdapter.NO_SELECTION));

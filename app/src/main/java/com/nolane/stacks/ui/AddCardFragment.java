@@ -50,7 +50,7 @@ public class AddCardFragment extends Fragment implements View.OnClickListener, L
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.add_card_fragment, container, false);
+        View view = inflater.inflate(R.layout.frag_add_card, container, false);
         tvTitle = (TextView) view.findViewById(R.id.tv_title);
         etFront = (EditText) view.findViewById(R.id.et_front);
         etBack = (EditText) view.findViewById(R.id.et_back);

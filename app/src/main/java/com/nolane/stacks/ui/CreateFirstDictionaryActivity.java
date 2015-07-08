@@ -16,6 +16,6 @@ public class CreateFirstDictionaryActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.create_first_dictionary_activity);
+        setContentView(R.layout.act_create_first_dictionary);
     }
 }

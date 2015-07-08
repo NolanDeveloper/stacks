@@ -1,5 +1,6 @@
 package com.nolane.stacks.ui;
 
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.LoaderManager;
 import android.content.ContentUris;
@@ -10,6 +11,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
 
+import com.nolane.stacks.R;
 import com.nolane.stacks.provider.CardsContract;
 
 /**
@@ -23,6 +25,11 @@ public class LauncherActivity extends Activity implements LoaderManager.LoaderCa
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.act_launcher);
+        ActionBar actionBar = getActionBar();
+        if (null != actionBar || actionBar.isShowing())
+            actionBar.hide();
+        // todo: show big logo
         getLoaderManager().initLoader(DictionariesQuery._TOKEN, null, this);
     }
 

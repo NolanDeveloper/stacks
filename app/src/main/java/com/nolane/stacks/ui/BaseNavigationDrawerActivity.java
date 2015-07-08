@@ -41,7 +41,7 @@ public abstract class BaseNavigationDrawerActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_with_navigation_drawer);
+        setContentView(R.layout.act_base_navigation_drawer);
 
         ActionBar actionBar = getActionBar();
         if (null != actionBar)

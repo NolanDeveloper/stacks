@@ -33,7 +33,7 @@ public class CreateDictionaryFragment extends Fragment implements View.OnClickLi
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.create_dictionary_fragment, container, false);
+        View view = inflater.inflate(R.layout.frag_create_dictionary, container, false);
 
         etTitle = (EditText) view.findViewById(R.id.et_title);
         etDescription = (EditText) view.findViewById(R.id.et_description);
