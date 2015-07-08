@@ -107,8 +107,11 @@ public class AddCardFragment extends Fragment implements View.OnClickListener, L
         etBack.getText().clear();
     }
 
-    // Interface holding data about loader which
-    // queries the title of the specified dictionary.
+
+    /**
+     * Interface holding data about loader which
+     * queries the title of the specified dictionary.
+     */
     private interface DictionaryQuery {
         // The identifier of loader which is passed to LoaderManager.
         int _TOKEN = 0;
