@@ -7,7 +7,6 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.app.Fragment;
 import android.view.LayoutInflater;
@@ -19,16 +18,18 @@ import android.widget.Toast;
 
 import com.nolane.stacks.R;
 import com.nolane.stacks.provider.CardsContract;
+import com.nolane.stacks.utils.UriUtils;
 
 /**
  * This fragment is used to show preview of training. Preview is stack title and description.
  * In future we are going to add more useful information here. It is user in conjunction with
  * {@link TrainingActivity}.
  */
-public class TrainingIntroFragment extends Fragment implements View.OnClickListener, LoaderManager.LoaderCallbacks<Cursor> {
+public class TrainingIntroFragment extends Fragment
+        implements View.OnClickListener, LoaderManager.LoaderCallbacks<Cursor> {
     // Interface that Activity must implement.
     public interface TrainingStarter {
-        void startTraining(@NonNull String stackTitle);
+        void startTraining();
     }
 
     // UI elements.
@@ -116,6 +117,7 @@ public class TrainingIntroFragment extends Fragment implements View.OnClickListe
                 String description = query.getString(StackQuery.DESCRIPTION);
                 tvTitle.setText(title);
                 tvDescription.setText(description);
+                UriUtils.insertParameter(getActivity(), CardsContract.Stacks.STACK_TITLE, tvTitle.getText().toString());
                 break;
             case CardQuery._TOKEN:
                 query.moveToFirst();
@@ -132,10 +134,11 @@ public class TrainingIntroFragment extends Fragment implements View.OnClickListe
 
     @Override
     public void onClick(View v) {
-        if (isStackEmpty)
+        if (isStackEmpty) {
             // todo: replace it with offer to add words into stack
             Toast.makeText(getActivity(), getString(R.string.no_cards), Toast.LENGTH_SHORT).show();
-        else
-            activity.startTraining(tvTitle.getText().toString());
+        } else {
+            activity.startTraining();
+        }
     }
 }

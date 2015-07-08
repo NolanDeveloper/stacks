@@ -4,6 +4,7 @@ import android.net.Uri;
 import android.os.Bundle;
 
 import com.nolane.stacks.provider.CardsContract;
+import com.nolane.stacks.utils.UriUtils;
 
 /**
  * This activity is for adding new cards into existing stack. You must specify uri for
@@ -13,16 +14,7 @@ public class AddCardActivity extends BaseNavigationDrawerActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // We should check that passed data is correct.
-        // Firstly it should exist.
-        final Uri data = getIntent().getData();
-        if (null == data)
-            throw new IllegalArgumentException("You must specify data(uri to stack) to start this activity.");
-        // Secondly it should have proper type.
-        final String dataType = getContentResolver().getType(data);
-        final String requiredType = CardsContract.Stacks.CONTENT_ITEM_TYPE;
-        if (!requiredType.equals(dataType))
-            throw new IllegalArgumentException("Specified data has unknown type. Must be \"" + requiredType + "\".");
+        UriUtils.checkDataTypeOrThrow(this, CardsContract.Stacks.CONTENT_ITEM_TYPE);
         setMainFragment(new AddCardFragment());
     }
 }

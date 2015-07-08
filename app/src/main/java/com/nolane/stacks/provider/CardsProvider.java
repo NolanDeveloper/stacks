@@ -23,7 +23,6 @@ public class CardsProvider extends ContentProvider {
     // Codes for uri matcher.
     private static final int STACKS_TABLE = 100;
     private static final int STACKS_ID = 101;
-
     private static final int CARDS_TABLE = 200;
     private static final int CARDS_OF_STACK = 201;
     private static final int CARDS_ID = 202;

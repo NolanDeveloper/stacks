@@ -9,7 +9,6 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,6 +19,7 @@ import android.widget.TextView;
 
 import com.nolane.stacks.R;
 import com.nolane.stacks.provider.CardsContract;
+import com.nolane.stacks.utils.UriUtils;
 
 import java.util.Random;
 
@@ -31,8 +31,6 @@ import java.util.Random;
  * {@link TrainingActivity}.
  */
 public class TrainingCardFragment extends Fragment implements View.OnClickListener, LoaderCallbacks<Object> {
-    // String which identifies stack title argument passing to this fragment.
-    private static final String EXTRA_STACK_TITLE = "stack.title";
     // Strings corresponding to the values saved in onSaveInstanceState().
     private static final String EXTRA_CARD_ID = "card.id";
     private static final String EXTRA_CARD_FRONT = "card.front";
@@ -54,19 +52,6 @@ public class TrainingCardFragment extends Fragment implements View.OnClickListen
 
     private Random random = new Random();
 
-    /**
-     * Creates instance of this fragment passing correct arguments to it.
-     * @param stackTitle The title of the specified stack.
-     * @return TrainingCardFragment with correct arguments.
-     */
-    public static TrainingCardFragment getInstance(@NonNull String stackTitle) {
-        TrainingCardFragment fragment = new TrainingCardFragment();
-        Bundle arguments = new Bundle();
-        arguments.putString(EXTRA_STACK_TITLE, stackTitle);
-        fragment.setArguments(arguments);
-        return fragment;
-    }
-
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
@@ -79,6 +64,9 @@ public class TrainingCardFragment extends Fragment implements View.OnClickListen
         } else {
             getLoaderManager().restartLoader(PickCardQuery._TOKEN, null, this).forceLoad();
         }
+        UriUtils.checkSpecifiesParameterOrThrow(getActivity(), CardsContract.Stacks.STACK_TITLE);
+        String title = getActivity().getIntent().getData().getQueryParameter(CardsContract.Stacks.STACK_TITLE);
+        tvTitle.setText(title);
     }
 
     @Override
@@ -99,8 +87,6 @@ public class TrainingCardFragment extends Fragment implements View.OnClickListen
         tvFront = (TextView) view.findViewById(R.id.tv_front);
         etBack = (EditText) view.findViewById(R.id.et_back);
         btnDone = (Button) view.findViewById(R.id.btn_done);
-
-        tvTitle.setText(getArguments().getString(EXTRA_STACK_TITLE));
         return view;
     }
 

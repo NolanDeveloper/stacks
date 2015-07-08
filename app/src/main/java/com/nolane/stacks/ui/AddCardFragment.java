@@ -22,6 +22,7 @@ import android.widget.Toast;
 
 import com.nolane.stacks.R;
 import com.nolane.stacks.provider.CardsContract;
+import com.nolane.stacks.utils.UriUtils;
 
 /**
  * This fragment is for adding new cards to existing stack. It is used with
@@ -144,6 +145,7 @@ public class AddCardFragment extends Fragment implements View.OnClickListener, L
             throw new IllegalArgumentException("Loader was failed. (query = null)");
         query.moveToFirst();
         String title = query.getString(StackQuery.TITLE);
+        UriUtils.insertParameter(getActivity(), CardsContract.Stacks.STACK_TITLE, title);
         tvTitle.setText(title);
         btnDone.setOnClickListener(this);
     }
