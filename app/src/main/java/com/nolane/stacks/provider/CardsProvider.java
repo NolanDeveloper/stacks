@@ -69,8 +69,9 @@ public class CardsProvider extends ContentProvider {
             case UriMatcher.NO_MATCH:
                 return null;
             case STACKS_TABLE:
-                if (TextUtils.isEmpty(sortOrder))
+                if (TextUtils.isEmpty(sortOrder)) {
                     sortOrder = Stacks.SORT_DEFAULT;
+                }
                 break;
             case STACKS_ID:
             case CARDS_ID: {
@@ -86,8 +87,9 @@ public class CardsProvider extends ContentProvider {
         // names are at the top of uri hierarchy providing by #URI_MATCHER.
         String table = uri.getPathSegments().get(0);
         Cursor cursor = db.getReadableDatabase().query(table, projection, selection, selectionArgs, null, null, sortOrder);
-        if ((null != cursor) && (null != getContext()))
+        if ((null != cursor) && (null != getContext())) {
             cursor.setNotificationUri(getContext().getContentResolver(), uri);
+        }
         return cursor;
     }
 
@@ -124,15 +126,15 @@ public class CardsProvider extends ContentProvider {
             case CARDS_ID:
                 throw new IllegalArgumentException("Specified uri points to the row of table. You can't insert into row.");
             case CARDS_OF_STACK:
-                if (values == null)
+                if (values == null) {
                     values = new ContentValues();
+                }
                 values.put(Card.CARD_STACK_ID, uri.getLastPathSegment());
                 break;
         }
         String table = uri.getPathSegments().get(0);
         long id = db.getWritableDatabase().insert(table, null, values);
-        if (-1 == id)
-            return null;
+        if (-1 == id) return null;
         uri = ContentUris.withAppendedId(uri, id);
         getContext().getContentResolver().notifyChange(uri, null);
         return uri;
@@ -161,8 +163,9 @@ public class CardsProvider extends ContentProvider {
         }
         String table = uri.getPathSegments().get(0);
         int count = db.getReadableDatabase().delete(table, selection, selectionArgs);
-        if (0 < count)
+        if (0 < count) {
             getContext().getContentResolver().notifyChange(uri, null);
+        }
         return count;
     }
 
@@ -191,8 +194,9 @@ public class CardsProvider extends ContentProvider {
         }
         String table = uri.getPathSegments().get(0);
         int count = db.getReadableDatabase().update(table, values, selection, selectionArgs);
-        if (0 < count)
+        if (0 < count) {
             getContext().getContentResolver().notifyChange(uri, null);
+        }
         return count;
     }
 
@@ -209,20 +213,24 @@ public class CardsProvider extends ContentProvider {
             case STACKS_TABLE:
             case STACKS_ID:
                 String title = values.getAsString(StacksColumns.STACK_TITLE);
-                if (null != title && !Stacks.checkTitle(title))
+                if (null != title && !Stacks.checkTitle(title)) {
                     throw new IllegalArgumentException("The title is too long. (max len is " + Stacks.MAX_TITLE_LEN + ")");
+                }
                 String description = values.getAsString(StacksColumns.STACK_DESCRIPTION);
-                if (null != description && !Stacks.checkDescription(description))
+                if (null != description && !Stacks.checkDescription(description)) {
                     throw new IllegalArgumentException("The description is too long. (max len is " + Stacks.MAX_DESCRIPTION_LEN + ")");
+                }
                 break;
             case CARDS_TABLE:
             case CARDS_ID:
                 String front = values.getAsString(CardsColumns.CARD_FRONT);
-                if (null != front && !Card.checkFront(front))
+                if (null != front && !Card.checkFront(front)) {
                     throw new IllegalArgumentException("The front is too long. (max len is " + Card.MAX_FRONT_LEN + ")");
+                }
                 String back = values.getAsString(CardsColumns.CARD_FRONT);
-                if (null != back && !Card.checkBack(back))
+                if (null != back && !Card.checkBack(back)) {
                     throw new IllegalArgumentException("The back is too long. (max len is " + Card.MAX_BACK_LEN + ")");
+                }
                 break;
             default:
                 throw new IllegalArgumentException("Can't check unknown uri.");

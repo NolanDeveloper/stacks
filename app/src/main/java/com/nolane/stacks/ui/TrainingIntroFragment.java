@@ -108,8 +108,9 @@ public class TrainingIntroFragment extends Fragment
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor query) {
-        if (null == query)
+        if (null == query) {
             throw new IllegalArgumentException("Loader was failed. (query = null)");
+        }
         switch (loader.getId()) {
             case StackQuery._TOKEN:
                 query.moveToFirst();

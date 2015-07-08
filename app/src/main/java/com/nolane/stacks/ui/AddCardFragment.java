@@ -77,8 +77,9 @@ public class AddCardFragment extends Fragment implements View.OnClickListener, L
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        if (savedInstanceState == null)
+        if (savedInstanceState == null) {
             getLoaderManager().initLoader(StackQuery._TOKEN, null, this);
+        }
     }
 
     @Override
@@ -140,8 +141,9 @@ public class AddCardFragment extends Fragment implements View.OnClickListener, L
     public void onLoadFinished(Loader<Cursor> loader, Cursor query) {
         // Note: When the loader is the only we do not use switch on #loader.getId().
         // Because it is simpler to read.
-        if (null == query)
+        if (null == query) {
             throw new IllegalArgumentException("Loader was failed. (query = null)");
+        }
         query.moveToFirst();
         String title = query.getString(StackQuery.TITLE);
         UriUtils.insertParameter(getActivity(), CardsContract.Stacks.STACK_TITLE, title);

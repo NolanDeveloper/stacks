@@ -50,7 +50,6 @@ public class AsyncResult<T> {
      * @throws Throwable Throwable which was caught during the async task.
      */
     public void throwIfHasException() throws Throwable {
-        if (hasException())
-            throw exception;
+        if (hasException()) throw exception;
     }
 }

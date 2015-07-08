@@ -87,8 +87,9 @@ public class NavigationFragment extends Fragment implements LoaderManager.Loader
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor stacks) {
-        if (null == stacks)
+        if (null == stacks) {
             throw new IllegalArgumentException("Loader was failed. (stacks = null)");
+        }
         lvNavigation.setAdapter(new SimpleCursorAdapter(getActivity(), R.layout.item_navigation, stacks,
                 new String[]{CardsContract.Stacks.STACK_TITLE},
                 new int[]{android.R.id.text1},

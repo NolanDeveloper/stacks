@@ -72,8 +72,9 @@ public abstract class BaseNavigationDrawerActivity extends Activity {
             public void onDrawerClosed(View view) {
                 super.onDrawerClosed(view);
                 ActionBar actionBar = getActionBar();
-                if (null != actionBar)
+                if (null != actionBar) {
                     actionBar.setTitle(getString(R.string.title_new_stack));
+                }
                 isDrawerOpened = false;
             }
 
@@ -81,8 +82,9 @@ public abstract class BaseNavigationDrawerActivity extends Activity {
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
                 ActionBar actionBar = getActionBar();
-                if (null != actionBar)
+                if (null != actionBar) {
                     actionBar.setTitle(getString(R.string.title_stacks));
+                }
                 isDrawerOpened = true;
             }
         };
@@ -90,10 +92,11 @@ public abstract class BaseNavigationDrawerActivity extends Activity {
 
         ActionBar actionBar = getActionBar();
         if (null != actionBar) {
-            if (isDrawerOpened)
+            if (isDrawerOpened) {
                 actionBar.setTitle(getString(R.string.title_stacks));
-            else
+            } else {
                 actionBar.setTitle(getString(R.string.title_new_stack));
+            }
             actionBar.setDisplayHomeAsUpEnabled(true);
             actionBar.setHomeButtonEnabled(true);
         }

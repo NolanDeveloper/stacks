@@ -50,8 +50,9 @@ public class UriUtils {
      */
     public static void insertParameter(@NonNull Activity activity, @NonNull String key, @NonNull Object value) {
         Uri data = activity.getIntent().getData();
-        if (null == data)
+        if (null == data) {
             throw new IllegalArgumentException("Activity intent don't have data.");
+        }
         String stringValue = value.toString();
         String parameter = data.getQueryParameter(key);
         if (null == parameter) {

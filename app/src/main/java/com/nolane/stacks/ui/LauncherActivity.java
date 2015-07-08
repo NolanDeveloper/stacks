@@ -27,8 +27,7 @@ public class LauncherActivity extends Activity implements LoaderManager.LoaderCa
         super.onCreate(savedInstanceState);
         setContentView(R.layout.act_launcher);
         ActionBar actionBar = getActionBar();
-        if (null != actionBar || actionBar.isShowing())
-            actionBar.hide();
+        if (null != actionBar && actionBar.isShowing()) actionBar.hide();
         // todo: show big logo
         getLoaderManager().initLoader(StacksQuery._TOKEN, null, this);
     }
@@ -51,8 +50,9 @@ public class LauncherActivity extends Activity implements LoaderManager.LoaderCa
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor query) {
-        if (null == query)
+        if (null == query) {
             throw new IllegalArgumentException("Loader was failed. (query = null)");
+        }
         // The logic is simple. If there is no stacks we start CreateFirstStackActivity
         // otherwise we start TrainingActivity.
         if (0 == query.getCount()) {

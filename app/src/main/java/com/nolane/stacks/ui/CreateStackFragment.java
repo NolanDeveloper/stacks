@@ -86,8 +86,9 @@ public class CreateStackFragment extends Fragment implements View.OnClickListene
 
     @Override
     public void onLoadFinished(Loader<Uri> loader, Uri uri) {
-        if (null == uri)
+        if (null == uri) {
             throw new IllegalArgumentException("Loader was failed. (uri = null)");
+        }
         Intent intent = new Intent(getActivity().getBaseContext(), AddCardActivity.class);
         intent.setData(uri);
         startActivity(intent);
