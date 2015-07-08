@@ -108,7 +108,6 @@ public class AddCardFragment extends Fragment implements View.OnClickListener, L
         etBack.getText().clear();
     }
 
-
     /**
      * Interface holding data about loader which
      * queries the title of the specified stack.

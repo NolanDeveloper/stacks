@@ -9,6 +9,8 @@ public class CreateStackActivity extends BaseNavigationDrawerActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setMainFragment(new CreateStackFragment());
+        if (null == savedInstanceState) {
+            setMainFragment(new CreateStackFragment());
+        }
     }
 }

@@ -14,7 +14,9 @@ public class AddCardActivity extends BaseNavigationDrawerActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        UriUtils.checkDataTypeOrThrow(this, CardsContract.Stacks.CONTENT_ITEM_TYPE);
-        setMainFragment(new AddCardFragment());
+        if (null == savedInstanceState) {
+            UriUtils.checkDataTypeOrThrow(this, CardsContract.Stacks.CONTENT_ITEM_TYPE);
+            setMainFragment(new AddCardFragment());
+        }
     }
 }

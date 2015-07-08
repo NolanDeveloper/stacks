@@ -47,7 +47,7 @@ public class NavigationFragment extends Fragment implements LoaderManager.Loader
 
     @Override
     public void onClick(View v) {
-        Intent intent = new Intent(getActivity().getBaseContext(), CreateStackFragment.class);
+        Intent intent = new Intent(getActivity().getBaseContext(), CreateStackActivity.class);
         startActivity(intent);
     }
 

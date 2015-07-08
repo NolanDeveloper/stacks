@@ -30,20 +30,14 @@
             android:hint="@string/hint_description"
             android:imeOptions="actionDone"/>
 
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <Button
-                android:id="@+id/btn_done"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:layout_marginLeft="16dp"
-                android:layout_marginRight="16dp"
-                android:layout_gravity="end"
-                android:text="@string/abc_action_mode_done"/>
-
-        </FrameLayout>
+        <Button
+            android:id="@+id/btn_done"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_gravity="end"
+            android:text="@string/abc_action_mode_done"/>
 
 </LinearLayout>

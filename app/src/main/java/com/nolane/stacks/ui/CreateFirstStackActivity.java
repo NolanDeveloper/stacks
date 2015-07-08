@@ -16,6 +16,8 @@ public class CreateFirstStackActivity extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.act_create_first_stack);
+        if (null == savedInstanceState) {
+            setContentView(R.layout.act_create_first_stack);
+        }
     }
 }

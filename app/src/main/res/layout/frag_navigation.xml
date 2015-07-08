@@ -3,7 +3,7 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="240dp"
     android:layout_height="match_parent"
-    android:background="#ff6c9edc">
+    android:background="@color/primary_dark">
 
     <ListView
         android:id="@+id/lv_navigation"
