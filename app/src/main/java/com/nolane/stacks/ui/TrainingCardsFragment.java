@@ -22,9 +22,6 @@ import com.nolane.stacks.provider.CardsContract;
 
 import java.util.Random;
 
-// todo: refactor this bullshit
-// todo: or rewrite it at all
-
 /**
  * This fragment is used for training process. It is used in conjunction with
  * {@link TrainingActivity}.
@@ -54,14 +51,19 @@ public class TrainingCardsFragment extends Fragment
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        if (null != savedInstanceState) {
+        if (null == savedInstanceState) {
+            getLoaderManager().initLoader(PickCardQuery._TOKEN, null, this).forceLoad();
+        } else {
             cardId = savedInstanceState.getLong(EXTRA_CARD_ID);
             tvFront.setText(savedInstanceState.getString(EXTRA_CARD_FRONT));
             cardBack = savedInstanceState.getString(EXTRA_CARD_BACK);
             cardScrutiny = savedInstanceState.getInt(EXTRA_CARD_SCRUTINY);
             btnDone.setOnClickListener(this);
-        } else {
-            getLoaderManager().restartLoader(PickCardQuery._TOKEN, null, this).forceLoad();
+            // Reconnect to started loaders.
+            if (null != getLoaderManager().getLoader(PickCardQuery._TOKEN))
+                getLoaderManager().initLoader(PickCardQuery._TOKEN, null, this);
+            if (null != getLoaderManager().getLoader(UpdateScrutinyQuery._TOKEN))
+                getLoaderManager().initLoader(UpdateScrutinyQuery._TOKEN, null, this);
         }
     }
 
@@ -91,7 +93,7 @@ public class TrainingCardsFragment extends Fragment
     public void onClick(View v) {
         // Turn off button until we did not get next card.
         btnDone.setOnClickListener(null);
-        // Update scrutiny
+        // Update scrutiny.
         // todo: fix wrong logic
         String userAssumption = etBack.getText().toString();
         etBack.getText().clear();
@@ -99,7 +101,7 @@ public class TrainingCardsFragment extends Fragment
         ContentValues values = new ContentValues();
         values.put(CardsContract.Card.CARD_SCRUTINY, cardScrutiny + (userAssumption.equals(cardBack) ? 1 : -1));
         arguments.putParcelable(VALUES, values);
-        getLoaderManager().restartLoader(UpdateScrutinyQuery._TOKEN, arguments, this).forceLoad();
+        getLoaderManager().initLoader(UpdateScrutinyQuery._TOKEN, arguments, this).forceLoad();
     }
 
     private interface PickCardQuery {
@@ -127,6 +129,8 @@ public class TrainingCardsFragment extends Fragment
         long stackId = Long.parseLong(getActivity().getIntent().getData().getLastPathSegment());
         switch (id) {
             case PickCardQuery._TOKEN: {
+                // Here we use AsyncTaskLoader instead of CursorLoader because we don't need to have
+                // observation on cursor. We just need to make one-shot load.
                 final Uri cardsOfStack = CardsContract.Card.buildUriToCardsOfStack(stackId);
                 return new AsyncTaskLoader(getActivity()) {
                     @Override
@@ -150,6 +154,12 @@ public class TrainingCardsFragment extends Fragment
 
     @Override
     public void onLoadFinished(Loader<Object> loader, Object data) {
+        if (null == data) {
+            throw new IllegalArgumentException("Loader was failed. (query = null)");
+        }
+        // All loader here are one-shot so we need to
+        // prevent them from saving previous results.
+        getLoaderManager().destroyLoader(loader.getId());
         switch (loader.getId()) {
             case PickCardQuery._TOKEN:
                 Cursor query = (Cursor) data;
@@ -182,7 +192,7 @@ public class TrainingCardsFragment extends Fragment
                 btnDone.setOnClickListener(this);
                 break;
             case UpdateScrutinyQuery._TOKEN:
-                getLoaderManager().restartLoader(PickCardQuery._TOKEN, null, this).forceLoad();
+                getLoaderManager().initLoader(PickCardQuery._TOKEN, null, this).forceLoad();
                 break;
         }
     }
