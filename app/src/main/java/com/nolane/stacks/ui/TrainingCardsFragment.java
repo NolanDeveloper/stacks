@@ -26,7 +26,7 @@ import java.util.Random;
 // todo: or rewrite it at all
 
 /**
- * This fragment is used for training process. It is user in conjunction with
+ * This fragment is used for training process. It is used in conjunction with
  * {@link TrainingActivity}.
  */
 public class TrainingCardsFragment extends Fragment

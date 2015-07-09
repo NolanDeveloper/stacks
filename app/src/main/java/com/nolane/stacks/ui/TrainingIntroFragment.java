@@ -22,7 +22,7 @@ import com.nolane.stacks.utils.UriUtils;
 
 /**
  * This fragment is used to show preview of training. Preview is stack title and description.
- * In future we are going to add more useful information here. It is user in conjunction with
+ * In future we are going to add more useful information here. It is used in conjunction with
  * {@link TrainingActivity}.
  */
 public class TrainingIntroFragment extends Fragment
