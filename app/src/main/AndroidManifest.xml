@@ -1,28 +1,53 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+<manifest
+    xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.nolane.stacks">
+
     <application
         android:allowBackup="true"
         android:label="@string/app_name"
         android:icon="@mipmap/ic_launcher"
         android:theme="@style/AppTheme">
-        <activity android:name=".ui.CreateStackActivity"/>
-        <activity android:name=".ui.CreateFirstStackActivity"
+
+        <activity
+            android:name=".ui.CreateStackActivity"/>
+
+        <activity
+            android:name=".ui.CreateFirstStackActivity"
             android:noHistory="true"/>
-        <activity android:name=".ui.AddCardActivity"/>
-        <activity android:name=".ui.TrainingActivity"
+
+        <activity
+            android:name=".ui.AddCardActivity"/>
+
+        <activity
+            android:name=".ui.TrainingActivity"
             android:windowSoftInputMode="adjustResize"/>
-        <activity android:name=".ui.LauncherActivity"
+
+        <activity
+            android:name=".ui.LauncherActivity"
             android:noHistory="true">
+
             <intent-filter>
-                <action android:name="android.intent.action.MAIN"/>
-                <category android:name="android.intent.category.LAUNCHER"/>
+
+                <action
+                    android:name="android.intent.action.MAIN"/>
+
+                <category
+                    android:name="android.intent.category.LAUNCHER"/>
+
             </intent-filter>
+
         </activity>
+
+        <activity
+            android:name=".ui.PickStackActivity"/>
+
         <provider
             android:authorities="com.nolane.stacks.provider"
             android:name="com.nolane.stacks.provider.CardsProvider"
             android:exported="false"
             android:readPermission="com.nolane.stacks.provider.READ"
             android:writePermission="com.nolane.stacks.provider.WRITE"/>
+
     </application>
+
 </manifest>

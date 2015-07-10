@@ -1,24 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<android.support.design.widget.NavigationView
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="240dp"
+    xmlns:android.support.design="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/nv"
+    android:layout_width="wrap_content"
     android:layout_height="match_parent"
-    android:background="@color/primary_dark">
-
-    <ListView
-        android:id="@+id/lv_navigation"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:layout_above="@id/btn_add"
-        android:choiceMode="singleChoice"
-        android:divider="@android:color/transparent"
-        android:dividerHeight="0dp"/>
-
-    <Button
-        android:id="@id/btn_add"
-        android:layout_width="match_parent"
-        android:layout_height="60dp"
-        android:layout_alignParentBottom="true"
-        android:text="@string/add"/>
-
-</RelativeLayout>
+    android.support.design:itemTextColor="@android:color/white"
+    android:background="@color/primary_dark"
+    android:layout_gravity="start" />

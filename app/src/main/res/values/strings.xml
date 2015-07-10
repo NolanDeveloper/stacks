@@ -14,4 +14,8 @@
     <string name="wrong">Wrong =(</string>
     <string name="failed">Failed</string>
     <string name="all_done">All done!</string>
+    <string name="training">Training</string>
+    <string name="cards">cards</string>
+    <string name="stacks">stacks</string>
+    <string name="choose_stack">Choose stack</string>
 </resources>
