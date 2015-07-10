@@ -1,15 +1,13 @@
 package com.nolane.stacks.ui;
 
-import android.app.ActionBar;
-import android.app.Activity;
 import android.app.Fragment;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.view.Gravity;
+import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
 
@@ -28,7 +26,7 @@ import com.nolane.stacks.R;
  * Main content fragment places on the whole screen. Derivative classes can specify it using
  * {@link #setMainFragment(Fragment)}.
  */
-public abstract class BaseNavigationDrawerActivity extends Activity {
+public abstract class BaseNavigationDrawerActivity extends AppCompatActivity {
     private static final String EXTRA_IS_DRAWER_OPENED = "is.drawer.opened";
 
     // Fragment that places in the navigation area. It shows up
@@ -71,7 +69,7 @@ public abstract class BaseNavigationDrawerActivity extends Activity {
             /** Called when a drawer has settled in a completely closed state. */
             public void onDrawerClosed(View view) {
                 super.onDrawerClosed(view);
-                ActionBar actionBar = getActionBar();
+                ActionBar actionBar = getSupportActionBar();
                 if (null != actionBar) {
                     actionBar.setTitle(getTitle());
                 }
@@ -81,7 +79,7 @@ public abstract class BaseNavigationDrawerActivity extends Activity {
             /** Called when a drawer has settled in a completely open state. */
             public void onDrawerOpened(View drawerView) {
                 super.onDrawerOpened(drawerView);
-                ActionBar actionBar = getActionBar();
+                ActionBar actionBar = getSupportActionBar();
                 if (null != actionBar) {
                     actionBar.setTitle(getString(R.string.title_stacks));
                 }
@@ -90,7 +88,7 @@ public abstract class BaseNavigationDrawerActivity extends Activity {
         };
         dlRoot.setDrawerListener(actionBarDrawerToggle);
 
-        ActionBar actionBar = getActionBar();
+        ActionBar actionBar = getSupportActionBar();
         if (null != actionBar) {
             if (isDrawerOpened) {
                 actionBar.setTitle(getString(R.string.title_stacks));
@@ -106,7 +104,7 @@ public abstract class BaseNavigationDrawerActivity extends Activity {
     public void setTitle(CharSequence title) {
         super.setTitle(title);
         if (!isDrawerOpened) {
-            ActionBar actionBar = getActionBar();
+            ActionBar actionBar = getSupportActionBar();
             if (null != actionBar)
                 actionBar.setTitle(title);
         }

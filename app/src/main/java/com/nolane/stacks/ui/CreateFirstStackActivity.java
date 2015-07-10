@@ -1,7 +1,7 @@
 package com.nolane.stacks.ui;
 
-import android.app.Activity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 
 import com.nolane.stacks.R;
 
@@ -12,7 +12,7 @@ import com.nolane.stacks.R;
  * the user does not need to see navigation bar. Hence we must have another
  * activity which is not derivative of {@link BaseNavigationDrawerActivity}.
  */
-public class CreateFirstStackActivity extends Activity {
+public class CreateFirstStackActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

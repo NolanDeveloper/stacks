@@ -1,7 +1,5 @@
 package com.nolane.stacks.ui;
 
-import android.app.ActionBar;
-import android.app.Activity;
 import android.app.LoaderManager;
 import android.content.ContentUris;
 import android.content.CursorLoader;
@@ -10,6 +8,8 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 
 import com.nolane.stacks.R;
 import com.nolane.stacks.provider.CardsContract;
@@ -21,12 +21,12 @@ import com.nolane.stacks.provider.CardsContract;
  * some information on the start and showing app logo over float screen during this
  * process.
  */
-public class LauncherActivity extends Activity implements LoaderManager.LoaderCallbacks<Cursor> {
+public class LauncherActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.act_launcher);
-        ActionBar actionBar = getActionBar();
+        ActionBar actionBar = getSupportActionBar();
         if (null != actionBar && actionBar.isShowing()) actionBar.hide();
         // todo: show big logo
         getLoaderManager().initLoader(StacksQuery._TOKEN, null, this);
