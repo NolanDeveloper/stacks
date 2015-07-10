@@ -13,4 +13,5 @@
     <string name="right">Right =)</string>
     <string name="wrong">Wrong =(</string>
     <string name="failed">Failed</string>
+    <string name="all_done">All done!</string>
 </resources>

@@ -24,6 +24,7 @@ import com.nolane.stacks.R;
 import com.nolane.stacks.provider.CardsContract;
 import com.nolane.stacks.utils.UriUtils;
 
+
 /**
  * This fragment is for adding new cards to existing stack. It is used with
  * conjunction with {@link AddCardActivity}.
@@ -37,7 +38,6 @@ public class AddCardFragment extends Fragment
     private long stackId;
 
     // UI elements.
-    private TextView tvTitle;
     private EditText etFront;
     private EditText etBack;
     private Button btnDone;
@@ -53,7 +53,6 @@ public class AddCardFragment extends Fragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.frag_add_card, container, false);
-        tvTitle = (TextView) view.findViewById(R.id.tv_title);
         etFront = (EditText) view.findViewById(R.id.et_front);
         etBack = (EditText) view.findViewById(R.id.et_back);
         btnDone = (Button) view.findViewById(R.id.btn_done);
@@ -71,16 +70,9 @@ public class AddCardFragment extends Fragment
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-    }
-
-    @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        if (savedInstanceState == null) {
-            getLoaderManager().initLoader(StackQuery._TOKEN, null, this);
-        }
+        getLoaderManager().initLoader(StackQuery._TOKEN, null, this);
     }
 
     @Override
@@ -148,7 +140,6 @@ public class AddCardFragment extends Fragment
         query.moveToFirst();
         String title = query.getString(StackQuery.TITLE);
         UriUtils.insertParameter(getActivity(), CardsContract.Stacks.STACK_TITLE, title);
-        tvTitle.setText(title);
         btnDone.setOnClickListener(this);
     }
 

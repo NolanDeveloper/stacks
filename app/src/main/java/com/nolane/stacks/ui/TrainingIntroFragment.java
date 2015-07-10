@@ -80,6 +80,8 @@ public class TrainingIntroFragment extends Fragment
                 CardsContract.Card.CARD_ID
         };
 
+        String SELCTION = CardsContract.Card.CARD_IN_LEARNING + " = 1";
+
         int ID = 0;
     }
 
@@ -99,7 +101,7 @@ public class TrainingIntroFragment extends Fragment
             case CardQuery._TOKEN:
                 String stackId = getActivity().getIntent().getData().getLastPathSegment();
                 Uri uri = CardsContract.Card.buildUriToCardsOfStack(Long.parseLong(stackId));
-                return new CursorLoader(getActivity(), uri, CardQuery.COLUMNS, null, null, null);
+                return new CursorLoader(getActivity(), uri, CardQuery.COLUMNS, CardQuery.SELCTION, null, null);
         }
         return null;
     }

@@ -9,18 +9,23 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.text.format.Time;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.nolane.stacks.R;
 import com.nolane.stacks.provider.CardsContract;
 
+import java.util.Calendar;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 /**
  * This fragment is used for training process. It is used in conjunction with
@@ -28,11 +33,26 @@ import java.util.Random;
  */
 public class TrainingCardsFragment extends Fragment
         implements View.OnClickListener, LoaderCallbacks<Object> {
+    /**
+     * Interface for this class that allows to test it by using mock object that will
+     * be able to control current time.
+     */
+    public interface Clock {
+        /**
+         * Must return the amount of milliseconds elapsed
+         * since any constant point in the past.
+         * @return The amount of milliseconds elapsed
+         * since any constant point in the past.
+         */
+        long getCurrentTime();
+    }
+
     // Strings corresponding to the values saved in onSaveInstanceState().
     private static final String EXTRA_CARD_ID = "card.id";
     private static final String EXTRA_CARD_FRONT = "card.front";
     private static final String EXTRA_CARD_BACK = "card.back";
     private static final String EXTRA_CARD_SCRUTINY = "card.scrutiny";
+    private static final String EXTRA_CARD_LAST_SEEN = "card.last.seen";
 
     // UI elements.
     private TextView tvFront;
@@ -45,6 +65,25 @@ public class TrainingCardsFragment extends Fragment
     private String cardBack;
     // CardsContract.Card.CARD_SCRUTINY value of showing card.
     private int cardScrutiny;
+    // CardsContract.Card.CARD_LAST_SEEN value of showing card.
+    private long cardLastSeen;
+
+    // The object which help to get current time.
+    private Clock clock = new Clock() {
+        @Override
+        public long getCurrentTime() {
+            return Calendar.getInstance().getTimeInMillis();
+        }
+    };
+
+    /**
+     * It's for testing purposes.
+     * @param clock Object that represents current time.
+     */
+    public void setClock(@NonNull Clock clock) {
+        this.clock = clock;
+    }
+
 
     private Random random = new Random();
 
@@ -58,6 +97,7 @@ public class TrainingCardsFragment extends Fragment
             tvFront.setText(savedInstanceState.getString(EXTRA_CARD_FRONT));
             cardBack = savedInstanceState.getString(EXTRA_CARD_BACK);
             cardScrutiny = savedInstanceState.getInt(EXTRA_CARD_SCRUTINY);
+            cardLastSeen = savedInstanceState.getLong(EXTRA_CARD_LAST_SEEN);
             btnDone.setOnClickListener(this);
             // Reconnect to started loaders.
             if (null != getLoaderManager().getLoader(PickCardQuery._TOKEN))
@@ -74,6 +114,7 @@ public class TrainingCardsFragment extends Fragment
         outState.putString(EXTRA_CARD_FRONT, tvFront.getText().toString());
         outState.putString(EXTRA_CARD_BACK, cardBack);
         outState.putInt(EXTRA_CARD_SCRUTINY, cardScrutiny);
+        outState.putLong(EXTRA_CARD_SCRUTINY, cardLastSeen);
     }
 
     @Nullable
@@ -93,15 +134,24 @@ public class TrainingCardsFragment extends Fragment
     public void onClick(View v) {
         // Turn off button until we did not get next card.
         btnDone.setOnClickListener(null);
-        // Update scrutiny.
-        // todo: fix wrong logic
-        String userAssumption = etBack.getText().toString();
-        etBack.getText().clear();
-        Bundle arguments = new Bundle();
-        ContentValues values = new ContentValues();
-        values.put(CardsContract.Card.CARD_SCRUTINY, cardScrutiny + (userAssumption.equals(cardBack) ? 1 : -1));
-        arguments.putParcelable(VALUES, values);
-        getLoaderManager().initLoader(UpdateScrutinyQuery._TOKEN, arguments, this).forceLoad();
+        long timeNow = clock.getCurrentTime();
+        long timeDiff =  timeNow - cardLastSeen;
+        if (TimeUnit.DAYS.toMillis(1) < timeDiff) {
+            // Update scrutiny.
+            String userAssumption = etBack.getText().toString();
+            etBack.getText().clear();
+            Bundle arguments = new Bundle();
+            int newScrutiny = cardScrutiny + (userAssumption.equals(cardBack) ? 1 : -1);
+            ContentValues values = new ContentValues();
+            // todo: make preference for the bound of scrutiny
+            if (getResources().getInteger(R.integer.default_min_scrutiny) <= newScrutiny)
+                values.put(CardsContract.Card.CARD_SCRUTINY, newScrutiny);
+            values.put(CardsContract.Card.CARD_LAST_SEEN, timeNow);
+            arguments.putParcelable(VALUES, values);
+            getLoaderManager().initLoader(UpdateScrutinyQuery._TOKEN, arguments, this).forceLoad();
+        } else {
+            getLoaderManager().initLoader(PickCardQuery._TOKEN, null, this).forceLoad();
+        }
     }
 
     private interface PickCardQuery {
@@ -113,6 +163,8 @@ public class TrainingCardsFragment extends Fragment
                 CardsContract.Card.CARD_BACK,
                 CardsContract.Card.CARD_SCRUTINY
         };
+
+        String SELECTION = CardsContract.Card.CARD_IN_LEARNING + " = 1";
 
         int ID = 0;
         int FRONT = 1;
@@ -135,7 +187,7 @@ public class TrainingCardsFragment extends Fragment
                 return new AsyncTaskLoader(getActivity()) {
                     @Override
                     public Object loadInBackground() {
-                        return getActivity().getContentResolver().query(cardsOfStack, PickCardQuery.COLUMNS, null, null, CardsContract.Card.SORT_LAST_SEEN);
+                        return getActivity().getContentResolver().query(cardsOfStack, PickCardQuery.COLUMNS, PickCardQuery.SELECTION, null, CardsContract.Card.SORT_LAST_SEEN);
                     }
                 };
             } case UpdateScrutinyQuery._TOKEN: {
@@ -163,18 +215,15 @@ public class TrainingCardsFragment extends Fragment
         switch (loader.getId()) {
             case PickCardQuery._TOKEN:
                 Cursor query = (Cursor) data;
-                if (null == query) {
-                    throw new IllegalArgumentException("Loader was failed. (query = null)");
-                }
                 int count = query.getCount();
                 if (0 == count) {
-                    throw new IllegalArgumentException("The specified stack does not have cards.");
+                    Toast.makeText(getActivity(), getString(R.string.all_done), Toast.LENGTH_LONG).show();
+                    getFragmentManager().popBackStack();
+                    return;
                 }
                 if (1 == count) {
                     query.moveToFirst();
                 } else {
-                    // todo: create complex distribution to be more
-                    // todo: productive when we have tons of cards
                     long cardPrevId = cardId;
                     // If you get the same card 5 times in a row it means God wants you to see this card.
                     for (int i = 0; (cardId == cardPrevId) && (i < 5); i++) {

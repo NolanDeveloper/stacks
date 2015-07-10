@@ -131,6 +131,23 @@ public class CardsProvider extends ContentProvider {
                 }
                 values.put(Card.CARD_STACK_ID, uri.getLastPathSegment());
                 break;
+            case CARDS_TABLE:
+                Cursor query = db.getReadableDatabase().query(
+                        CardsDatabase.Tables.STACKS,
+                        new String[]{StacksColumns.STACK_MAX_IN_LEARNING},
+                        StacksColumns.STACK_ID + " = ?",
+                        new String[]{String.valueOf(values.getAsLong(CardsColumns.CARD_STACK_ID))},
+                        null, null, null);
+                query.moveToFirst();
+                int maxInLearning = query.getInt(0);
+                query.close();
+                query = db.getReadableDatabase().rawQuery(
+                        "SELECT COUNT(*) FROM " + CardsDatabase.Tables.CARDS + " WHERE " + CardsColumns.CARD_IN_LEARNING + " = 1", null);
+                query.moveToFirst();
+                int countInLearning = query.getInt(0);
+                int inLearning = countInLearning < maxInLearning ? 1 : 0;
+                values.put(CardsColumns.CARD_IN_LEARNING, inLearning);
+                break;
         }
         String table = uri.getPathSegments().get(0);
         long id = db.getWritableDatabase().insert(table, null, values);

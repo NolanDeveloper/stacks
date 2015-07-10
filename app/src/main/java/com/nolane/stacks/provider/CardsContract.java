@@ -21,6 +21,8 @@ public class CardsContract {
         String STACK_TITLE = "STACK_TITLE";
         // Brief description.
         String STACK_DESCRIPTION = "STACK_DESCRIPTION";
+        // Maximum card in "in learning" state.
+        String STACK_MAX_IN_LEARNING = "STACK_MAX_IN_LEARNING";
     }
     interface CardsColumns {
         // Id column.
@@ -36,6 +38,8 @@ public class CardsContract {
         String CARD_LAST_SEEN = "CARD_LAST_SEEN";
         // Id of the stack this card belongs to.
         String CARD_STACK_ID = "CARD_STACK_ID";
+        // Flag which shows if card is in learning.
+        String CARD_IN_LEARNING = "CARD_IN_LEARNING";
     }
 
     // Paths for uris. They are also table names.
