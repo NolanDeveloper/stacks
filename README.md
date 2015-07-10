@@ -6,15 +6,6 @@ This project was created for educational purposes. (probably not only)
 create a better design and another algorithm of studying and probably support of different ways of
 studying like in LinguaLeo.
 
----
-
-I feel have to say I was not aware of such apps which can help in learning languages in this way.
-This was my own idea. But like the most of ideas in this big word it was not new idea and very soon
-I found out these apps. But I do not think I need to avoid them to create brand new experience.
-Vice versa I think it is good that I am not first here. I have opportunity to learn the mistakes
-of others and avoid them and find in these application something that I probably would never
-imagine.
-
 How I see it for now
 ---
 
