@@ -42,10 +42,10 @@ public class NavigationFragment extends Fragment
                 intent = new Intent(getActivity().getBaseContext(), AllCardsActivity.class);
                 startActivity(intent);
                 break;
-//            case R.id.mi_stacks:
-//                intent = new Intent(getActivity().getBaseContext(), AllStacksActivity.class);
-//                startActivity(intent);
-//                break;
+            case R.id.mi_stacks:
+                intent = new Intent(getActivity().getBaseContext(), AllStacksActivity.class);
+                startActivity(intent);
+                break;
         }
         return true;
     }
