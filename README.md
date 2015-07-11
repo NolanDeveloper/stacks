@@ -1,5 +1,7 @@
 # Stacks
 
+![logo](D:\AndroidStudioProjects\Stacks\app\src\main\res\mipmap-xxhdpi\ic_launcher.png)
+
 This project was created for educational purposes. (probably not only)
 
 **Stacks** is application for Android. It is similar to anki droid, but I am going to
