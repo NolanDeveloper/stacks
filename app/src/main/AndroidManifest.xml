@@ -41,6 +41,12 @@
         <activity
             android:name=".ui.PickStackActivity"/>
 
+        <activity
+            android:name=".ui.AllCardsActivity"/>
+
+        <activity
+            android:name=".ui.EditCardActivity"/>
+
         <provider
             android:authorities="com.nolane.stacks.provider"
             android:name="com.nolane.stacks.provider.CardsProvider"

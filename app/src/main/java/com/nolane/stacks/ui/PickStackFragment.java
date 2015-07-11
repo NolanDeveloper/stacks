@@ -20,6 +20,7 @@ import android.widget.TextView;
 
 import com.nolane.stacks.R;
 import com.nolane.stacks.provider.CardsContract;
+import com.nolane.stacks.utils.MetricsUtils;
 
 /**
  * This fragment must find out which stack user wants to train and then
@@ -27,7 +28,7 @@ import com.nolane.stacks.provider.CardsContract;
  */
 public class PickStackFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
     /**
-     * Adapter for the view holder.
+     * Adapter for the RecyclerView.
      */
     public class StacksAdapter extends RecyclerView.Adapter<StacksAdapter.ViewHolder> {
         public class ViewHolder extends RecyclerView.ViewHolder {
@@ -93,15 +94,21 @@ public class PickStackFragment extends Fragment implements LoaderManager.LoaderC
                     @Override
                     public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
                         super.getItemOffsets(outRect, view, parent, state);
-                        outRect.top = 8;
-                        outRect.right = 8;
-                        outRect.bottom = 8;
-                        outRect.left = 8;
+                        int margin = MetricsUtils.convertDpToPx(4);
+                        outRect.top = margin;
+                        outRect.right = margin;
+                        outRect.bottom = margin;
+                        outRect.left = margin;
                     }
                 });
                 getActivity().setTitle(getString(R.string.choose_stack));
-        getLoaderManager().initLoader(StacksQuery._TOKEN, null, this);
         return view;
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        getLoaderManager().initLoader(StacksQuery._TOKEN, null, this);
     }
 
     private interface StacksQuery {
@@ -115,7 +122,7 @@ public class PickStackFragment extends Fragment implements LoaderManager.LoaderC
 
         int ID = 0;
         int TITLE = 1;
-        int DESCRIPTION = 1;
+        int DESCRIPTION = 2;
     }
 
     @Override

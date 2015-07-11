@@ -209,7 +209,7 @@ public class TrainingCardsFragment extends Fragment
         if (null == data) {
             throw new IllegalArgumentException("Loader was failed. (query = null)");
         }
-        // All loader here are one-shot so we need to
+        // All loader here are one-shot. So we need to
         // prevent them from saving previous results.
         getLoaderManager().destroyLoader(loader.getId());
         switch (loader.getId()) {

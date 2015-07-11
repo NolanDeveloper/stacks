@@ -23,7 +23,7 @@ public class UriUtils {
         }
         String dataType = activity.getContentResolver().getType(data);
         if (!requiredType.equals(dataType)) {
-            throw new IllegalArgumentException("Specified data has unknown type. Must be \"" + requiredType + "\".");
+            throw new IllegalArgumentException("Specified data has unknown type. Must be \"" + requiredType + "\", but \"" + dataType + "\" provided.");
         }
     }
 
