@@ -17,7 +17,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.nolane.stacks.R;
@@ -59,11 +58,11 @@ public class AddCardFragment extends Fragment
 
         if (null == savedInstanceState) {
             InputFilter[] filters = new InputFilter[1];
-            filters[0] = new InputFilter.LengthFilter(CardsContract.Card.MAX_FRONT_LEN);
+            filters[0] = new InputFilter.LengthFilter(CardsContract.Cards.MAX_FRONT_LEN);
             etFront.setFilters(filters);
 
             filters = new InputFilter[1];
-            filters[0] = new InputFilter.LengthFilter(CardsContract.Card.MAX_BACK_LEN);
+            filters[0] = new InputFilter.LengthFilter(CardsContract.Cards.MAX_BACK_LEN);
             etBack.setFilters(filters);
         }
         return view;
@@ -81,13 +80,13 @@ public class AddCardFragment extends Fragment
         String back = etBack.getText().toString();
         final ContentResolver resolver = getActivity().getContentResolver();
         final ContentValues values = new ContentValues();
-        values.put(CardsContract.Card.CARD_FRONT, front);
-        values.put(CardsContract.Card.CARD_BACK, back);
-        values.put(CardsContract.Card.CARD_STACK_ID, stackId);
+        values.put(CardsContract.Cards.CARD_FRONT, front);
+        values.put(CardsContract.Cards.CARD_BACK, back);
+        values.put(CardsContract.Cards.CARD_STACK_ID, stackId);
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... params) {
-                resolver.insert(CardsContract.Card.CONTENT_URI, values);
+                resolver.insert(CardsContract.Cards.CONTENT_URI, values);
                 return null;
             }
 

@@ -18,4 +18,6 @@
     <string name="cards">Cards</string>
     <string name="stacks">Stacks</string>
     <string name="choose_stack">Choose stack</string>
+    <string name="deleted">Deleted</string>
+    <string name="undo">undo</string>
 </resources>

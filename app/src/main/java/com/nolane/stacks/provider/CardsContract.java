@@ -78,7 +78,7 @@ public class CardsContract {
     /**
      * This class holds fields and methods to easily make requests to cards table of CardsProvider.
      * */
-    public static class Card implements CardsColumns {
+    public static class Cards implements CardsColumns {
         // Uri pointing to the table of cards.
         public static final Uri CONTENT_URI =
                 BASE_CONTENT_URI.buildUpon().appendPath(PATH_CARDS).build();

@@ -18,9 +18,9 @@ import com.nolane.stacks.provider.CardsContract;
 /**
  * This fragment allows user to edit cards(eg to change front, to change back).
  * The activity that uses this fragment must specify data with the type
- * {@link CardsContract.Card#CONTENT_ITEM_TYPE} and contain parameters:
- * {@link CardsContract.Card#CARD_FRONT}, {@link CardsContract.Card#CARD_BACK},
- * {@link CardsContract.Card#CARD_SCRUTINY}. This fragment is used in
+ * {@link CardsContract.Cards#CONTENT_ITEM_TYPE} and contain parameters:
+ * {@link CardsContract.Cards#CARD_FRONT}, {@link CardsContract.Cards#CARD_BACK},
+ * {@link CardsContract.Cards#CARD_SCRUTINY}. This fragment is used in
  * conjunction with {@link EditCardActivity}.
  */
 public class EditCardFragment extends Fragment implements View.OnClickListener {
@@ -46,11 +46,11 @@ public class EditCardFragment extends Fragment implements View.OnClickListener {
 
         Uri data = getActivity().getIntent().getData();
         id = Long.parseLong(data.getLastPathSegment());
-        String scrutiny = data.getQueryParameter(CardsContract.Card.CARD_SCRUTINY);
+        String scrutiny = data.getQueryParameter(CardsContract.Cards.CARD_SCRUTINY);
         tvProgress.setText(scrutiny);
-        front = data.getQueryParameter(CardsContract.Card.CARD_FRONT);
+        front = data.getQueryParameter(CardsContract.Cards.CARD_FRONT);
         etFront.setText(front);
-        back = data.getQueryParameter(CardsContract.Card.CARD_BACK);
+        back = data.getQueryParameter(CardsContract.Cards.CARD_BACK);
         etBack.setText(back);
 
         btnDone.setOnClickListener(this);
@@ -68,8 +68,8 @@ public class EditCardFragment extends Fragment implements View.OnClickListener {
                 public void run() {
                     Uri uri = getActivity().getIntent().getData();
                     ContentValues contentValues = new ContentValues();
-                    contentValues.put(CardsContract.Card.CARD_FRONT, newFront);
-                    contentValues.put(CardsContract.Card.CARD_BACK, newBack);
+                    contentValues.put(CardsContract.Cards.CARD_FRONT, newFront);
+                    contentValues.put(CardsContract.Cards.CARD_BACK, newBack);
                     EditCardFragment.this.getActivity().getContentResolver()
                             .update(uri, contentValues, null, null);
                 }

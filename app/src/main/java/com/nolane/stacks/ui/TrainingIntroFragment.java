@@ -77,10 +77,10 @@ public class TrainingIntroFragment extends Fragment
         int _TOKEN = 1;
 
         String[] COLUMNS = new String[] {
-                CardsContract.Card.CARD_ID
+                CardsContract.Cards.CARD_ID
         };
 
-        String SELCTION = CardsContract.Card.CARD_IN_LEARNING + " = 1";
+        String SELCTION = CardsContract.Cards.CARD_IN_LEARNING + " = 1";
 
         int ID = 0;
     }
@@ -100,7 +100,7 @@ public class TrainingIntroFragment extends Fragment
                         StackQuery.COLUMNS, null, null, null);
             case CardQuery._TOKEN:
                 String stackId = getActivity().getIntent().getData().getLastPathSegment();
-                Uri uri = CardsContract.Card.buildUriToCardsOfStack(Long.parseLong(stackId));
+                Uri uri = CardsContract.Cards.buildUriToCardsOfStack(Long.parseLong(stackId));
                 return new CursorLoader(getActivity(), uri, CardQuery.COLUMNS, CardQuery.SELCTION, null, null);
         }
         return null;

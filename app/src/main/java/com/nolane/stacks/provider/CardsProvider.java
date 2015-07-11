@@ -80,7 +80,7 @@ public class CardsProvider extends ContentProvider {
                 break;
             } case CARDS_OF_STACK: {
                 String id = uri.getLastPathSegment();
-                selection = DatabaseUtils.concatenateWhere(selection, Card.CARD_STACK_ID + " = " + id);
+                selection = DatabaseUtils.concatenateWhere(selection, Cards.CARD_STACK_ID + " = " + id);
             }
         }
         // The first part of uri is always table name. In other words all table
@@ -103,11 +103,11 @@ public class CardsProvider extends ContentProvider {
             case STACKS_ID:
                 return Stacks.CONTENT_ITEM_TYPE;
             case CARDS_TABLE:
-                return Card.CONTENT_TYPE;
+                return Cards.CONTENT_TYPE;
             case CARDS_OF_STACK:
-                return Card.CONTENT_TYPE;
+                return Cards.CONTENT_TYPE;
             case CARDS_ID:
-                return Card.CONTENT_ITEM_TYPE;
+                return Cards.CONTENT_ITEM_TYPE;
         }
         return null;
     }
@@ -129,7 +129,7 @@ public class CardsProvider extends ContentProvider {
                 if (values == null) {
                     values = new ContentValues();
                 }
-                values.put(Card.CARD_STACK_ID, uri.getLastPathSegment());
+                values.put(Cards.CARD_STACK_ID, uri.getLastPathSegment());
                 break;
             case CARDS_TABLE:
                 Cursor query = db.getReadableDatabase().query(
@@ -174,7 +174,7 @@ public class CardsProvider extends ContentProvider {
                 break;
             } case CARDS_OF_STACK: {
                 String id = uri.getLastPathSegment();
-                selection = DatabaseUtils.concatenateWhere(selection, Card.CARD_STACK_ID + " = " + id);
+                selection = DatabaseUtils.concatenateWhere(selection, Cards.CARD_STACK_ID + " = " + id);
                 break;
             }
         }
@@ -205,7 +205,7 @@ public class CardsProvider extends ContentProvider {
                 break;
             } case CARDS_OF_STACK: {
                 String id = uri.getLastPathSegment();
-                selection = DatabaseUtils.concatenateWhere(selection, Card.CARD_STACK_ID + " = " + id);
+                selection = DatabaseUtils.concatenateWhere(selection, Cards.CARD_STACK_ID + " = " + id);
                 break;
             }
         }
@@ -241,12 +241,12 @@ public class CardsProvider extends ContentProvider {
             case CARDS_TABLE:
             case CARDS_ID:
                 String front = values.getAsString(CardsColumns.CARD_FRONT);
-                if (null != front && !Card.checkFront(front)) {
-                    throw new IllegalArgumentException("The front is too long. (max len is " + Card.MAX_FRONT_LEN + ")");
+                if (null != front && !Cards.checkFront(front)) {
+                    throw new IllegalArgumentException("The front is too long. (max len is " + Cards.MAX_FRONT_LEN + ")");
                 }
                 String back = values.getAsString(CardsColumns.CARD_FRONT);
-                if (null != back && !Card.checkBack(back)) {
-                    throw new IllegalArgumentException("The back is too long. (max len is " + Card.MAX_BACK_LEN + ")");
+                if (null != back && !Cards.checkBack(back)) {
+                    throw new IllegalArgumentException("The back is too long. (max len is " + Cards.MAX_BACK_LEN + ")");
                 }
                 break;
             default:

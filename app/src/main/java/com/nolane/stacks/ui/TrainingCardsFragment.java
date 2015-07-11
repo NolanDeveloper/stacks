@@ -11,7 +11,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.text.format.Time;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -145,8 +144,8 @@ public class TrainingCardsFragment extends Fragment
             ContentValues values = new ContentValues();
             // todo: make preference for the bound of scrutiny
             if (getResources().getInteger(R.integer.default_min_scrutiny) <= newScrutiny)
-                values.put(CardsContract.Card.CARD_SCRUTINY, newScrutiny);
-            values.put(CardsContract.Card.CARD_LAST_SEEN, timeNow);
+                values.put(CardsContract.Cards.CARD_SCRUTINY, newScrutiny);
+            values.put(CardsContract.Cards.CARD_LAST_SEEN, timeNow);
             arguments.putParcelable(VALUES, values);
             getLoaderManager().initLoader(UpdateScrutinyQuery._TOKEN, arguments, this).forceLoad();
         } else {
@@ -158,13 +157,13 @@ public class TrainingCardsFragment extends Fragment
         int _TOKEN = 0;
 
         String[] COLUMNS = new String[] {
-                CardsContract.Card.CARD_ID,
-                CardsContract.Card.CARD_FRONT,
-                CardsContract.Card.CARD_BACK,
-                CardsContract.Card.CARD_SCRUTINY
+                CardsContract.Cards.CARD_ID,
+                CardsContract.Cards.CARD_FRONT,
+                CardsContract.Cards.CARD_BACK,
+                CardsContract.Cards.CARD_SCRUTINY
         };
 
-        String SELECTION = CardsContract.Card.CARD_IN_LEARNING + " = 1";
+        String SELECTION = CardsContract.Cards.CARD_IN_LEARNING + " = 1";
 
         int ID = 0;
         int FRONT = 1;
@@ -183,15 +182,15 @@ public class TrainingCardsFragment extends Fragment
             case PickCardQuery._TOKEN: {
                 // Here we use AsyncTaskLoader instead of CursorLoader because we don't need to have
                 // observation on cursor. We just need to make one-shot load.
-                final Uri cardsOfStack = CardsContract.Card.buildUriToCardsOfStack(stackId);
+                final Uri cardsOfStack = CardsContract.Cards.buildUriToCardsOfStack(stackId);
                 return new AsyncTaskLoader(getActivity()) {
                     @Override
                     public Object loadInBackground() {
-                        return getActivity().getContentResolver().query(cardsOfStack, PickCardQuery.COLUMNS, PickCardQuery.SELECTION, null, CardsContract.Card.SORT_LAST_SEEN);
+                        return getActivity().getContentResolver().query(cardsOfStack, PickCardQuery.COLUMNS, PickCardQuery.SELECTION, null, CardsContract.Cards.SORT_LAST_SEEN);
                     }
                 };
             } case UpdateScrutinyQuery._TOKEN: {
-                final Uri uri = ContentUris.withAppendedId(CardsContract.Card.buildUriToCardsOfStack(stackId), cardId);
+                final Uri uri = ContentUris.withAppendedId(CardsContract.Cards.buildUriToCardsOfStack(stackId), cardId);
                 final ContentValues values = args.getParcelable(VALUES);
                 return new AsyncTaskLoader<Object>(getActivity()) {
                     @Override

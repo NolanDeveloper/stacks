@@ -2,6 +2,8 @@ package com.nolane.stacks.ui;
 
 import android.app.Fragment;
 import android.app.LoaderManager;
+import android.content.AsyncTaskLoader;
+import android.content.ContentValues;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
@@ -11,6 +13,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -27,7 +30,9 @@ import com.nolane.stacks.utils.MetricsUtils;
  * This fragment shows all cards to user. The user can remove all edit each card.
  * This fragment is used in conjunction with {@link AllCardsActivity}.
  */
-public class AllCardsFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class AllCardsFragment extends Fragment implements LoaderManager.LoaderCallbacks<Object> {
+    public static final String EXTRA_VALUES = "values";
+
     /**
      * Adapter for RecyclerView.
      */
@@ -65,38 +70,50 @@ public class AllCardsFragment extends Fragment implements LoaderManager.LoaderCa
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
             query.moveToPosition(position);
-            final int scrutiny = query.getInt(CardsQuery.SCRUTINY);
-            holder.tvScrutiny.setText(String.valueOf(scrutiny));
-            final String front = query.getString(CardsQuery.FRONT);
-            holder.tvFront.setText(front);
-            final String back = query.getString(CardsQuery.BACK);
-            holder.tvBack.setText(back);
             final long id = query.getLong(CardsQuery.ID);
+            final String front = query.getString(CardsQuery.FRONT);
+            final String back = query.getString(CardsQuery.BACK);
+            final int scrutiny = query.getInt(CardsQuery.SCRUTINY);
+            final long lastSeen = query.getLong(CardsQuery.LAST_SEEN);
             final long stackId = query.getLong(CardsQuery.STACK_ID);
+            final long inLearning = query.getInt(CardsQuery.IN_LEARNING);
+            holder.tvScrutiny.setText(String.valueOf(scrutiny));
+            holder.tvFront.setText(front);
+            holder.tvBack.setText(back);
             holder.ibRemove.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            // todo: make snackbar.
-                            Uri data = CardsContract.Card.buildUriToCard(stackId, id);
-                            getActivity().getContentResolver().delete(data, null, null);
+                            // We need to save all information about card we want to remove to
+                            // be able to restore it in the future.
+                            Bundle arguments = new Bundle();
+                            ContentValues values = new ContentValues();
+                            values.put(CardsContract.Cards.CARD_ID, id);
+                            values.put(CardsContract.Cards.CARD_FRONT, front);
+                            values.put(CardsContract.Cards.CARD_BACK, back);
+                            values.put(CardsContract.Cards.CARD_SCRUTINY, scrutiny);
+                            values.put(CardsContract.Cards.CARD_LAST_SEEN, lastSeen);
+                            values.put(CardsContract.Cards.CARD_STACK_ID, stackId);
+                            values.put(CardsContract.Cards.CARD_IN_LEARNING, inLearning);
+                            arguments.putParcelable(EXTRA_VALUES, values);
+                            getLoaderManager().initLoader(RemoveCardQuery._TOKEN, arguments, AllCardsFragment.this).forceLoad();
                         }
-                    });
+                    }).run();
                 }
             });
             holder.root.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(getActivity(), EditCardActivity.class);
-                    Uri data = CardsContract.Card.CONTENT_URI
+                    Uri data = CardsContract.Cards.CONTENT_URI
                             .buildUpon()
                             .appendPath(String.valueOf(stackId))
                             .appendPath(String.valueOf(id))
-                            .appendQueryParameter(CardsContract.Card.CARD_FRONT, front)
-                            .appendQueryParameter(CardsContract.Card.CARD_BACK, back)
-                            .appendQueryParameter(CardsContract.Card.CARD_SCRUTINY, String.valueOf(scrutiny))
+                            .appendQueryParameter(CardsContract.Cards.CARD_FRONT, front)
+                            .appendQueryParameter(CardsContract.Cards.CARD_BACK, back)
+                            .appendQueryParameter(CardsContract.Cards.CARD_SCRUTINY, String.valueOf(scrutiny))
                             .build();
                     intent.setData(data);
                     startActivity(intent);
@@ -137,43 +154,91 @@ public class AllCardsFragment extends Fragment implements LoaderManager.LoaderCa
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         getLoaderManager().initLoader(CardsQuery._TOKEN, null, this);
+        // Catch started loader.
+        if (null != getLoaderManager().getLoader(RemoveCardQuery._TOKEN)) {
+            getLoaderManager().initLoader(RemoveCardQuery._TOKEN, null, this);
+        }
     }
 
     private interface CardsQuery {
         int _TOKEN = 0;
 
         String[] COLUMNS = {
-                CardsContract.Card.CARD_ID,
-                CardsContract.Card.CARD_FRONT,
-                CardsContract.Card.CARD_BACK,
-                CardsContract.Card.CARD_SCRUTINY,
-                CardsContract.Card.CARD_STACK_ID
+                CardsContract.Cards.CARD_ID,
+                CardsContract.Cards.CARD_FRONT,
+                CardsContract.Cards.CARD_BACK,
+                CardsContract.Cards.CARD_SCRUTINY,
+                CardsContract.Cards.CARD_LAST_SEEN,
+                CardsContract.Cards.CARD_STACK_ID,
+                CardsContract.Cards.CARD_IN_LEARNING
         };
 
         int ID = 0;
         int FRONT = 1;
         int BACK = 2;
         int SCRUTINY = 3;
-        int STACK_ID = 4;
+        int LAST_SEEN = 4;
+        int STACK_ID = 5;
+        int IN_LEARNING = 6;
+    }
+
+    private interface RemoveCardQuery {
+        int _TOKEN = 1;
     }
 
     @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return new CursorLoader(getActivity(), CardsContract.Card.CONTENT_URI, CardsQuery.COLUMNS, null, null, null);
-    }
-
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor query) {
-        if (null == query) {
-            throw new IllegalArgumentException("Loader was failed. (query = null)");
+    public Loader onCreateLoader(int id, final Bundle args) {
+        switch (id) {
+            case CardsQuery._TOKEN:
+                return new CursorLoader(getActivity(), CardsContract.Cards.CONTENT_URI, CardsQuery.COLUMNS, null, null, null);
+            case RemoveCardQuery._TOKEN:
+                return new AsyncTaskLoader(getActivity()) {
+                    @Override
+                    public Object loadInBackground() {
+                        ContentValues values = args.getParcelable(EXTRA_VALUES);
+                        long stackId = values.getAsLong(CardsContract.Cards.CARD_STACK_ID);
+                        long cardId = values.getAsLong(CardsContract.Cards.CARD_ID);
+                        Uri data = CardsContract.Cards.buildUriToCard(stackId, cardId);
+                        getActivity().getContentResolver().delete(data, null, null);
+                        return values;
+                    }
+                };
         }
-        int count = query.getCount();
-        rvCards.setAdapter(new CardsAdapter(query));
+        return null;
     }
 
     @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-
+    public void onLoadFinished(Loader<Object> loader, Object data) {
+        if (null == data) {
+            throw new IllegalArgumentException("Loader was failed. (data = null)");
+        }
+        switch (loader.getId()) {
+            case CardsQuery._TOKEN:
+                Cursor query = (Cursor) data;
+                rvCards.setAdapter(new CardsAdapter(query));
+                break;
+            case RemoveCardQuery._TOKEN:
+                getLoaderManager().destroyLoader(RemoveCardQuery._TOKEN);
+                final ContentValues values = (ContentValues) data;
+                Snackbar.make(getView(), getString(R.string.deleted), Snackbar.LENGTH_LONG)
+                        .setAction(R.string.undo, new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                new Thread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        Uri uri = CardsContract.Cards.CONTENT_URI;
+                                        getActivity().getContentResolver().insert(uri, values);
+                                    }
+                                }).run();
+                            }
+                        }).show();
+                break;
+        }
     }
 
+    @Override
+    public void onLoaderReset(Loader<Object> loader) {
+
+    }
 }
