@@ -1,6 +1,6 @@
 # Stacks
 
-![logo](D:\AndroidStudioProjects\Stacks\app\src\main\res\mipmap-xxhdpi\ic_launcher.png)
+![logo](./app/src/main/res/mipmap-xxhdpi/ic_launcher.png)
 
 This project was created for educational purposes. (probably not only)
 
