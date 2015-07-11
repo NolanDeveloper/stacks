@@ -44,11 +44,13 @@
 
         <ImageButton
             android:id="@+id/ib_remove"
-            android:layout_width="36dp"
-            android:layout_height="36dp"
-            android:scaleType="center"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:padding="12dp"
+            android:scaleType="fitCenter"
             android:layout_gravity="center_vertical"
-            android:src="@android:drawable/ic_menu_delete"
+            android:tint="@android:color/darker_gray"
+            android:src="@drawable/delete"
             android:background="?attr/selectableItemBackgroundBorderless"/>
 
     </LinearLayout>

@@ -16,6 +16,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.nolane.stacks.R;
@@ -36,6 +37,7 @@ public class AllCardsFragment extends Fragment implements LoaderManager.LoaderCa
             public TextView tvScrutiny;
             public TextView tvFront;
             public TextView tvBack;
+            public ImageButton ibRemove;
 
             public ViewHolder(View itemView) {
                 super(itemView);
@@ -43,6 +45,7 @@ public class AllCardsFragment extends Fragment implements LoaderManager.LoaderCa
                 tvScrutiny = (TextView) itemView.findViewById(R.id.tv_scrutiny);
                 tvFront = (TextView) itemView.findViewById(R.id.tv_front);
                 tvBack = (TextView) itemView.findViewById(R.id.tv_back);
+                ibRemove = (ImageButton) itemView.findViewById(R.id.ib_remove);
             }
         }
 
@@ -68,9 +71,21 @@ public class AllCardsFragment extends Fragment implements LoaderManager.LoaderCa
             holder.tvFront.setText(front);
             final String back = query.getString(CardsQuery.BACK);
             holder.tvBack.setText(back);
-            // todo: activate delete button!
             final long id = query.getLong(CardsQuery.ID);
             final long stackId = query.getLong(CardsQuery.STACK_ID);
+            holder.ibRemove.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            // todo: make snackbar.
+                            Uri data = CardsContract.Card.buildUriToCard(stackId, id);
+                            getActivity().getContentResolver().delete(data, null, null);
+                        }
+                    });
+                }
+            });
             holder.root.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {

@@ -91,6 +91,17 @@ public class CardsContract {
             return ContentUris.withAppendedId(CONTENT_URI, id);
         }
 
+        /**
+         * Creates uri to the card with id equal to {@code cardId} of stack
+         * with id equal to {@code stackId}.
+         * @param stackId Id of stack.
+         * @param cardId Id of card.
+         * @return Uri to the card with id equal to {@code cardId} of stack
+         * */
+        public static Uri buildUriToCard(long stackId, long cardId) {
+            return ContentUris.withAppendedId(buildUriToCardsOfStack(stackId), cardId);
+        }
+
         public static final String CONTENT_TYPE =
                 ContentResolver.CURSOR_DIR_BASE_TYPE + "/vnd." + CONTENT_AUTHORITY + ".card";
         public static final String CONTENT_ITEM_TYPE =
