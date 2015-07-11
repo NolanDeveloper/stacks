@@ -8,7 +8,6 @@ import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
-import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -24,7 +23,6 @@ import android.widget.TextView;
 
 import com.nolane.stacks.R;
 import com.nolane.stacks.provider.CardsContract;
-import com.nolane.stacks.utils.MetricsUtils;
 
 /**
  * This fragment shows all cards to user. The user can remove all edit each card.
@@ -136,17 +134,6 @@ public class AllCardsFragment extends Fragment implements LoaderManager.LoaderCa
         View view = inflater.inflate(R.layout.frag_all_cards, container, false);
         rvCards = (RecyclerView) view.findViewById(R.id.rv_cards);
         rvCards.setLayoutManager(new GridLayoutManager(getActivity(), 2, GridLayoutManager.VERTICAL, false));
-        rvCards.addItemDecoration(new RecyclerView.ItemDecoration() {
-            @Override
-            public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
-                super.getItemOffsets(outRect, view, parent, state);
-                int margin = MetricsUtils.convertDpToPx(4);
-                outRect.top = margin;
-                outRect.right = margin;
-                outRect.bottom = margin;
-                outRect.left = margin;
-            }
-        });
         return view;
     }
 
