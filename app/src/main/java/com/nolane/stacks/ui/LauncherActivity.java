@@ -13,6 +13,7 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.nolane.stacks.R;
 import com.nolane.stacks.provider.CardsContract;
+import com.nolane.stacks.utils.UriUtils;
 
 /**
  * This activity is required to start different activities on launch by condition.
@@ -59,11 +60,7 @@ public class LauncherActivity extends AppCompatActivity implements LoaderManager
             Intent intent = new Intent(getBaseContext(), CreateFirstStackActivity.class);
             startActivity(intent);
         } else {
-            Intent intent = new Intent(getBaseContext(), TrainingActivity.class);
-            query.moveToFirst();
-            Uri data = ContentUris.withAppendedId(
-                    CardsContract.Stacks.CONTENT_URI, query.getLong(StacksQuery.ID));
-            intent.setData(data);
+            Intent intent = new Intent(getBaseContext(), PickStackActivity.class);
             startActivity(intent);
         }
     }

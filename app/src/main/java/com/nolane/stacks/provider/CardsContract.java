@@ -3,7 +3,6 @@ package com.nolane.stacks.provider;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.net.Uri;
-import android.provider.BaseColumns;
 
 /**
  * This class is public interface of CardsProvider. You can access it using
@@ -16,17 +15,19 @@ public class CardsContract {
     // Columns for creating table and making queries.
     interface StacksColumns {
         // Id column.
-        String STACK_ID = BaseColumns._ID;
+        String STACK_ID = "STACK_ID";
         // Title.
         String STACK_TITLE = "STACK_TITLE";
         // Brief description.
         String STACK_DESCRIPTION = "STACK_DESCRIPTION";
         // Maximum card in "in learning" state.
         String STACK_MAX_IN_LEARNING = "STACK_MAX_IN_LEARNING";
+        // The amount of cards in this stack. Read only.
+        String STACK_COUNT_CARDS = "STACK_COUNT_CARDS";
     }
     interface CardsColumns {
         // Id column.
-        String CARD_ID = BaseColumns._ID;
+        String CARD_ID = "CARD_ID";
         // Front text.
         String CARD_FRONT = "CARD_FRONT";
         // Back text.

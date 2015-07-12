@@ -8,9 +8,10 @@ import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.graphics.Rect;
+import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -21,6 +22,7 @@ import android.widget.TextView;
 import com.nolane.stacks.R;
 import com.nolane.stacks.provider.CardsContract;
 import com.nolane.stacks.utils.MetricsUtils;
+import com.nolane.stacks.utils.UriUtils;
 
 /**
  * This fragment must find out which stack user wants to train and then
@@ -60,17 +62,33 @@ public class PickStackFragment extends Fragment implements LoaderManager.LoaderC
         @Override
         public void onBindViewHolder(ViewHolder holder, final int position) {
             query.moveToPosition(position);
-            holder.tvTitle.setText(query.getString(StacksQuery.TITLE));
+            final long id = query.getLong(StacksQuery.ID);
+            final String title = query.getString(StacksQuery.TITLE);
+            final String description = query.getString(StacksQuery.DESCRIPTION);
+            final int count = query.getInt(StacksQuery.COUNT_CARDS);
+            holder.tvTitle.setText(title);
             holder.tvDescription.setText(query.getString(StacksQuery.DESCRIPTION));
-            holder.root.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    query.moveToPosition(position);
-                    Intent intent = new Intent(getActivity(), TrainingActivity.class);
-                    intent.setData(ContentUris.withAppendedId(CardsContract.Stacks.CONTENT_URI, query.getLong(StacksQuery.ID)));
-                    startActivity(intent);
-                }
-            });
+            if (0 == count) {
+                holder.root.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Snackbar.make(getView(), getString(R.string.no_cards), Snackbar.LENGTH_SHORT)
+                                .show();
+                    }
+                });
+            } else {
+                holder.root.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent(getActivity(), TrainingActivity.class);
+                        Uri data = ContentUris.withAppendedId(CardsContract.Stacks.CONTENT_URI, id);
+                        data = UriUtils.insertParameter(data, CardsContract.Stacks.STACK_TITLE, title);
+                        data = UriUtils.insertParameter(data, CardsContract.Stacks.STACK_DESCRIPTION, description);
+                        intent.setData(data);
+                        startActivity(intent);
+                    }
+                });
+            }
         }
 
         @Override
@@ -132,12 +150,14 @@ public class PickStackFragment extends Fragment implements LoaderManager.LoaderC
         String[] COLUMNS = {
                 CardsContract.Stacks.STACK_ID,
                 CardsContract.Stacks.STACK_TITLE,
-                CardsContract.Stacks.STACK_DESCRIPTION
+                CardsContract.Stacks.STACK_DESCRIPTION,
+                CardsContract.Stacks.STACK_COUNT_CARDS
         };
 
         int ID = 0;
         int TITLE = 1;
         int DESCRIPTION = 2;
+        int COUNT_CARDS = 3;
     }
 
     @Override

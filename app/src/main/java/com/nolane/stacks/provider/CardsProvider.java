@@ -8,7 +8,6 @@ import android.database.Cursor;
 import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteException;
 import android.net.Uri;
-import android.provider.BaseColumns;
 import android.text.TextUtils;
 import android.util.Log;
 
@@ -65,6 +64,11 @@ public class CardsProvider extends ContentProvider {
         Log.d(LOG_TAG, "selectionArgs: " + ((null != selectionArgs) ? Arrays.deepToString(selectionArgs) : "null"));
         Log.d(LOG_TAG, "sortOrder: " + sortOrder);
 
+        // The first part of uri is always table name. In other words all table
+        // names are at the top of uri hierarchy providing by #URI_MATCHER.
+        String table = uri.getPathSegments().get(0);
+        String groupBy = null;
+        String[] actualProjection = null == projection ? null : Arrays.copyOf(projection, projection.length);
         switch (URI_MATCHER.match(uri)) {
             case UriMatcher.NO_MATCH:
                 return null;
@@ -72,21 +76,29 @@ public class CardsProvider extends ContentProvider {
                 if (TextUtils.isEmpty(sortOrder)) {
                     sortOrder = Stacks.SORT_DEFAULT;
                 }
+                if (null != projection) {
+                    int countId = Arrays.asList(actualProjection).indexOf(StacksColumns.STACK_COUNT_CARDS);
+                    if (-1 != countId) {
+                        actualProjection[countId] = "COUNT(" + Cards.CARD_STACK_ID + ")";
+                        table += " LEFT OUTER JOIN " + CardsDatabase.Tables.CARDS + " ON " + CardsColumns.CARD_STACK_ID + " = " + StacksColumns.STACK_ID;
+                        groupBy = StacksColumns.STACK_ID;
+                    }
+                }
                 break;
-            case STACKS_ID:
-            case CARDS_ID: {
+            case STACKS_ID: {
                 String id = uri.getLastPathSegment();
-                selection = DatabaseUtils.concatenateWhere(selection, BaseColumns._ID + " = " + id);
+                selection = DatabaseUtils.concatenateWhere(selection, Stacks.STACK_ID + " = " + id);
+                break;
+            } case CARDS_ID: {
+                String id = uri.getLastPathSegment();
+                selection = DatabaseUtils.concatenateWhere(selection, Cards.CARD_ID + " = " + id);
                 break;
             } case CARDS_OF_STACK: {
                 String id = uri.getLastPathSegment();
                 selection = DatabaseUtils.concatenateWhere(selection, Cards.CARD_STACK_ID + " = " + id);
             }
         }
-        // The first part of uri is always table name. In other words all table
-        // names are at the top of uri hierarchy providing by #URI_MATCHER.
-        String table = uri.getPathSegments().get(0);
-        Cursor cursor = db.getReadableDatabase().query(table, projection, selection, selectionArgs, null, null, sortOrder);
+        Cursor cursor = db.getReadableDatabase().query(table, actualProjection, selection, selectionArgs, groupBy, null, sortOrder);
         if ((null != cursor) && (null != getContext())) {
             cursor.setNotificationUri(getContext().getContentResolver(), uri);
         }
@@ -167,10 +179,13 @@ public class CardsProvider extends ContentProvider {
         switch (URI_MATCHER.match(uri)) {
             case UriMatcher.NO_MATCH:
                 return 0;
-            case STACKS_ID:
-            case CARDS_ID: {
+            case STACKS_ID: {
                 String id = uri.getLastPathSegment();
-                selection = DatabaseUtils.concatenateWhere(selection, BaseColumns._ID + " = " + id);
+                selection = DatabaseUtils.concatenateWhere(selection, Stacks.STACK_ID + " = " + id);
+                break;
+            } case CARDS_ID: {
+                String id = uri.getLastPathSegment();
+                selection = DatabaseUtils.concatenateWhere(selection, Cards.CARD_ID + " = " + id);
                 break;
             } case CARDS_OF_STACK: {
                 String id = uri.getLastPathSegment();
@@ -198,10 +213,13 @@ public class CardsProvider extends ContentProvider {
         switch (URI_MATCHER.match(uri)) {
             case UriMatcher.NO_MATCH:
                 return 0;
-            case STACKS_ID:
-            case CARDS_ID: {
+            case STACKS_ID: {
                 String id = uri.getLastPathSegment();
-                selection = DatabaseUtils.concatenateWhere(selection, BaseColumns._ID + " = " + id);
+                selection = DatabaseUtils.concatenateWhere(selection, Stacks.STACK_ID + " = " + id);
+                break;
+            } case CARDS_ID: {
+                String id = uri.getLastPathSegment();
+                selection = DatabaseUtils.concatenateWhere(selection, Cards.CARD_ID + " = " + id);
                 break;
             } case CARDS_OF_STACK: {
                 String id = uri.getLastPathSegment();

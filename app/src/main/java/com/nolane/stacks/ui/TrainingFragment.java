@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -30,7 +31,7 @@ import java.util.concurrent.TimeUnit;
  * This fragment is used for training process. It is used in conjunction with
  * {@link TrainingActivity}.
  */
-public class TrainingCardsFragment extends Fragment
+public class TrainingFragment extends Fragment
         implements View.OnClickListener, LoaderCallbacks<Object> {
     /**
      * Interface for this class that allows to test it by using mock object that will
@@ -120,7 +121,7 @@ public class TrainingCardsFragment extends Fragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
-        View view = inflater.inflate(R.layout.frag_training_cards, container, false);
+        View view = inflater.inflate(R.layout.frag_training, container, false);
         tvFront = (TextView) view.findViewById(R.id.tv_front);
         etBack = (EditText) view.findViewById(R.id.et_back);
         btnDone = (Button) view.findViewById(R.id.btn_done);
@@ -216,8 +217,10 @@ public class TrainingCardsFragment extends Fragment
                 Cursor query = (Cursor) data;
                 int count = query.getCount();
                 if (0 == count) {
-                    Toast.makeText(getActivity(), getString(R.string.all_done), Toast.LENGTH_LONG).show();
-                    getFragmentManager().popBackStack();
+                    // fixme: notify user that we run out of cards.
+//                    Snackbar.make(getView(), getString(R.string.all_done), Snackbar.LENGTH_SHORT)
+//                            .show();
+                    getActivity().finish();
                     return;
                 }
                 if (1 == count) {
