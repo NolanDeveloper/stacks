@@ -30,7 +30,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginBottom="32dp"
                     android:hint="@string/front"
-                    android:text=""/>
+                    android:text="some text to move hint up"/>
 
             </android.support.design.widget.TextInputLayout>
 

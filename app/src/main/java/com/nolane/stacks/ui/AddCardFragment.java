@@ -58,6 +58,8 @@ public class AddCardFragment extends Fragment
         btnDone = (Button) view.findViewById(R.id.btn_done);
 
         if (null == savedInstanceState) {
+            etFront.setText("");
+
             InputFilter[] filters = new InputFilter[1];
             filters[0] = new InputFilter.LengthFilter(CardsContract.Cards.MAX_FRONT_LEN);
             etFront.setFilters(filters);
