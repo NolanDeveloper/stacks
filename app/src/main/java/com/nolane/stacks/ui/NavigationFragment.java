@@ -26,7 +26,6 @@ public class NavigationFragment extends Fragment
         ViewGroup view = (ViewGroup) inflater.inflate(R.layout.frag_navigation, container, false);
         nv = (NavigationView) view.findViewById(R.id.nv);
         nv.setNavigationItemSelectedListener(this);
-        nv.inflateMenu(R.menu.navigation);
         return view;
     }
 

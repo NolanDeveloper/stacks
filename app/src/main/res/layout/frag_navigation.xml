@@ -6,5 +6,8 @@
     android:layout_width="wrap_content"
     android:layout_height="match_parent"
     android.support.design:itemTextColor="@android:color/white"
+    android.support.design:itemIconTint="@android:color/white"
+    android.support.design:headerLayout="@layout/navigation_header"
     android:background="@color/primary_dark"
-    android:layout_gravity="start" />
+    android:layout_gravity="start"
+    android.support.design:menu="@menu/navigation"/>

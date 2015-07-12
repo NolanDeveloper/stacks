@@ -2,12 +2,15 @@
 <menu
     xmlns:android="http://schemas.android.com/apk/res/android">
     <item
+        android:icon="@drawable/ic_alpha"
         android:id="@+id/mi_training"
         android:title="@string/training"/>
     <item
+        android:icon="@drawable/ic_card"
         android:id="@+id/mi_cards"
         android:title="@string/cards"/>
     <item
+        android:icon="@drawable/ic_card_multiple"
         android:id="@+id/mi_stacks"
         android:title="@string/stacks"/>
 </menu>
