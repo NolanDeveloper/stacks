@@ -61,6 +61,7 @@ public class CreateStackFragment extends Fragment
             InputFilter[] filterArray = new InputFilter[1];
             filterArray[0] = new InputFilter.LengthFilter(CardsContract.Stacks.MAX_TITLE_LEN);
             etTitle.setFilters(filterArray);
+            etTitle.setText(null);
 
             filterArray = new InputFilter[1];
             filterArray[0] = new InputFilter.LengthFilter(CardsContract.Stacks.MAX_DESCRIPTION_LEN);
