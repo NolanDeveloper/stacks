@@ -55,7 +55,7 @@ public class AllStacksFragment extends Fragment implements LoaderManager.LoaderC
         // of screen. The value -1 means nothing is hidden.
         private int hiddenPosition = -1;
 
-        public StacksAdapter(@NonNull Cursor query) {
+        public StacksAdapter(@Nullable Cursor query) {
             super();
             this.query = query;
         }
@@ -134,7 +134,22 @@ public class AllStacksFragment extends Fragment implements LoaderManager.LoaderC
 
         @Override
         public int getItemCount() {
-            return query.getCount() - (-1 == hiddenPosition ? 0 : 1);
+            if (null == query) {
+                return 0;
+            } else {
+                return query.getCount() - (-1 == hiddenPosition ? 0 : 1);
+            }
+        }
+
+        public void setCursor(@Nullable Cursor query) {
+            if (this.query == query)
+                return;
+            hiddenPosition = -1;
+            if (null != this.query) {
+                this.query.close();
+            }
+            this.query = query;
+            notifyDataSetChanged();
         }
     }
 
@@ -147,6 +162,7 @@ public class AllStacksFragment extends Fragment implements LoaderManager.LoaderC
         View view = inflater.inflate(R.layout.frag_all_stacks, container, false);
         rvStacks = (RecyclerView) view.findViewById(R.id.rv_stacks);
         rvStacks.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
+        rvStacks.setAdapter(new StacksAdapter(null));
         getLoaderManager().initLoader(StacksQuery._TOKEN, null, this);
         return view;
     }
@@ -175,7 +191,7 @@ public class AllStacksFragment extends Fragment implements LoaderManager.LoaderC
         if (null == query) {
             throw new IllegalArgumentException("Loader was failed. (query = null)");
         }
-        rvStacks.setAdapter(new StacksAdapter(query));
+        ((StacksAdapter) rvStacks.getAdapter()).setCursor(query);
     }
 
     @Override

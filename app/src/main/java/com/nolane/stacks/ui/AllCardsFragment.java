@@ -54,7 +54,7 @@ public class AllCardsFragment extends Fragment implements LoaderManager.LoaderCa
 
         private Cursor query;
 
-        public CardsAdapter(@NonNull Cursor query) {
+        public CardsAdapter(@Nullable Cursor query) {
             super();
             this.query = query;
         }
@@ -121,7 +121,21 @@ public class AllCardsFragment extends Fragment implements LoaderManager.LoaderCa
 
         @Override
         public int getItemCount() {
-            return query.getCount();
+            if (null == query) {
+                return 0;
+            } else {
+                return query.getCount();
+            }
+        }
+
+        public void setCursor(@Nullable Cursor query) {
+            if (this.query == query)
+                return;
+            if (null != this.query) {
+                this.query.close();
+            }
+            this.query = query;
+            notifyDataSetChanged();
         }
     }
 
@@ -134,6 +148,7 @@ public class AllCardsFragment extends Fragment implements LoaderManager.LoaderCa
         View view = inflater.inflate(R.layout.frag_all_cards, container, false);
         rvCards = (RecyclerView) view.findViewById(R.id.rv_cards);
         rvCards.setLayoutManager(new GridLayoutManager(getActivity(), 2, GridLayoutManager.VERTICAL, false));
+        rvCards.setAdapter(new CardsAdapter(null));
         return view;
     }
 
@@ -202,7 +217,7 @@ public class AllCardsFragment extends Fragment implements LoaderManager.LoaderCa
         switch (loader.getId()) {
             case CardsQuery._TOKEN:
                 Cursor query = (Cursor) data;
-                rvCards.setAdapter(new CardsAdapter(query));
+                ((CardsAdapter) rvCards.getAdapter()).setCursor(query);
                 break;
             case RemoveCardQuery._TOKEN:
                 getLoaderManager().destroyLoader(RemoveCardQuery._TOKEN);

@@ -46,7 +46,7 @@ public class PickStackFragment extends Fragment implements LoaderManager.LoaderC
 
         private Cursor query;
 
-        public StacksAdapter(@NonNull Cursor query) {
+        public StacksAdapter(@Nullable Cursor query) {
             super();
             this.query = query;
         }
@@ -75,7 +75,21 @@ public class PickStackFragment extends Fragment implements LoaderManager.LoaderC
 
         @Override
         public int getItemCount() {
-            return query.getCount();
+            if (null == query) {
+                return 0;
+            } else {
+                return query.getCount();
+            }
+        }
+
+        public void setCursor(@Nullable Cursor query) {
+            if (this.query == query)
+                return;
+            if (null != this.query) {
+                this.query.close();
+            }
+            this.query = query;
+            notifyDataSetChanged();
         }
     }
 
@@ -102,6 +116,7 @@ public class PickStackFragment extends Fragment implements LoaderManager.LoaderC
                     }
                 });
                 getActivity().setTitle(getString(R.string.choose_stack));
+        rvStacks.setAdapter(new StacksAdapter(null));
         return view;
     }
 
@@ -135,7 +150,7 @@ public class PickStackFragment extends Fragment implements LoaderManager.LoaderC
         if (null == query) {
             throw new IllegalArgumentException("Loader was failed. (query = null)");
         }
-        rvStacks.setAdapter(new StacksAdapter(query));
+        ((StacksAdapter) rvStacks.getAdapter()).setCursor(query);
     }
 
     @Override
