@@ -136,10 +136,11 @@ public class TrainingFragment extends Fragment
         btnDone.setOnClickListener(null);
         long timeNow = clock.getCurrentTime();
         long timeDiff =  timeNow - cardLastSeen;
-        if (TimeUnit.DAYS.toMillis(1) < timeDiff) {
+        long dayInMills = TimeUnit.DAYS.toMillis(1);
+        String userAssumption = etBack.getText().toString();
+        etBack.getText().clear();
+        if (dayInMills < timeDiff) {
             // Update scrutiny.
-            String userAssumption = etBack.getText().toString();
-            etBack.getText().clear();
             Bundle arguments = new Bundle();
             int newScrutiny = cardScrutiny + (userAssumption.equals(cardBack) ? 1 : -1);
             ContentValues values = new ContentValues();
@@ -161,7 +162,8 @@ public class TrainingFragment extends Fragment
                 CardsContract.Cards.CARD_ID,
                 CardsContract.Cards.CARD_FRONT,
                 CardsContract.Cards.CARD_BACK,
-                CardsContract.Cards.CARD_SCRUTINY
+                CardsContract.Cards.CARD_SCRUTINY,
+                CardsContract.Cards.CARD_LAST_SEEN
         };
 
         String SELECTION = CardsContract.Cards.CARD_IN_LEARNING + " = 1";
@@ -170,6 +172,7 @@ public class TrainingFragment extends Fragment
         int FRONT = 1;
         int BACK = 2;
         int SCRUTINY = 3;
+        int LAST_SEEN = 4;
     }
 
     private interface UpdateScrutinyQuery {
@@ -237,6 +240,7 @@ public class TrainingFragment extends Fragment
                 cardId = query.getLong(PickCardQuery.ID);
                 cardBack = query.getString(PickCardQuery.BACK);
                 cardScrutiny = query.getInt(PickCardQuery.SCRUTINY);
+                cardLastSeen = query.getLong(PickCardQuery.LAST_SEEN);
                 String cardFront = query.getString(PickCardQuery.FRONT);
                 tvFront.setText(cardFront);
                 // Do not forget to turn button on.
