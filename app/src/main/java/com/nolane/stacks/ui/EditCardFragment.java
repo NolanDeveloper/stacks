@@ -5,6 +5,7 @@ import android.content.ContentValues;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.text.InputFilter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,11 +48,22 @@ public class EditCardFragment extends Fragment implements View.OnClickListener {
         Uri data = getActivity().getIntent().getData();
         id = Long.parseLong(data.getLastPathSegment());
         String scrutiny = data.getQueryParameter(CardsContract.Cards.CARD_SCRUTINY);
-        tvProgress.setText(scrutiny);
         front = data.getQueryParameter(CardsContract.Cards.CARD_FRONT);
-        etFront.setText(front);
         back = data.getQueryParameter(CardsContract.Cards.CARD_BACK);
-        etBack.setText(back);
+
+        if (null == savedInstanceState) {
+            tvProgress.setText(scrutiny);
+            etFront.setText(front);
+            etBack.setText(back);
+
+            InputFilter[] filters = new InputFilter[1];
+            filters[0] = new InputFilter.LengthFilter(CardsContract.Cards.MAX_FRONT_LEN);
+            etFront.setFilters(filters);
+
+            filters = new InputFilter[1];
+            filters[0] = new InputFilter.LengthFilter(CardsContract.Cards.MAX_BACK_LEN);
+            etBack.setFilters(filters);
+        }
 
         btnDone.setOnClickListener(this);
 
