@@ -52,7 +52,7 @@
             android:scaleType="fitCenter"
             android:layout_gravity="center_vertical"
             android:tint="@android:color/darker_gray"
-            android:src="@drawable/delete"
+            android:src="@drawable/ic_delete"
             android:background="?attr/selectableItemBackgroundBorderless"/>
 
     </LinearLayout>

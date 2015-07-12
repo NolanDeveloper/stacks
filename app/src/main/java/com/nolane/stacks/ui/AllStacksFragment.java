@@ -12,6 +12,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -28,7 +29,7 @@ import com.nolane.stacks.utils.MetricsUtils;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class AllStacksFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class AllStacksFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, View.OnClickListener {
     private class StacksAdapter extends RecyclerView.Adapter<StacksAdapter.ViewHolder> {
         public class ViewHolder extends RecyclerView.ViewHolder {
             private TextView tvTitle;
@@ -155,16 +156,27 @@ public class AllStacksFragment extends Fragment implements LoaderManager.LoaderC
 
     // UI elements.
     private RecyclerView rvStacks;
+    private FloatingActionButton fab;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.frag_all_stacks, container, false);
         rvStacks = (RecyclerView) view.findViewById(R.id.rv_stacks);
+        fab = (FloatingActionButton) view.findViewById(R.id.fab);
+
         rvStacks.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
         rvStacks.setAdapter(new StacksAdapter(null));
+
+        fab.setOnClickListener(this);
         getLoaderManager().initLoader(StacksQuery._TOKEN, null, this);
         return view;
+    }
+
+    @Override
+    public void onClick(View v) {
+        Intent intent = new Intent(getActivity(), CreateStackActivity.class);
+        startActivity(intent);
     }
 
     private interface StacksQuery {

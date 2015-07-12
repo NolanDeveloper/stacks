@@ -149,6 +149,7 @@ public class AllCardsFragment extends Fragment implements LoaderManager.LoaderCa
         rvCards = (RecyclerView) view.findViewById(R.id.rv_cards);
         rvCards.setLayoutManager(new GridLayoutManager(getActivity(), 2, GridLayoutManager.VERTICAL, false));
         rvCards.setAdapter(new CardsAdapter(null));
+        getActivity().setTitle(getString(R.string.cards));
         return view;
     }
 
