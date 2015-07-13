@@ -14,6 +14,8 @@ Current stage
 <img src="./screenshots/7.png" width="200">
 <img src="./screenshots/8.png" width="200">
 
+And <a href="./activity_navigation_hierarchy.png">here</a> you can see navigation hierarchy.
+
 This project was created for educational purposes. (probably not only)
 
 **Stacks** is application for Android. It is similar to anki droid, but I am going to
