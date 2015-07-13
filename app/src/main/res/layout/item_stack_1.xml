@@ -10,7 +10,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="4dp"
-        card_view:cardElevation="4dp"
+        card_view:cardElevation="2dp"
         card_view:cardBackgroundColor="@android:color/background_light"
         card_view:cardCornerRadius="4dp"
         card_view:contentPadding="8dp">
@@ -47,6 +47,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/add_card"
                     android:layout_marginRight="8dp"
+                    android:textColor="@android:color/holo_blue_light"
                     style="?android:attr/borderlessButtonStyle"/>
 
                 <Button
@@ -54,7 +55,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/delete"
-                    android:layout_marginRight="8dp"
+                    android:textColor="@android:color/holo_red_light"
                     style="?android:attr/borderlessButtonStyle"/>
 
             </LinearLayout>

@@ -10,8 +10,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
-        card_view:cardBackgroundColor="@color/primary_light"
-        card_view:cardElevation="4dp"
+        card_view:cardBackgroundColor="@android:color/background_light"
+        card_view:cardElevation="2dp"
         card_view:cardCornerRadius="4dp"
         card_view:contentPadding="16dp">
 

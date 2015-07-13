@@ -29,7 +29,6 @@ public class LauncherActivity extends AppCompatActivity implements LoaderManager
         setContentView(R.layout.act_launcher);
         ActionBar actionBar = getSupportActionBar();
         if (null != actionBar && actionBar.isShowing()) actionBar.hide();
-        // todo: show big logo
         getLoaderManager().initLoader(StacksQuery._TOKEN, null, this);
     }
 

@@ -13,7 +13,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        card_view:cardElevation="4dp"
+        card_view:cardElevation="2dp"
         card_view:contentPadding="16dp"
         card_view:cardCornerRadius="4dp">
 

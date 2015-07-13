@@ -5,11 +5,9 @@ import android.app.LoaderManager;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.CursorLoader;
-import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.InputFilter;
@@ -18,7 +16,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.nolane.stacks.R;
 import com.nolane.stacks.provider.CardsContract;
@@ -86,20 +83,12 @@ public class AddCardFragment extends Fragment
         values.put(CardsContract.Cards.CARD_FRONT, front);
         values.put(CardsContract.Cards.CARD_BACK, back);
         values.put(CardsContract.Cards.CARD_STACK_ID, stackId);
-        new AsyncTask<Void, Void, Void>() {
+        new Thread(new Runnable() {
             @Override
-            protected Void doInBackground(Void... params) {
+            public void run() {
                 resolver.insert(CardsContract.Cards.CONTENT_URI, values);
-                return null;
             }
-
-            @Override
-            protected void onPostExecute(Void aVoid) {
-                super.onPostExecute(aVoid);
-                Toast.makeText(getActivity(), getString(R.string.added), Toast.LENGTH_SHORT).show();
-            }
-        }.execute();
-
+        }).run();
         etFront.getText().clear();
         etBack.getText().clear();
     }

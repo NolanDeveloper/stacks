@@ -10,6 +10,9 @@ import android.database.Cursor;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -28,6 +31,7 @@ import com.nolane.stacks.utils.MetricsUtils;
 
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.ScheduledExecutorService;
 
 public class AllStacksFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, View.OnClickListener {
     private class StacksAdapter extends RecyclerView.Adapter<StacksAdapter.ViewHolder> {
@@ -55,6 +59,9 @@ public class AllStacksFragment extends Fragment implements LoaderManager.LoaderC
         // stack we just do this after the moment the button "undo" will move out
         // of screen. The value -1 means nothing is hidden.
         private int hiddenPosition = -1;
+        // Timer and TimerTask that will do actual deletion.
+        Timer timer;
+        TimerTask timerTask;
 
         public StacksAdapter(@Nullable Cursor query) {
             super();
@@ -99,7 +106,7 @@ public class AllStacksFragment extends Fragment implements LoaderManager.LoaderC
                     notifyDataSetChanged();
                     // Then create snackbar and start timer for deletion.
                     int snackDuration = 2000;
-                    final Timer timer = new Timer();
+                    timer = new Timer();
                     // Here we use explicit duration because we didn't find a way to find out
                     // duration of constant values Snackbar.LENGTH_SHORT and Snackbar.LENGTH_LONG.
                     // I want to meet the man who created these constants and ask him what he
@@ -117,7 +124,7 @@ public class AllStacksFragment extends Fragment implements LoaderManager.LoaderC
                                 }
                             })
                             .show();
-                    timer.schedule(new TimerTask() {
+                    timerTask = new TimerTask() {
                         @Override
                         public void run() {
                             // Here is actual deletion.
@@ -127,8 +134,11 @@ public class AllStacksFragment extends Fragment implements LoaderManager.LoaderC
                                     getActivity().getContentResolver().delete(thisStack, null, null);
                                 }
                             }).run();
+                            timer = null;
+                            timerTask = null;
                         }
-                    }, snackDuration);
+                    };
+                    timer.schedule(timerTask, snackDuration);
                 }
             });
         }
@@ -171,6 +181,16 @@ public class AllStacksFragment extends Fragment implements LoaderManager.LoaderC
         fab.setOnClickListener(this);
         getLoaderManager().initLoader(StacksQuery._TOKEN, null, this);
         return view;
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        StacksAdapter adapter = (StacksAdapter) rvStacks.getAdapter();
+        if (null != adapter.timer) {
+            adapter.timer.cancel();
+            adapter.timerTask.run();
+        }
     }
 
     @Override

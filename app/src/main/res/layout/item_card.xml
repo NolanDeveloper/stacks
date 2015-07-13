@@ -5,9 +5,9 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="4dp"
-    android:background="@color/primary_light"
+    android:background="@android:color/background_light"
     android:foreground="?android:attr/selectableItemBackground"
-    card_view:cardElevation="4dp"
+    card_view:cardElevation="2dp"
     card_view:contentPadding="8dp"
     card_view:cardCornerRadius="4dp">
 
