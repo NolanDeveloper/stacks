@@ -49,6 +49,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:hint="@string/front"
+                    android:singleLine="true"
                     android:text="text"/>
 
             </android.support.design.widget.TextInputLayout>
@@ -63,6 +64,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:hint="@string/back"
+                    android:singleLine="true"
+                    android:imeOptions="actionDone"
                     android:text="text"/>
 
             </android.support.design.widget.TextInputLayout>

@@ -14,7 +14,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         card_view:cardElevation="2dp"
-        card_view:contentPadding="16dp"
+        card_view:contentPadding="8dp"
         card_view:cardCornerRadius="4dp">
 
         <LinearLayout
@@ -22,51 +22,16 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <EditText
-                    android:id="@+id/et_title"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:singleLine="true"
-                    android:hint="@string/hint_title"
-                    android:inputType="textCapWords"
-                    android:imeOptions="actionNext"
-                    android:text="Text to move hint up."/>
-
-            </android.support.design.widget.TextInputLayout>
-
-
-            <android.support.design.widget.TextInputLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
-
-                <EditText
-                    android:id="@+id/et_description"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:inputType="textCapSentences"
-                    android:maxLines="5"
-                    android:gravity="top"
-                    android:hint="@string/hint_description"
-                    android:imeOptions="actionDone"/>
-
-            </android.support.design.widget.TextInputLayout>
-
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
                 android:text="Speed of learning"/>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                android:layout_marginTop="16dp">
+                android:layout_marginTop="8dp">
 
                 <TextView
                     android:id="@+id/tv_min"
@@ -89,6 +54,39 @@
                     android:text="100"/> <!-- actual value must be set in fragment's onCreate -->
 
             </LinearLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp">
+
+                <EditText
+                    android:id="@+id/et_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:singleLine="true"
+                    android:hint="@string/hint_title"
+                    android:inputType="textCapWords"
+                    android:text="Text to move hint up."/>
+
+            </android.support.design.widget.TextInputLayout>
+
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp">
+
+                <EditText
+                    android:id="@+id/et_description"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:inputType="textCapSentences"
+                    android:singleLine="true"
+                    android:hint="@string/hint_description"
+                    android:imeOptions="actionDone"/>
+
+            </android.support.design.widget.TextInputLayout>
 
         </LinearLayout>
 

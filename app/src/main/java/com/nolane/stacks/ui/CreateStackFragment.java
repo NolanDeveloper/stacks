@@ -10,6 +10,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.InputFilter;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -27,7 +28,7 @@ import com.nolane.stacks.provider.CardsContract;
  * {@link CreateStackActivity} and {@link CreateFirstStackActivity} use this.
  */
 public class CreateStackFragment extends Fragment
-        implements View.OnClickListener, LoaderManager.LoaderCallbacks<Uri> {
+        implements View.OnClickListener, LoaderManager.LoaderCallbacks<Uri>, TextView.OnEditorActionListener {
     // UI elements.
     private EditText etTitle;
     private EditText etDescription;
@@ -56,6 +57,7 @@ public class CreateStackFragment extends Fragment
         maxMaxInLearning = getResources().getInteger(R.integer.max_max_in_learning);
 
         btnDone.setOnClickListener(this);
+        etDescription.setOnEditorActionListener(this);
 
         if (null == savedInstanceState) {
             InputFilter[] filterArray = new InputFilter[1];
@@ -122,5 +124,11 @@ public class CreateStackFragment extends Fragment
     @Override
     public void onLoaderReset(Loader<Uri> loader) {
 
+    }
+
+    @Override
+    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+        onClick(null);
+        return true;
     }
 }

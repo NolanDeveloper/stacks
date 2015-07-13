@@ -11,12 +11,14 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.InputFilter;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.nolane.stacks.R;
 import com.nolane.stacks.provider.CardsContract;
@@ -28,7 +30,7 @@ import com.nolane.stacks.utils.UriUtils;
  * conjunction with {@link AddCardActivity}.
  */
 public class AddCardFragment extends Fragment
-        implements View.OnClickListener, LoaderManager.LoaderCallbacks<Cursor> {
+        implements View.OnClickListener, LoaderManager.LoaderCallbacks<Cursor>, TextView.OnEditorActionListener {
     // Uri pointing to stack where to put new cards to.
     private Uri stack;
 
@@ -56,6 +58,8 @@ public class AddCardFragment extends Fragment
         etBack = (EditText) view.findViewById(R.id.et_back);
         cbBidirectional = (CheckBox) view.findViewById(R.id.cb_bidirectional);
         btnDone = (Button) view.findViewById(R.id.btn_done);
+
+        etBack.setOnEditorActionListener(this);
 
         if (null == savedInstanceState) {
             etFront.setText("");
@@ -112,6 +116,12 @@ public class AddCardFragment extends Fragment
         }
         etFront.getText().clear();
         etBack.getText().clear();
+    }
+
+    @Override
+    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+        onClick(null);
+        return true;
     }
 
     /**

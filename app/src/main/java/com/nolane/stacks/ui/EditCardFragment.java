@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.InputFilter;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,7 +25,7 @@ import com.nolane.stacks.provider.CardsContract;
  * {@link CardsContract.Cards#CARD_PROGRESS}. This fragment is used in
  * conjunction with {@link EditCardActivity}.
  */
-public class EditCardFragment extends Fragment implements View.OnClickListener {
+public class EditCardFragment extends Fragment implements View.OnClickListener, TextView.OnEditorActionListener {
     // UI elements.
     private TextView tvProgress;
     private EditText etFront;
@@ -50,6 +51,8 @@ public class EditCardFragment extends Fragment implements View.OnClickListener {
         String progress = data.getQueryParameter(CardsContract.Cards.CARD_PROGRESS);
         front = data.getQueryParameter(CardsContract.Cards.CARD_FRONT);
         back = data.getQueryParameter(CardsContract.Cards.CARD_BACK);
+
+        etBack.setOnEditorActionListener(this);
 
         if (null == savedInstanceState) {
             tvProgress.setText(progress);
@@ -88,5 +91,11 @@ public class EditCardFragment extends Fragment implements View.OnClickListener {
             }).run();
         }
         getActivity().onBackPressed();
+    }
+
+    @Override
+    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+        onClick(null);
+        return true;
     }
 }
