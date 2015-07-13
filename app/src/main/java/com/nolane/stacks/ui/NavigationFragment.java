@@ -34,15 +34,30 @@ public class NavigationFragment extends Fragment
         Intent intent;
         switch (menuItem.getItemId()) {
             case R.id.mi_training:
+                if (getActivity() instanceof PickStackActivity) {
+                    ((PickStackActivity) getActivity()).hideNavigationDrawer();
+                    return true;
+                }
                 intent = new Intent(getActivity().getBaseContext(), PickStackActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
                 break;
             case R.id.mi_cards:
+                if (getActivity() instanceof AllCardsActivity) {
+                    ((AllCardsActivity) getActivity()).hideNavigationDrawer();
+                    return true;
+                }
                 intent = new Intent(getActivity().getBaseContext(), AllCardsActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
                 break;
             case R.id.mi_stacks:
+                if (getActivity() instanceof AllStacksActivity) {
+                    ((AllStacksActivity) getActivity()).hideNavigationDrawer();
+                    return true;
+                }
                 intent = new Intent(getActivity().getBaseContext(), AllStacksActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
                 break;
         }

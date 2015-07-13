@@ -9,20 +9,6 @@
         android:theme="@style/AppTheme">
 
         <activity
-            android:name=".ui.CreateStackActivity"/>
-
-        <activity
-            android:name=".ui.CreateFirstStackActivity"
-            android:noHistory="true"/>
-
-        <activity
-            android:name=".ui.AddCardActivity"/>
-
-        <activity
-            android:name=".ui.TrainingActivity"
-            android:windowSoftInputMode="adjustResize"/>
-
-        <activity
             android:name=".ui.LauncherActivity"
             android:noHistory="true">
 
@@ -39,13 +25,34 @@
         </activity>
 
         <activity
+            android:name=".ui.CreateFirstStackActivity"
+            android:noHistory="true"/>
+
+        <activity
+            android:name=".ui.CreateStackActivity"
+            android:noHistory="true"/>
+
+        <activity
+            android:name=".ui.AddCardActivity"
+            android:noHistory="true"
+            android:parentActivityName=".ui.AllStacksActivity"/>
+
+        <activity
+            android:name=".ui.TrainingActivity"
+            android:windowSoftInputMode="adjustResize"
+            android:noHistory="true"
+            android:parentActivityName=".ui.PickStackActivity"/>
+
+        <activity
+            android:name=".ui.EditCardActivity"
+            android:noHistory="true"
+            android:parentActivityName=".ui.AllCardsActivity"/>
+
+        <activity
             android:name=".ui.PickStackActivity"/>
 
         <activity
             android:name=".ui.AllCardsActivity"/>
-
-        <activity
-            android:name=".ui.EditCardActivity"/>
 
         <activity
             android:name=".ui.AllStacksActivity"/>

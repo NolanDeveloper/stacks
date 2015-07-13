@@ -1,7 +1,9 @@
 package com.nolane.stacks.ui;
 
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 
+import com.nolane.stacks.R;
 import com.nolane.stacks.provider.CardsContract;
 import com.nolane.stacks.utils.UriUtils;
 
@@ -12,16 +14,20 @@ import com.nolane.stacks.utils.UriUtils;
  * {@link CardsContract.Cards#CARD_FRONT}, {@link CardsContract.Cards#CARD_BACK},
  * {@link CardsContract.Cards#CARD_PROGRESS}.
  */
-public class EditCardActivity extends BaseNavigationDrawerActivity {
+public class EditCardActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.fragment_activity);
         if (null == savedInstanceState) {
             UriUtils.checkDataTypeOrThrow(this, CardsContract.Cards.CONTENT_ITEM_TYPE);
             UriUtils.checkSpecifiesParameterOrThrow(this, CardsContract.Cards.CARD_FRONT);
             UriUtils.checkSpecifiesParameterOrThrow(this, CardsContract.Cards.CARD_BACK);
             UriUtils.checkSpecifiesParameterOrThrow(this, CardsContract.Cards.CARD_PROGRESS);
-            setMainFragment(new EditCardFragment());
+            getFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.fl_root, new EditCardFragment())
+                    .commit();
         }
     }
 }

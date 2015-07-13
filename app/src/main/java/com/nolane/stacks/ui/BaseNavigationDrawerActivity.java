@@ -145,10 +145,17 @@ public abstract class BaseNavigationDrawerActivity extends AppCompatActivity {
      * classes to specify main fragment.
      * @param fragment Fragment to placed as main.
      */
-    public void setMainFragment(@NonNull Fragment fragment) {
+    protected void setMainFragment(@NonNull Fragment fragment) {
         getFragmentManager()
                 .beginTransaction()
                 .replace(R.id.fl_main_content, fragment)
                 .commit();
+    }
+
+    /**
+     * Hides navigation drawer.
+     */
+    public void hideNavigationDrawer() {
+        dlRoot.closeDrawers();
     }
 }

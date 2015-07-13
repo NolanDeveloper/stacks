@@ -57,9 +57,11 @@ public class LauncherActivity extends AppCompatActivity implements LoaderManager
         // otherwise we start TrainingActivity.
         if (0 == query.getCount()) {
             Intent intent = new Intent(getBaseContext(), CreateFirstStackActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
             startActivity(intent);
         } else {
             Intent intent = new Intent(getBaseContext(), PickStackActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
             startActivity(intent);
         }
     }
