@@ -121,6 +121,8 @@ public class AllStacksFragment extends Fragment implements LoaderManager.LoaderC
                                     timer.cancel();
                                     hiddenPosition = -1;
                                     notifyDataSetChanged();
+                                    timer = null;
+                                    timerTask = null;
                                 }
                             })
                             .show();

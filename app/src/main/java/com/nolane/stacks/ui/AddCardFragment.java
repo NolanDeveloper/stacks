@@ -15,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 
 import com.nolane.stacks.R;
@@ -37,6 +38,7 @@ public class AddCardFragment extends Fragment
     // UI elements.
     private EditText etFront;
     private EditText etBack;
+    private CheckBox cbBidirectional;
     private Button btnDone;
 
     @Override
@@ -52,6 +54,7 @@ public class AddCardFragment extends Fragment
         View view = inflater.inflate(R.layout.frag_add_card, container, false);
         etFront = (EditText) view.findViewById(R.id.et_front);
         etBack = (EditText) view.findViewById(R.id.et_back);
+        cbBidirectional = (CheckBox) view.findViewById(R.id.cb_bidirectional);
         btnDone = (Button) view.findViewById(R.id.btn_done);
 
         if (null == savedInstanceState) {
@@ -79,16 +82,34 @@ public class AddCardFragment extends Fragment
         String front = etFront.getText().toString();
         String back = etBack.getText().toString();
         final ContentResolver resolver = getActivity().getContentResolver();
-        final ContentValues values = new ContentValues();
-        values.put(CardsContract.Cards.CARD_FRONT, front);
-        values.put(CardsContract.Cards.CARD_BACK, back);
-        values.put(CardsContract.Cards.CARD_STACK_ID, stackId);
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                resolver.insert(CardsContract.Cards.CONTENT_URI, values);
-            }
-        }).run();
+        if (!cbBidirectional.isChecked()) {
+            final ContentValues values = new ContentValues();
+            values.put(CardsContract.Cards.CARD_FRONT, front);
+            values.put(CardsContract.Cards.CARD_BACK, back);
+            values.put(CardsContract.Cards.CARD_STACK_ID, stackId);
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    resolver.insert(CardsContract.Cards.CONTENT_URI, values);
+                }
+            }).run();
+        } else {
+            final ContentValues valuesOne = new ContentValues();
+            valuesOne.put(CardsContract.Cards.CARD_FRONT, front);
+            valuesOne.put(CardsContract.Cards.CARD_BACK, back);
+            valuesOne.put(CardsContract.Cards.CARD_STACK_ID, stackId);
+            final ContentValues valuesTwo = new ContentValues();
+            valuesTwo.put(CardsContract.Cards.CARD_FRONT, back);
+            valuesTwo.put(CardsContract.Cards.CARD_BACK, front);
+            valuesTwo.put(CardsContract.Cards.CARD_STACK_ID, stackId);
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    resolver.insert(CardsContract.Cards.CONTENT_URI, valuesOne);
+                    resolver.insert(CardsContract.Cards.CONTENT_URI, valuesTwo);
+                }
+            }).run();
+        }
         etFront.getText().clear();
         etBack.getText().clear();
     }

@@ -22,4 +22,5 @@
     <string name="undo">undo</string>
     <string name="delete">Delete</string>
     <string name="add_card">Add card</string>
+    <string name="bidirectional">bidirectional</string>
 </resources>
