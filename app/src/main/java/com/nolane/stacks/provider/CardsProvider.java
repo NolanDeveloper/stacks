@@ -251,10 +251,6 @@ public class CardsProvider extends ContentProvider {
                 if (null != title && !Stacks.checkTitle(title)) {
                     throw new IllegalArgumentException("The title is too long. (max len is " + Stacks.MAX_TITLE_LEN + ")");
                 }
-                String description = values.getAsString(StacksColumns.STACK_DESCRIPTION);
-                if (null != description && !Stacks.checkDescription(description)) {
-                    throw new IllegalArgumentException("The description is too long. (max len is " + Stacks.MAX_DESCRIPTION_LEN + ")");
-                }
                 break;
             case CARDS_TABLE:
             case CARDS_ID:

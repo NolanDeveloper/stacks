@@ -7,13 +7,8 @@ import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
-import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Looper;
-import android.os.Message;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -27,24 +22,20 @@ import android.widget.TextView;
 
 import com.nolane.stacks.R;
 import com.nolane.stacks.provider.CardsContract;
-import com.nolane.stacks.utils.MetricsUtils;
 
 import java.util.Timer;
 import java.util.TimerTask;
-import java.util.concurrent.ScheduledExecutorService;
 
 public class AllStacksFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, View.OnClickListener {
     private class StacksAdapter extends RecyclerView.Adapter<StacksAdapter.ViewHolder> {
         public class ViewHolder extends RecyclerView.ViewHolder {
             private TextView tvTitle;
-            private TextView tvDescription;
             private Button btnAddCard;
             private Button btnDelete;
 
             public ViewHolder(View itemView) {
                 super(itemView);
                 tvTitle = (TextView) itemView.findViewById(R.id.tv_title);
-                tvDescription = (TextView) itemView.findViewById(R.id.tv_description);
                 btnAddCard = (Button) itemView.findViewById(R.id.btn_add_card);
                 btnDelete = (Button) itemView.findViewById(R.id.btn_delete);
             }
@@ -83,10 +74,8 @@ public class AllStacksFragment extends Fragment implements LoaderManager.LoaderC
             query.moveToPosition(position);
             final long id = query.getLong(StacksQuery.ID);
             final String title = query.getString(StacksQuery.TITLE);
-            final String description = query.getString(StacksQuery.DESCRIPTION);
             final Uri thisStack = ContentUris.withAppendedId(CardsContract.Stacks.CONTENT_URI, id);
             holder.tvTitle.setText(title);
-            holder.tvDescription.setText(description);
             holder.btnAddCard.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -206,13 +195,11 @@ public class AllStacksFragment extends Fragment implements LoaderManager.LoaderC
 
         String[] COLUMNS = {
                 CardsContract.Stacks.STACK_ID,
-                CardsContract.Stacks.STACK_TITLE,
-                CardsContract.Stacks.STACK_DESCRIPTION
+                CardsContract.Stacks.STACK_TITLE
         };
 
         int ID = 0;
         int TITLE = 1;
-        int DESCRIPTION = 2;
     }
 
     @Override

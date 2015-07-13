@@ -36,13 +36,11 @@ public class PickStackFragment extends Fragment implements LoaderManager.LoaderC
         public class ViewHolder extends RecyclerView.ViewHolder {
             public View root;
             public TextView tvTitle;
-            public TextView tvDescription;
 
             public ViewHolder(View itemView) {
                 super(itemView);
                 root = itemView;
                 tvTitle = (TextView) itemView.findViewById(R.id.tv_title);
-                tvDescription = (TextView) itemView.findViewById(R.id.tv_description);
             }
         }
 
@@ -64,10 +62,8 @@ public class PickStackFragment extends Fragment implements LoaderManager.LoaderC
             query.moveToPosition(position);
             final long id = query.getLong(StacksQuery.ID);
             final String title = query.getString(StacksQuery.TITLE);
-            final String description = query.getString(StacksQuery.DESCRIPTION);
             final int count = query.getInt(StacksQuery.COUNT_CARDS);
             holder.tvTitle.setText(title);
-            holder.tvDescription.setText(query.getString(StacksQuery.DESCRIPTION));
             if (0 == count) {
                 holder.root.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -83,7 +79,6 @@ public class PickStackFragment extends Fragment implements LoaderManager.LoaderC
                         Intent intent = new Intent(getActivity(), TrainingActivity.class);
                         Uri data = ContentUris.withAppendedId(CardsContract.Stacks.CONTENT_URI, id);
                         data = UriUtils.insertParameter(data, CardsContract.Stacks.STACK_TITLE, title);
-                        data = UriUtils.insertParameter(data, CardsContract.Stacks.STACK_DESCRIPTION, description);
                         intent.setData(data);
                         startActivity(intent);
                     }
@@ -150,14 +145,12 @@ public class PickStackFragment extends Fragment implements LoaderManager.LoaderC
         String[] COLUMNS = {
                 CardsContract.Stacks.STACK_ID,
                 CardsContract.Stacks.STACK_TITLE,
-                CardsContract.Stacks.STACK_DESCRIPTION,
                 CardsContract.Stacks.STACK_COUNT_CARDS
         };
 
         int ID = 0;
         int TITLE = 1;
-        int DESCRIPTION = 2;
-        int COUNT_CARDS = 3;
+        int COUNT_CARDS = 2;
     }
 
     @Override

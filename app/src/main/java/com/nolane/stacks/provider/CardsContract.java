@@ -18,8 +18,6 @@ public class CardsContract {
         String STACK_ID = "STACK_ID";
         // Title.
         String STACK_TITLE = "STACK_TITLE";
-        // Brief description.
-        String STACK_DESCRIPTION = "STACK_DESCRIPTION";
         // Maximum card in "in learning" state.
         String STACK_MAX_IN_LEARNING = "STACK_MAX_IN_LEARNING";
         // The amount of cards in this stack. Read only.
@@ -65,14 +63,9 @@ public class CardsContract {
 
         // Maximum length of title.
         public static final int MAX_TITLE_LEN = 35;
-        // Maximum length of description.
-        public static final int MAX_DESCRIPTION_LEN = 100;
 
         public static boolean checkTitle(String title) {
             return (null != title) && (title.length() <= MAX_TITLE_LEN);
-        }
-        public static boolean checkDescription(String description) {
-            return (null != description) && (description.length() <= MAX_DESCRIPTION_LEN);
         }
     }
 

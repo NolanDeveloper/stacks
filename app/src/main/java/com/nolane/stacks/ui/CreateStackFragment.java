@@ -31,7 +31,6 @@ public class CreateStackFragment extends Fragment
         implements View.OnClickListener, LoaderManager.LoaderCallbacks<Uri>, TextView.OnEditorActionListener {
     // UI elements.
     private EditText etTitle;
-    private EditText etDescription;
     private Button btnDone;
     private TextView tvMin;
     private TextView tvMax;
@@ -47,7 +46,6 @@ public class CreateStackFragment extends Fragment
         View view = inflater.inflate(R.layout.frag_create_stack, container, false);
 
         etTitle = (EditText) view.findViewById(R.id.et_title);
-        etDescription = (EditText) view.findViewById(R.id.et_description);
         btnDone = (Button) view.findViewById(R.id.btn_done);
         tvMin = (TextView) view.findViewById(R.id.tv_min);
         tvMax = (TextView) view.findViewById(R.id.tv_max);
@@ -57,17 +55,13 @@ public class CreateStackFragment extends Fragment
         maxMaxInLearning = getResources().getInteger(R.integer.max_max_in_learning);
 
         btnDone.setOnClickListener(this);
-        etDescription.setOnEditorActionListener(this);
+        etTitle.setOnEditorActionListener(this);
 
         if (null == savedInstanceState) {
             InputFilter[] filterArray = new InputFilter[1];
             filterArray[0] = new InputFilter.LengthFilter(CardsContract.Stacks.MAX_TITLE_LEN);
             etTitle.setFilters(filterArray);
             etTitle.setText(null);
-
-            filterArray = new InputFilter[1];
-            filterArray[0] = new InputFilter.LengthFilter(CardsContract.Stacks.MAX_DESCRIPTION_LEN);
-            etDescription.setFilters(filterArray);
 
             tvMin.setText(String.valueOf(minMaxInLearning));
             tvMax.setText(String.valueOf(maxMaxInLearning));
@@ -84,14 +78,12 @@ public class CreateStackFragment extends Fragment
     public void onClick(View v) {
         btnDone.setOnClickListener(null);
         String title = etTitle.getText().toString();
-        String description = etDescription.getText().toString();
         int maxInLearning = sbMaxInLearning.getProgress() + minMaxInLearning;
         // If you know better way to pass values though Bundle please,
         // make pull request on https://github.com/Nolane/learn-english-words
         Bundle args = new Bundle();
         ContentValues values = new ContentValues();
         values.put(CardsContract.Stacks.STACK_TITLE, title);
-        values.put(CardsContract.Stacks.STACK_DESCRIPTION, description);
         values.put(CardsContract.Stacks.STACK_MAX_IN_LEARNING, maxInLearning);
         args.putParcelable(VALUES, values);
         getLoaderManager().initLoader(0, args, this).forceLoad();
