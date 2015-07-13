@@ -21,7 +21,7 @@ import com.nolane.stacks.provider.CardsContract;
  * The activity that uses this fragment must specify data with the type
  * {@link CardsContract.Cards#CONTENT_ITEM_TYPE} and contain parameters:
  * {@link CardsContract.Cards#CARD_FRONT}, {@link CardsContract.Cards#CARD_BACK},
- * {@link CardsContract.Cards#CARD_SCRUTINY}. This fragment is used in
+ * {@link CardsContract.Cards#CARD_PROGRESS}. This fragment is used in
  * conjunction with {@link EditCardActivity}.
  */
 public class EditCardFragment extends Fragment implements View.OnClickListener {
@@ -47,12 +47,12 @@ public class EditCardFragment extends Fragment implements View.OnClickListener {
 
         Uri data = getActivity().getIntent().getData();
         id = Long.parseLong(data.getLastPathSegment());
-        String scrutiny = data.getQueryParameter(CardsContract.Cards.CARD_SCRUTINY);
+        String progress = data.getQueryParameter(CardsContract.Cards.CARD_PROGRESS);
         front = data.getQueryParameter(CardsContract.Cards.CARD_FRONT);
         back = data.getQueryParameter(CardsContract.Cards.CARD_BACK);
 
         if (null == savedInstanceState) {
-            tvProgress.setText(scrutiny);
+            tvProgress.setText(progress);
             etFront.setText(front);
             etBack.setText(back);
 

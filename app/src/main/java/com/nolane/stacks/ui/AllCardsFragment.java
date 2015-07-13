@@ -37,7 +37,7 @@ public class AllCardsFragment extends Fragment implements LoaderManager.LoaderCa
     private class CardsAdapter extends RecyclerView.Adapter<CardsAdapter.ViewHolder> {
         public class ViewHolder extends RecyclerView.ViewHolder {
             public View root;
-            public TextView tvScrutiny;
+            public TextView tvProgress;
             public TextView tvFront;
             public TextView tvBack;
             public ImageButton ibRemove;
@@ -45,7 +45,7 @@ public class AllCardsFragment extends Fragment implements LoaderManager.LoaderCa
             public ViewHolder(View itemView) {
                 super(itemView);
                 root = itemView;
-                tvScrutiny = (TextView) itemView.findViewById(R.id.tv_scrutiny);
+                tvProgress = (TextView) itemView.findViewById(R.id.tv_progress);
                 tvFront = (TextView) itemView.findViewById(R.id.tv_front);
                 tvBack = (TextView) itemView.findViewById(R.id.tv_back);
                 ibRemove = (ImageButton) itemView.findViewById(R.id.ib_remove);
@@ -71,11 +71,11 @@ public class AllCardsFragment extends Fragment implements LoaderManager.LoaderCa
             final long id = query.getLong(CardsQuery.ID);
             final String front = query.getString(CardsQuery.FRONT);
             final String back = query.getString(CardsQuery.BACK);
-            final int scrutiny = query.getInt(CardsQuery.SCRUTINY);
+            final int progress = query.getInt(CardsQuery.PROGRESS);
             final long lastSeen = query.getLong(CardsQuery.LAST_SEEN);
             final long stackId = query.getLong(CardsQuery.STACK_ID);
             final long inLearning = query.getInt(CardsQuery.IN_LEARNING);
-            holder.tvScrutiny.setText(String.valueOf(scrutiny));
+            holder.tvProgress.setText(String.valueOf(progress));
             holder.tvFront.setText(front);
             holder.tvBack.setText(back);
             holder.ibRemove.setOnClickListener(new View.OnClickListener() {
@@ -91,7 +91,7 @@ public class AllCardsFragment extends Fragment implements LoaderManager.LoaderCa
                             values.put(CardsContract.Cards.CARD_ID, id);
                             values.put(CardsContract.Cards.CARD_FRONT, front);
                             values.put(CardsContract.Cards.CARD_BACK, back);
-                            values.put(CardsContract.Cards.CARD_SCRUTINY, scrutiny);
+                            values.put(CardsContract.Cards.CARD_PROGRESS, progress);
                             values.put(CardsContract.Cards.CARD_LAST_SEEN, lastSeen);
                             values.put(CardsContract.Cards.CARD_STACK_ID, stackId);
                             values.put(CardsContract.Cards.CARD_IN_LEARNING, inLearning);
@@ -111,7 +111,7 @@ public class AllCardsFragment extends Fragment implements LoaderManager.LoaderCa
                             .appendPath(String.valueOf(id))
                             .appendQueryParameter(CardsContract.Cards.CARD_FRONT, front)
                             .appendQueryParameter(CardsContract.Cards.CARD_BACK, back)
-                            .appendQueryParameter(CardsContract.Cards.CARD_SCRUTINY, String.valueOf(scrutiny))
+                            .appendQueryParameter(CardsContract.Cards.CARD_PROGRESS, String.valueOf(progress))
                             .build();
                     intent.setData(data);
                     startActivity(intent);
@@ -170,7 +170,7 @@ public class AllCardsFragment extends Fragment implements LoaderManager.LoaderCa
                 CardsContract.Cards.CARD_ID,
                 CardsContract.Cards.CARD_FRONT,
                 CardsContract.Cards.CARD_BACK,
-                CardsContract.Cards.CARD_SCRUTINY,
+                CardsContract.Cards.CARD_PROGRESS,
                 CardsContract.Cards.CARD_LAST_SEEN,
                 CardsContract.Cards.CARD_STACK_ID,
                 CardsContract.Cards.CARD_IN_LEARNING
@@ -179,7 +179,7 @@ public class AllCardsFragment extends Fragment implements LoaderManager.LoaderCa
         int ID = 0;
         int FRONT = 1;
         int BACK = 2;
-        int SCRUTINY = 3;
+        int PROGRESS = 3;
         int LAST_SEEN = 4;
         int STACK_ID = 5;
         int IN_LEARNING = 6;

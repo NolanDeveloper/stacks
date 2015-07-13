@@ -56,13 +56,13 @@ public class CardsDatabase extends SQLiteOpenHelper {
                 CardsColumns.CARD_ID + " INTEGER PRIMARY KEY, " +
                 CardsColumns.CARD_FRONT + " TEXT NOT NULL, " +
                 CardsColumns.CARD_BACK + " TEXT NOT NULL, " +
-                CardsColumns.CARD_SCRUTINY + " INTEGER DEFAULT 0, " +
+                CardsColumns.CARD_PROGRESS + " INTEGER DEFAULT 0, " +
                 CardsColumns.CARD_LAST_SEEN + " INTEGER DEFAULT 0, " +
                 CardsColumns.CARD_STACK_ID + " INTEGER " + References.STACKS_ID + " ," +
                 CardsColumns.CARD_IN_LEARNING + " INTEGER NOT NULL)");
 
-        int defaultMaxScrutiny = context.getResources().getInteger(R.integer.default_max_scrutiny);
-        setMaxScrutinyTrigger(db, defaultMaxScrutiny);
+        int defaultMaxProgress = context.getResources().getInteger(R.integer.default_max_progress);
+        setMaxProgressTrigger(db, defaultMaxProgress);
     }
 
     @Override
@@ -72,19 +72,19 @@ public class CardsDatabase extends SQLiteOpenHelper {
 
     /**
      * This method updates trigger which listens for updates on cards table to
-     * unset flag "in learning" when scrutiny becomes maximum. But the trigger
-     * requires this max value. So use this method each time the maximum scrutiny
+     * unset flag "in learning" when progress becomes maximum. But the trigger
+     * requires this max value. So use this method each time the maximum progress
      * value is changed.
-     * @param value The maximum scrutiny.
+     * @param value The maximum progress.
      */
-    public void setMaxScrutinyTrigger(@NonNull SQLiteDatabase db, int value) {
+    public void setMaxProgressTrigger(@NonNull SQLiteDatabase db, int value) {
         db.beginTransaction();
         try {
             db.execSQL("DROP TRIGGER IF EXISTS " + Triggers.CARDS_UPDATE);
             db.execSQL("CREATE TRIGGER " + Triggers.CARDS_UPDATE +
-                    " AFTER UPDATE OF " + CardsColumns.CARD_SCRUTINY +
+                    " AFTER UPDATE OF " + CardsColumns.CARD_PROGRESS +
                     " ON " + Tables.CARDS +
-                    " WHEN NEW." + CardsColumns.CARD_SCRUTINY + " = " + value +
+                    " WHEN NEW." + CardsColumns.CARD_PROGRESS + " = " + value +
                     " BEGIN" +
                     // Unset flag "in learning".
                     " UPDATE " + Tables.CARDS +
@@ -95,7 +95,7 @@ public class CardsDatabase extends SQLiteOpenHelper {
                         " SET " + CardsColumns.CARD_IN_LEARNING + " = 1" +
                         " WHERE " + CardsColumns.CARD_ID + " = " +
                             "(SELECT " + CardsColumns.CARD_ID + " FROM " + Tables.CARDS +
-                            " WHERE " + CardsColumns.CARD_SCRUTINY + " != " + value +
+                            " WHERE " + CardsColumns.CARD_PROGRESS + " != " + value +
                             " ORDER BY " + CardsColumns.CARD_LAST_SEEN + " ASC " +
                             " LIMIT 1);" +
                     " END");

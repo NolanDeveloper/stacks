@@ -10,7 +10,7 @@ import com.nolane.stacks.utils.UriUtils;
  * The intent that will call this activity must specify the data. The data must
  * have type {@link CardsContract.Cards#CONTENT_ITEM_TYPE} and contain parameters:
  * {@link CardsContract.Cards#CARD_FRONT}, {@link CardsContract.Cards#CARD_BACK},
- * {@link CardsContract.Cards#CARD_SCRUTINY}.
+ * {@link CardsContract.Cards#CARD_PROGRESS}.
  */
 public class EditCardActivity extends BaseNavigationDrawerActivity {
     @Override
@@ -20,7 +20,7 @@ public class EditCardActivity extends BaseNavigationDrawerActivity {
             UriUtils.checkDataTypeOrThrow(this, CardsContract.Cards.CONTENT_ITEM_TYPE);
             UriUtils.checkSpecifiesParameterOrThrow(this, CardsContract.Cards.CARD_FRONT);
             UriUtils.checkSpecifiesParameterOrThrow(this, CardsContract.Cards.CARD_BACK);
-            UriUtils.checkSpecifiesParameterOrThrow(this, CardsContract.Cards.CARD_SCRUTINY);
+            UriUtils.checkSpecifiesParameterOrThrow(this, CardsContract.Cards.CARD_PROGRESS);
             setMainFragment(new EditCardFragment());
         }
     }

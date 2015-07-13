@@ -33,7 +33,7 @@ public class CardsContract {
         // Back text.
         String CARD_BACK = "CARD_BACK";
         // This values symbolizes the degree of knowing of card.
-        String CARD_SCRUTINY = "CARD_SCRUTINY";
+        String CARD_PROGRESS = "CARD_PROGRESS";
         // Unix time when this card was answered last time.
         // Format is integer meaning the number of seconds since 1970-01-01 00:00:00 UTC.
         String CARD_LAST_SEEN = "CARD_LAST_SEEN";

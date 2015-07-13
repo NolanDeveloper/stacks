@@ -49,7 +49,7 @@ public class TrainingFragment extends Fragment
     private static final String EXTRA_CARD_ID = "card.id";
     private static final String EXTRA_CARD_FRONT = "card.front";
     private static final String EXTRA_CARD_BACK = "card.back";
-    private static final String EXTRA_CARD_SCRUTINY = "card.scrutiny";
+    private static final String EXTRA_CARD_PROGRESS = "card.progress";
     private static final String EXTRA_CARD_LAST_SEEN = "card.last.seen";
 
     // UI elements.
@@ -61,8 +61,8 @@ public class TrainingFragment extends Fragment
     private long cardId;
     // CardsContract.Card.CARD_BACK value of showing card.
     private String cardBack;
-    // CardsContract.Card.CARD_SCRUTINY value of showing card.
-    private int cardScrutiny;
+    // CardsContract.Card.CARD_PROGRESS value of showing card.
+    private int cardProgress;
     // CardsContract.Card.CARD_LAST_SEEN value of showing card.
     private long cardLastSeen;
 
@@ -94,14 +94,14 @@ public class TrainingFragment extends Fragment
             cardId = savedInstanceState.getLong(EXTRA_CARD_ID);
             tvFront.setText(savedInstanceState.getString(EXTRA_CARD_FRONT));
             cardBack = savedInstanceState.getString(EXTRA_CARD_BACK);
-            cardScrutiny = savedInstanceState.getInt(EXTRA_CARD_SCRUTINY);
+            cardProgress = savedInstanceState.getInt(EXTRA_CARD_PROGRESS);
             cardLastSeen = savedInstanceState.getLong(EXTRA_CARD_LAST_SEEN);
             btnDone.setOnClickListener(this);
             // Reconnect to started loaders.
             if (null != getLoaderManager().getLoader(PickCardQuery._TOKEN))
                 getLoaderManager().initLoader(PickCardQuery._TOKEN, null, this);
-            if (null != getLoaderManager().getLoader(UpdateScrutinyQuery._TOKEN))
-                getLoaderManager().initLoader(UpdateScrutinyQuery._TOKEN, null, this);
+            if (null != getLoaderManager().getLoader(UpdateProgressQuery._TOKEN))
+                getLoaderManager().initLoader(UpdateProgressQuery._TOKEN, null, this);
         }
     }
 
@@ -111,8 +111,8 @@ public class TrainingFragment extends Fragment
         outState.putLong(EXTRA_CARD_ID, cardId);
         outState.putString(EXTRA_CARD_FRONT, tvFront.getText().toString());
         outState.putString(EXTRA_CARD_BACK, cardBack);
-        outState.putInt(EXTRA_CARD_SCRUTINY, cardScrutiny);
-        outState.putLong(EXTRA_CARD_SCRUTINY, cardLastSeen);
+        outState.putInt(EXTRA_CARD_PROGRESS, cardProgress);
+        outState.putLong(EXTRA_CARD_PROGRESS, cardLastSeen);
     }
 
     @Nullable
@@ -138,16 +138,16 @@ public class TrainingFragment extends Fragment
         String userAssumption = etBack.getText().toString();
         etBack.getText().clear();
         if (dayInMills < timeDiff) {
-            // Update scrutiny.
+            // Update progress.
             Bundle arguments = new Bundle();
-            int newScrutiny = cardScrutiny + (userAssumption.equals(cardBack) ? 1 : -1);
+            int newProgress = cardProgress + (userAssumption.equals(cardBack) ? 1 : -1);
             ContentValues values = new ContentValues();
-            // todo: make preference for the bound of scrutiny
-            if (getResources().getInteger(R.integer.default_min_scrutiny) <= newScrutiny)
-                values.put(CardsContract.Cards.CARD_SCRUTINY, newScrutiny);
+            // todo: make preference for the bound of progress
+            if (getResources().getInteger(R.integer.default_min_progress) <= newProgress)
+                values.put(CardsContract.Cards.CARD_PROGRESS, newProgress);
             values.put(CardsContract.Cards.CARD_LAST_SEEN, timeNow);
             arguments.putParcelable(VALUES, values);
-            getLoaderManager().initLoader(UpdateScrutinyQuery._TOKEN, arguments, this).forceLoad();
+            getLoaderManager().initLoader(UpdateProgressQuery._TOKEN, arguments, this).forceLoad();
         } else {
             getLoaderManager().initLoader(PickCardQuery._TOKEN, null, this).forceLoad();
         }
@@ -160,7 +160,7 @@ public class TrainingFragment extends Fragment
                 CardsContract.Cards.CARD_ID,
                 CardsContract.Cards.CARD_FRONT,
                 CardsContract.Cards.CARD_BACK,
-                CardsContract.Cards.CARD_SCRUTINY,
+                CardsContract.Cards.CARD_PROGRESS,
                 CardsContract.Cards.CARD_LAST_SEEN
         };
 
@@ -169,11 +169,11 @@ public class TrainingFragment extends Fragment
         int ID = 0;
         int FRONT = 1;
         int BACK = 2;
-        int SCRUTINY = 3;
+        int PROGRESS = 3;
         int LAST_SEEN = 4;
     }
 
-    private interface UpdateScrutinyQuery {
+    private interface UpdateProgressQuery {
         int _TOKEN = 1;
     }
 
@@ -191,7 +191,7 @@ public class TrainingFragment extends Fragment
                         return getActivity().getContentResolver().query(cardsOfStack, PickCardQuery.COLUMNS, PickCardQuery.SELECTION, null, CardsContract.Cards.SORT_LAST_SEEN);
                     }
                 };
-            } case UpdateScrutinyQuery._TOKEN: {
+            } case UpdateProgressQuery._TOKEN: {
                 final Uri uri = ContentUris.withAppendedId(CardsContract.Cards.buildUriToCardsOfStack(stackId), cardId);
                 final ContentValues values = args.getParcelable(VALUES);
                 return new AsyncTaskLoader<Object>(getActivity()) {
@@ -237,14 +237,14 @@ public class TrainingFragment extends Fragment
                 }
                 cardId = query.getLong(PickCardQuery.ID);
                 cardBack = query.getString(PickCardQuery.BACK);
-                cardScrutiny = query.getInt(PickCardQuery.SCRUTINY);
+                cardProgress = query.getInt(PickCardQuery.PROGRESS);
                 cardLastSeen = query.getLong(PickCardQuery.LAST_SEEN);
                 String cardFront = query.getString(PickCardQuery.FRONT);
                 tvFront.setText(cardFront);
                 // Do not forget to turn button on.
                 btnDone.setOnClickListener(this);
                 break;
-            case UpdateScrutinyQuery._TOKEN:
+            case UpdateProgressQuery._TOKEN:
                 getLoaderManager().initLoader(PickCardQuery._TOKEN, null, this).forceLoad();
                 break;
         }
