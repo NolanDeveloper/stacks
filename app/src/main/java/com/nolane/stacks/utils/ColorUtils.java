@@ -1,6 +1,10 @@
 package com.nolane.stacks.utils;
 
+import android.content.Context;
 import android.graphics.Color;
+import android.support.annotation.NonNull;
+
+import com.nolane.stacks.R;
 
 /**
  * This class contains some useful function for working with colors.
@@ -35,5 +39,26 @@ public class ColorUtils {
             hsvb[i] = interpolate(hsva[i], hsvb[i], proportion);
         }
         return Color.HSVToColor(hsvb);
+    }
+
+    /**
+     * Returns color which represents current progress.
+     * @param cardProgress Progress value of some card.
+     * @return Color which represents current progress.
+     */
+    public static int getColorForProgress(@NonNull Context context, int cardProgress) {
+        int minProgress = context.getResources().getInteger(R.integer.default_min_progress);
+        int maxProgress = context.getResources().getInteger(R.integer.default_max_progress);
+        if (cardProgress < minProgress || maxProgress < cardProgress) {
+            throw new IllegalArgumentException("The progress of card is out of limits.");
+        }
+        if (maxProgress <= minProgress) {
+            throw new IllegalStateException("Maximum progress <= minimal progress of card.");
+        }
+        float proportion = (float)(cardProgress - minProgress) / (maxProgress - minProgress);
+        return ColorUtils.interpolateColor(
+                context.getResources().getColor(R.color.bad_progress),
+                context.getResources().getColor(R.color.good_progress),
+                proportion);
     }
 }

@@ -5,6 +5,7 @@ import android.app.LoaderManager.LoaderCallbacks;
 import android.content.AsyncTaskLoader;
 import android.content.ContentUris;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Loader;
 import android.content.res.ColorStateList;
 import android.database.Cursor;
@@ -243,7 +244,7 @@ public class TrainingFragment extends Fragment
                 cardBack = query.getString(PickCardQuery.BACK);
                 cardProgress = query.getInt(PickCardQuery.PROGRESS);
                 cardLastSeen = query.getLong(PickCardQuery.LAST_SEEN);
-                vProgressIndicator.setBackgroundColor(getColorForProgress(cardProgress));
+                vProgressIndicator.setBackgroundColor(ColorUtils.getColorForProgress(getActivity(), cardProgress));
                 String cardFront = query.getString(PickCardQuery.FRONT);
                 tvFront.setText(cardFront);
                 // Do not forget to turn button on.
@@ -253,27 +254,6 @@ public class TrainingFragment extends Fragment
                 getLoaderManager().initLoader(PickCardQuery._TOKEN, null, this).forceLoad();
                 break;
         }
-    }
-
-    /**
-     * Returns color which represents current progress.
-     * @param cardProgress Progress value of some card.
-     * @return Color which represents current progress.
-     */
-    private int getColorForProgress(int cardProgress) {
-        int minProgress = getResources().getInteger(R.integer.default_min_progress);
-        int maxProgress = getResources().getInteger(R.integer.default_max_progress);
-        if (cardProgress < minProgress || maxProgress < cardProgress) {
-            throw new IllegalArgumentException("The progress of card is out of limits.");
-        }
-        if (maxProgress <= minProgress) {
-            throw new IllegalStateException("Maximum progress <= minimal progress of card.");
-        }
-        float proportion = (float)(cardProgress - minProgress) / (maxProgress - minProgress);
-        return ColorUtils.interpolateColor(
-                getResources().getColor(R.color.bad_progress),
-                getResources().getColor(R.color.good_progress),
-                proportion);
     }
 
     @Override

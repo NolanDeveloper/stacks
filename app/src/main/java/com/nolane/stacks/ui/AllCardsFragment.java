@@ -21,6 +21,8 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.nolane.stacks.R;
+import com.nolane.stacks.utils.ColorUtils;
+
 import static com.nolane.stacks.provider.CardsContract.*;
 
 /**
@@ -36,7 +38,7 @@ public class AllCardsFragment extends Fragment implements LoaderManager.LoaderCa
     private class CardsAdapter extends RecyclerView.Adapter<CardsAdapter.ViewHolder> {
         public class ViewHolder extends RecyclerView.ViewHolder {
             public View root;
-            public TextView tvProgress;
+            public View vProgressIndicator;
             public TextView tvFront;
             public TextView tvBack;
             public ImageButton ibRemove;
@@ -44,7 +46,7 @@ public class AllCardsFragment extends Fragment implements LoaderManager.LoaderCa
             public ViewHolder(View itemView) {
                 super(itemView);
                 root = itemView;
-                tvProgress = (TextView) itemView.findViewById(R.id.tv_progress);
+                vProgressIndicator = itemView.findViewById(R.id.v_progress_indicator);
                 tvFront = (TextView) itemView.findViewById(R.id.tv_front);
                 tvBack = (TextView) itemView.findViewById(R.id.tv_back);
                 ibRemove = (ImageButton) itemView.findViewById(R.id.ib_remove);
@@ -74,9 +76,9 @@ public class AllCardsFragment extends Fragment implements LoaderManager.LoaderCa
             final long lastSeen = query.getLong(CardsQuery.LAST_SEEN);
             final long stackId = query.getLong(CardsQuery.STACK_ID);
             final long inLearning = query.getInt(CardsQuery.IN_LEARNING);
-            holder.tvProgress.setText(String.valueOf(progress));
             holder.tvFront.setText(front);
             holder.tvBack.setText(back);
+            holder.vProgressIndicator.setBackgroundColor(ColorUtils.getColorForProgress(getActivity(), progress));
             holder.ibRemove.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -234,7 +236,9 @@ public class AllCardsFragment extends Fragment implements LoaderManager.LoaderCa
                                     }
                                 }).run();
                             }
-                        }).show();
+                        })
+                        .setActionTextColor(getResources().getColor(R.color.snack_bar_positive))
+                        .show();
                 break;
         }
     }

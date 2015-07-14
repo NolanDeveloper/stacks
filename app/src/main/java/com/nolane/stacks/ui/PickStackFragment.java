@@ -69,6 +69,17 @@ public class PickStackFragment extends Fragment implements LoaderManager.LoaderC
                     @Override
                     public void onClick(View v) {
                         Snackbar.make(getView(), getString(R.string.no_cards), Snackbar.LENGTH_SHORT)
+                                .setAction(R.string.add_card, new View.OnClickListener() {
+                                    @Override
+                                    public void onClick(View v) {
+                                        Intent intent = new Intent(getActivity(), AddCardActivity.class);
+                                        Uri data = ContentUris.withAppendedId(Stacks.CONTENT_URI, id);
+                                        intent.setData(data);
+                                        intent.setFlags(intent.getFlags() & ~Intent.FLAG_ACTIVITY_NO_HISTORY);
+                                        startActivity(intent);
+                                    }
+                                })
+                                .setActionTextColor(getResources().getColor(R.color.snack_bar_positive))
                                 .show();
                     }
                 });

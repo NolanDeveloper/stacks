@@ -10,4 +10,6 @@
     <color name="divider">#B6B6B6</color>
     <color name="bad_progress">#ffff625d</color>
     <color name="good_progress">#ff90ff7e</color>
+    <color name="snack_bar_positive">#ff81ff87</color>
+    <color name="snack_bar_negative">#ffff6462</color>
 </resources>

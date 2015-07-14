@@ -114,6 +114,7 @@ public class AllStacksFragment extends Fragment implements LoaderManager.LoaderC
                                     timerTask = null;
                                 }
                             })
+                            .setActionTextColor(getResources().getColor(R.color.snack_bar_positive))
                             .show();
                     timerTask = new TimerTask() {
                         @Override
