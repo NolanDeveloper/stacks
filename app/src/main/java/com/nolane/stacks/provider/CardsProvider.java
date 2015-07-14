@@ -172,7 +172,10 @@ public class CardsProvider extends ContentProvider {
         long id = db.getWritableDatabase().insert(table, null, values);
         if (-1 == id) return null;
         uri = ContentUris.withAppendedId(uri, id);
-        getContext().getContentResolver().notifyChange(uri, null);
+        getContext().getContentResolver().notifyChange(Cards.CONTENT_URI, null);
+        if (CARDS_OF_STACK == URI_MATCHER.match(uri)) {
+            getContext().getContentResolver().notifyChange(Stacks.CONTENT_URI, null);
+        }
         return uri;
     }
 
