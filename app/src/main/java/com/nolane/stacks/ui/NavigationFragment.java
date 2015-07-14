@@ -39,7 +39,6 @@ public class NavigationFragment extends Fragment
                     return true;
                 }
                 intent = new Intent(getActivity().getBaseContext(), PickStackActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
                 break;
             case R.id.mi_cards:
@@ -48,7 +47,6 @@ public class NavigationFragment extends Fragment
                     return true;
                 }
                 intent = new Intent(getActivity().getBaseContext(), AllCardsActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
                 break;
             case R.id.mi_stacks:
@@ -57,10 +55,10 @@ public class NavigationFragment extends Fragment
                     return true;
                 }
                 intent = new Intent(getActivity().getBaseContext(), AllStacksActivity.class);
-                intent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 startActivity(intent);
                 break;
         }
+        getActivity().finish();
         return true;
     }
 }

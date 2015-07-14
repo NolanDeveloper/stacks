@@ -42,7 +42,17 @@ public class LauncherActivity extends AppCompatActivity implements LoaderManager
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return new CursorLoader(this, Stacks.CONTENT_URI, StacksQuery.COLUMNS, null, null, null);
+        return new CursorLoader(this, Stacks.CONTENT_URI, StacksQuery.COLUMNS, null, null, null) {
+            @Override
+            public Cursor loadInBackground() {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                return super.loadInBackground();
+            }
+        };
     }
 
     @Override
@@ -54,13 +64,12 @@ public class LauncherActivity extends AppCompatActivity implements LoaderManager
         // otherwise we start TrainingActivity.
         if (0 == query.getCount()) {
             Intent intent = new Intent(getBaseContext(), CreateFirstStackActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
             startActivity(intent);
         } else {
             Intent intent = new Intent(getBaseContext(), PickStackActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_NO_HISTORY);
             startActivity(intent);
         }
+        finish();
     }
 
     @Override

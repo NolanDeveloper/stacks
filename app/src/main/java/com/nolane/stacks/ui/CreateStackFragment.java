@@ -111,6 +111,7 @@ public class CreateStackFragment extends Fragment
         Intent intent = new Intent(getActivity().getBaseContext(), AddCardActivity.class);
         intent.setData(uri);
         startActivity(intent);
+        getActivity().finish();
     }
 
     @Override

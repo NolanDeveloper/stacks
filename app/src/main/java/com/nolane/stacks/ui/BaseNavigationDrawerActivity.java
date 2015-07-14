@@ -152,6 +152,15 @@ public abstract class BaseNavigationDrawerActivity extends AppCompatActivity {
                 .commit();
     }
 
+    @Override
+    public void onBackPressed() {
+        if (isDrawerOpened) {
+            hideNavigationDrawer();
+        } else {
+            super.onBackPressed();
+        }
+    }
+
     /**
      * Hides navigation drawer.
      */

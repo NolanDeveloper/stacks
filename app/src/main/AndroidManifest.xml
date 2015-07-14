@@ -9,8 +9,7 @@
         android:theme="@style/AppTheme">
 
         <activity
-            android:name=".ui.LauncherActivity"
-            android:noHistory="true">
+            android:name=".ui.LauncherActivity">
 
             <intent-filter>
 
@@ -25,27 +24,22 @@
         </activity>
 
         <activity
-            android:name=".ui.CreateFirstStackActivity"
-            android:noHistory="true"/>
+            android:name=".ui.CreateFirstStackActivity"/>
 
         <activity
-            android:name=".ui.CreateStackActivity"
-            android:noHistory="true"/>
+            android:name=".ui.CreateStackActivity"/>
 
         <activity
             android:name=".ui.AddCardActivity"
-            android:noHistory="true"
             android:parentActivityName=".ui.AllStacksActivity"/>
 
         <activity
             android:name=".ui.TrainingActivity"
             android:windowSoftInputMode="adjustResize"
-            android:noHistory="true"
             android:parentActivityName=".ui.PickStackActivity"/>
 
         <activity
             android:name=".ui.EditCardActivity"
-            android:noHistory="true"
             android:parentActivityName=".ui.AllCardsActivity"/>
 
         <activity

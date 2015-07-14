@@ -75,7 +75,6 @@ public class PickStackFragment extends Fragment implements LoaderManager.LoaderC
                                         Intent intent = new Intent(getActivity(), AddCardActivity.class);
                                         Uri data = ContentUris.withAppendedId(Stacks.CONTENT_URI, id);
                                         intent.setData(data);
-                                        intent.setFlags(intent.getFlags() & ~Intent.FLAG_ACTIVITY_NO_HISTORY);
                                         startActivity(intent);
                                     }
                                 })
