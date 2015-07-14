@@ -10,7 +10,6 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.GridLayoutManager;
@@ -22,7 +21,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.nolane.stacks.R;
-import com.nolane.stacks.provider.CardsContract;
+import static com.nolane.stacks.provider.CardsContract.*;
 
 /**
  * This fragment shows all cards to user. The user can remove all edit each card.
@@ -88,13 +87,13 @@ public class AllCardsFragment extends Fragment implements LoaderManager.LoaderCa
                             // be able to restore it in the future.
                             Bundle arguments = new Bundle();
                             ContentValues values = new ContentValues();
-                            values.put(CardsContract.Cards.CARD_ID, id);
-                            values.put(CardsContract.Cards.CARD_FRONT, front);
-                            values.put(CardsContract.Cards.CARD_BACK, back);
-                            values.put(CardsContract.Cards.CARD_PROGRESS, progress);
-                            values.put(CardsContract.Cards.CARD_LAST_SEEN, lastSeen);
-                            values.put(CardsContract.Cards.CARD_STACK_ID, stackId);
-                            values.put(CardsContract.Cards.CARD_IN_LEARNING, inLearning);
+                            values.put(Cards.CARD_ID, id);
+                            values.put(Cards.CARD_FRONT, front);
+                            values.put(Cards.CARD_BACK, back);
+                            values.put(Cards.CARD_PROGRESS, progress);
+                            values.put(Cards.CARD_LAST_SEEN, lastSeen);
+                            values.put(Cards.CARD_STACK_ID, stackId);
+                            values.put(Cards.CARD_IN_LEARNING, inLearning);
                             arguments.putParcelable(EXTRA_VALUES, values);
                             getLoaderManager().initLoader(RemoveCardQuery._TOKEN, arguments, AllCardsFragment.this).forceLoad();
                         }
@@ -105,13 +104,13 @@ public class AllCardsFragment extends Fragment implements LoaderManager.LoaderCa
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(getActivity(), EditCardActivity.class);
-                    Uri data = CardsContract.Cards.CONTENT_URI
+                    Uri data = Cards.CONTENT_URI
                             .buildUpon()
                             .appendPath(String.valueOf(stackId))
                             .appendPath(String.valueOf(id))
-                            .appendQueryParameter(CardsContract.Cards.CARD_FRONT, front)
-                            .appendQueryParameter(CardsContract.Cards.CARD_BACK, back)
-                            .appendQueryParameter(CardsContract.Cards.CARD_PROGRESS, String.valueOf(progress))
+                            .appendQueryParameter(Cards.CARD_FRONT, front)
+                            .appendQueryParameter(Cards.CARD_BACK, back)
+                            .appendQueryParameter(Cards.CARD_PROGRESS, String.valueOf(progress))
                             .build();
                     intent.setData(data);
                     startActivity(intent);
@@ -167,13 +166,13 @@ public class AllCardsFragment extends Fragment implements LoaderManager.LoaderCa
         int _TOKEN = 0;
 
         String[] COLUMNS = {
-                CardsContract.Cards.CARD_ID,
-                CardsContract.Cards.CARD_FRONT,
-                CardsContract.Cards.CARD_BACK,
-                CardsContract.Cards.CARD_PROGRESS,
-                CardsContract.Cards.CARD_LAST_SEEN,
-                CardsContract.Cards.CARD_STACK_ID,
-                CardsContract.Cards.CARD_IN_LEARNING
+                Cards.CARD_ID,
+                Cards.CARD_FRONT,
+                Cards.CARD_BACK,
+                Cards.CARD_PROGRESS,
+                Cards.CARD_LAST_SEEN,
+                Cards.CARD_STACK_ID,
+                Cards.CARD_IN_LEARNING
         };
 
         int ID = 0;
@@ -193,15 +192,15 @@ public class AllCardsFragment extends Fragment implements LoaderManager.LoaderCa
     public Loader onCreateLoader(int id, final Bundle args) {
         switch (id) {
             case CardsQuery._TOKEN:
-                return new CursorLoader(getActivity(), CardsContract.Cards.CONTENT_URI, CardsQuery.COLUMNS, null, null, null);
+                return new CursorLoader(getActivity(), Cards.CONTENT_URI, CardsQuery.COLUMNS, null, null, null);
             case RemoveCardQuery._TOKEN:
                 return new AsyncTaskLoader(getActivity()) {
                     @Override
                     public Object loadInBackground() {
                         ContentValues values = args.getParcelable(EXTRA_VALUES);
-                        long stackId = values.getAsLong(CardsContract.Cards.CARD_STACK_ID);
-                        long cardId = values.getAsLong(CardsContract.Cards.CARD_ID);
-                        Uri data = CardsContract.Cards.buildUriToCard(stackId, cardId);
+                        long stackId = values.getAsLong(Cards.CARD_STACK_ID);
+                        long cardId = values.getAsLong(Cards.CARD_ID);
+                        Uri data = Cards.buildUriToCard(stackId, cardId);
                         getActivity().getContentResolver().delete(data, null, null);
                         return values;
                     }
@@ -230,7 +229,7 @@ public class AllCardsFragment extends Fragment implements LoaderManager.LoaderCa
                                 new Thread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        Uri uri = CardsContract.Cards.CONTENT_URI;
+                                        Uri uri = Cards.CONTENT_URI;
                                         getActivity().getContentResolver().insert(uri, values);
                                     }
                                 }).run();

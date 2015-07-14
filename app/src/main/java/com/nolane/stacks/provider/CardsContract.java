@@ -9,35 +9,46 @@ import android.net.Uri;
  * field of this class.
  * */
 public class CardsContract {
-    static final String CONTENT_AUTHORITY = "com.nolane.stacks.provider";
-    static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
+    public static final String CONTENT_AUTHORITY = "com.nolane.stacks.provider";
+    public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
 
     // Columns for creating table and making queries.
     interface StacksColumns {
         // Id column.
+        // (read-only)
         String STACK_ID = "STACK_ID";
         // Title.
+        // (read/write)
         String STACK_TITLE = "STACK_TITLE";
         // Maximum card in "in learning" state.
+        // (read/write)
         String STACK_MAX_IN_LEARNING = "STACK_MAX_IN_LEARNING";
-        // The amount of cards in this stack. Read only.
+        // The amount of cards in this stack.
+        // (read-only)
         String STACK_COUNT_CARDS = "STACK_COUNT_CARDS";
     }
     interface CardsColumns {
         // Id column.
+        // (read-only)
         String CARD_ID = "CARD_ID";
         // Front text.
+        // (read/write)
         String CARD_FRONT = "CARD_FRONT";
         // Back text.
+        // (read/write)
         String CARD_BACK = "CARD_BACK";
         // This values symbolizes the degree of knowing of card.
+        // (read/write)
         String CARD_PROGRESS = "CARD_PROGRESS";
         // Unix time when this card was answered last time.
         // Format is integer meaning the number of seconds since 1970-01-01 00:00:00 UTC.
+        // (read/write)
         String CARD_LAST_SEEN = "CARD_LAST_SEEN";
         // Id of the stack this card belongs to.
+        // (read/write-once)
         String CARD_STACK_ID = "CARD_STACK_ID";
         // Flag which shows if card is in learning.
+        // (read/write)
         String CARD_IN_LEARNING = "CARD_IN_LEARNING";
     }
 

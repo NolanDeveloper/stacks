@@ -15,14 +15,14 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.nolane.stacks.R;
-import com.nolane.stacks.provider.CardsContract;
+import static com.nolane.stacks.provider.CardsContract.*;
 
 /**
  * This fragment allows user to edit cards(eg to change front, to change back).
  * The activity that uses this fragment must specify data with the type
- * {@link CardsContract.Cards#CONTENT_ITEM_TYPE} and contain parameters:
- * {@link CardsContract.Cards#CARD_FRONT}, {@link CardsContract.Cards#CARD_BACK},
- * {@link CardsContract.Cards#CARD_PROGRESS}. This fragment is used in
+ * {@link Cards#CONTENT_ITEM_TYPE} and contain parameters:
+ * {@link Cards#CARD_FRONT}, {@link Cards#CARD_BACK},
+ * {@link Cards#CARD_PROGRESS}. This fragment is used in
  * conjunction with {@link EditCardActivity}.
  */
 public class EditCardFragment extends Fragment implements View.OnClickListener, TextView.OnEditorActionListener {
@@ -48,9 +48,9 @@ public class EditCardFragment extends Fragment implements View.OnClickListener, 
 
         Uri data = getActivity().getIntent().getData();
         id = Long.parseLong(data.getLastPathSegment());
-        String progress = data.getQueryParameter(CardsContract.Cards.CARD_PROGRESS);
-        front = data.getQueryParameter(CardsContract.Cards.CARD_FRONT);
-        back = data.getQueryParameter(CardsContract.Cards.CARD_BACK);
+        String progress = data.getQueryParameter(Cards.CARD_PROGRESS);
+        front = data.getQueryParameter(Cards.CARD_FRONT);
+        back = data.getQueryParameter(Cards.CARD_BACK);
 
         etBack.setOnEditorActionListener(this);
 
@@ -60,11 +60,11 @@ public class EditCardFragment extends Fragment implements View.OnClickListener, 
             etBack.setText(back);
 
             InputFilter[] filters = new InputFilter[1];
-            filters[0] = new InputFilter.LengthFilter(CardsContract.Cards.MAX_FRONT_LEN);
+            filters[0] = new InputFilter.LengthFilter(Cards.MAX_FRONT_LEN);
             etFront.setFilters(filters);
 
             filters = new InputFilter[1];
-            filters[0] = new InputFilter.LengthFilter(CardsContract.Cards.MAX_BACK_LEN);
+            filters[0] = new InputFilter.LengthFilter(Cards.MAX_BACK_LEN);
             etBack.setFilters(filters);
         }
 
@@ -83,8 +83,8 @@ public class EditCardFragment extends Fragment implements View.OnClickListener, 
                 public void run() {
                     Uri uri = getActivity().getIntent().getData();
                     ContentValues contentValues = new ContentValues();
-                    contentValues.put(CardsContract.Cards.CARD_FRONT, newFront);
-                    contentValues.put(CardsContract.Cards.CARD_BACK, newBack);
+                    contentValues.put(Cards.CARD_FRONT, newFront);
+                    contentValues.put(Cards.CARD_BACK, newBack);
                     EditCardFragment.this.getActivity().getContentResolver()
                             .update(uri, contentValues, null, null);
                 }

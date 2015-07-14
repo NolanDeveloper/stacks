@@ -5,7 +5,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
 import com.nolane.stacks.R;
-import com.nolane.stacks.provider.CardsContract;
+import static com.nolane.stacks.provider.CardsContract.*;
 import com.nolane.stacks.utils.UriUtils;
 
 /**
@@ -21,7 +21,7 @@ public class TrainingActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_activity);
         if (null == savedInstanceState) {
-            UriUtils.checkDataTypeOrThrow(this, CardsContract.Stacks.CONTENT_ITEM_TYPE);
+            UriUtils.checkDataTypeOrThrow(this, Stacks.CONTENT_ITEM_TYPE);
             getFragmentManager()
                     .beginTransaction()
                     .replace(R.id.fl_root, new TrainingFragment())

@@ -21,7 +21,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.nolane.stacks.R;
-import com.nolane.stacks.provider.CardsContract;
+import static com.nolane.stacks.provider.CardsContract.*;
 
 import java.util.Timer;
 import java.util.TimerTask;
@@ -74,7 +74,7 @@ public class AllStacksFragment extends Fragment implements LoaderManager.LoaderC
             query.moveToPosition(position);
             final long id = query.getLong(StacksQuery.ID);
             final String title = query.getString(StacksQuery.TITLE);
-            final Uri thisStack = ContentUris.withAppendedId(CardsContract.Stacks.CONTENT_URI, id);
+            final Uri thisStack = ContentUris.withAppendedId(Stacks.CONTENT_URI, id);
             holder.tvTitle.setText(title);
             holder.btnAddCard.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -194,8 +194,8 @@ public class AllStacksFragment extends Fragment implements LoaderManager.LoaderC
         int _TOKEN = 0;
 
         String[] COLUMNS = {
-                CardsContract.Stacks.STACK_ID,
-                CardsContract.Stacks.STACK_TITLE
+                Stacks.STACK_ID,
+                Stacks.STACK_TITLE
         };
 
         int ID = 0;
@@ -204,7 +204,7 @@ public class AllStacksFragment extends Fragment implements LoaderManager.LoaderC
 
     @Override
     public Loader onCreateLoader(int id, Bundle args) {
-        return new CursorLoader(getActivity(), CardsContract.Stacks.CONTENT_URI, StacksQuery.COLUMNS, null, null, null);
+        return new CursorLoader(getActivity(), Stacks.CONTENT_URI, StacksQuery.COLUMNS, null, null, null);
     }
 
     @Override

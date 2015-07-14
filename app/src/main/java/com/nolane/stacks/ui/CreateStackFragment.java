@@ -20,7 +20,7 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.nolane.stacks.R;
-import com.nolane.stacks.provider.CardsContract;
+import static com.nolane.stacks.provider.CardsContract.*;
 
 /**
  * This fragment is for creating new stacks.
@@ -59,7 +59,7 @@ public class CreateStackFragment extends Fragment
 
         if (null == savedInstanceState) {
             InputFilter[] filterArray = new InputFilter[1];
-            filterArray[0] = new InputFilter.LengthFilter(CardsContract.Stacks.MAX_TITLE_LEN);
+            filterArray[0] = new InputFilter.LengthFilter(Stacks.MAX_TITLE_LEN);
             etTitle.setFilters(filterArray);
             etTitle.setText(null);
 
@@ -83,8 +83,8 @@ public class CreateStackFragment extends Fragment
         // make pull request on https://github.com/Nolane/learn-english-words
         Bundle args = new Bundle();
         ContentValues values = new ContentValues();
-        values.put(CardsContract.Stacks.STACK_TITLE, title);
-        values.put(CardsContract.Stacks.STACK_MAX_IN_LEARNING, maxInLearning);
+        values.put(Stacks.STACK_TITLE, title);
+        values.put(Stacks.STACK_MAX_IN_LEARNING, maxInLearning);
         args.putParcelable(VALUES, values);
         getLoaderManager().initLoader(0, args, this).forceLoad();
     }
@@ -98,7 +98,7 @@ public class CreateStackFragment extends Fragment
         return new AsyncTaskLoader<Uri>(getActivity()) {
             @Override
             public Uri loadInBackground() {
-                return getContext().getContentResolver().insert(CardsContract.Stacks.CONTENT_URI, values);
+                return getContext().getContentResolver().insert(Stacks.CONTENT_URI, values);
             }
         };
     }

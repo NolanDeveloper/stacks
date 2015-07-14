@@ -19,7 +19,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.nolane.stacks.R;
-import com.nolane.stacks.provider.CardsContract;
+import static com.nolane.stacks.provider.CardsContract.*;
 
 import java.util.Calendar;
 import java.util.Random;
@@ -57,13 +57,13 @@ public class TrainingFragment extends Fragment
     private EditText etBack;
     private Button btnDone;
 
-    // CardsContract.Card.CARD_ID value of showing card.
+    // Card.CARD_ID value of showing card.
     private long cardId;
-    // CardsContract.Card.CARD_BACK value of showing card.
+    // Card.CARD_BACK value of showing card.
     private String cardBack;
-    // CardsContract.Card.CARD_PROGRESS value of showing card.
+    // Card.CARD_PROGRESS value of showing card.
     private int cardProgress;
-    // CardsContract.Card.CARD_LAST_SEEN value of showing card.
+    // Card.CARD_LAST_SEEN value of showing card.
     private long cardLastSeen;
 
     // The object which help to get current time.
@@ -144,8 +144,8 @@ public class TrainingFragment extends Fragment
             ContentValues values = new ContentValues();
             // todo: make preference for the bound of progress
             if (getResources().getInteger(R.integer.default_min_progress) <= newProgress)
-                values.put(CardsContract.Cards.CARD_PROGRESS, newProgress);
-            values.put(CardsContract.Cards.CARD_LAST_SEEN, timeNow);
+                values.put(Cards.CARD_PROGRESS, newProgress);
+            values.put(Cards.CARD_LAST_SEEN, timeNow);
             arguments.putParcelable(VALUES, values);
             getLoaderManager().initLoader(UpdateProgressQuery._TOKEN, arguments, this).forceLoad();
         } else {
@@ -157,14 +157,14 @@ public class TrainingFragment extends Fragment
         int _TOKEN = 0;
 
         String[] COLUMNS = new String[] {
-                CardsContract.Cards.CARD_ID,
-                CardsContract.Cards.CARD_FRONT,
-                CardsContract.Cards.CARD_BACK,
-                CardsContract.Cards.CARD_PROGRESS,
-                CardsContract.Cards.CARD_LAST_SEEN
+                Cards.CARD_ID,
+                Cards.CARD_FRONT,
+                Cards.CARD_BACK,
+                Cards.CARD_PROGRESS,
+                Cards.CARD_LAST_SEEN
         };
 
-        String SELECTION = CardsContract.Cards.CARD_IN_LEARNING + " = 1";
+        String SELECTION = Cards.CARD_IN_LEARNING + " = 1";
 
         int ID = 0;
         int FRONT = 1;
@@ -184,15 +184,15 @@ public class TrainingFragment extends Fragment
             case PickCardQuery._TOKEN: {
                 // Here we use AsyncTaskLoader instead of CursorLoader because we don't need to have
                 // observation on cursor. We just need to make one-shot load.
-                final Uri cardsOfStack = CardsContract.Cards.buildUriToCardsOfStack(stackId);
+                final Uri cardsOfStack = Cards.buildUriToCardsOfStack(stackId);
                 return new AsyncTaskLoader(getActivity()) {
                     @Override
                     public Object loadInBackground() {
-                        return getActivity().getContentResolver().query(cardsOfStack, PickCardQuery.COLUMNS, PickCardQuery.SELECTION, null, CardsContract.Cards.SORT_LAST_SEEN);
+                        return getActivity().getContentResolver().query(cardsOfStack, PickCardQuery.COLUMNS, PickCardQuery.SELECTION, null, Cards.SORT_LAST_SEEN);
                     }
                 };
             } case UpdateProgressQuery._TOKEN: {
-                final Uri uri = ContentUris.withAppendedId(CardsContract.Cards.buildUriToCardsOfStack(stackId), cardId);
+                final Uri uri = ContentUris.withAppendedId(Cards.buildUriToCardsOfStack(stackId), cardId);
                 final ContentValues values = args.getParcelable(VALUES);
                 return new AsyncTaskLoader<Object>(getActivity()) {
                     @Override

@@ -21,9 +21,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.nolane.stacks.R;
-import com.nolane.stacks.provider.CardsContract;
 import com.nolane.stacks.utils.UriUtils;
 
+import static com.nolane.stacks.provider.CardsContract.*;
 
 /**
  * This fragment is for adding new cards to existing stack. It is used with
@@ -61,15 +61,17 @@ public class AddCardFragment extends Fragment
 
         etBack.setOnEditorActionListener(this);
 
+        getActivity().setTitle(getString(R.string.add_card));
+
         if (null == savedInstanceState) {
             etFront.setText("");
 
             InputFilter[] filters = new InputFilter[1];
-            filters[0] = new InputFilter.LengthFilter(CardsContract.Cards.MAX_FRONT_LEN);
+            filters[0] = new InputFilter.LengthFilter(Cards.MAX_FRONT_LEN);
             etFront.setFilters(filters);
 
             filters = new InputFilter[1];
-            filters[0] = new InputFilter.LengthFilter(CardsContract.Cards.MAX_BACK_LEN);
+            filters[0] = new InputFilter.LengthFilter(Cards.MAX_BACK_LEN);
             etBack.setFilters(filters);
         }
         return view;
@@ -88,29 +90,29 @@ public class AddCardFragment extends Fragment
         final ContentResolver resolver = getActivity().getContentResolver();
         if (!cbBidirectional.isChecked()) {
             final ContentValues values = new ContentValues();
-            values.put(CardsContract.Cards.CARD_FRONT, front);
-            values.put(CardsContract.Cards.CARD_BACK, back);
-            values.put(CardsContract.Cards.CARD_STACK_ID, stackId);
+            values.put(Cards.CARD_FRONT, front);
+            values.put(Cards.CARD_BACK, back);
+            values.put(Cards.CARD_STACK_ID, stackId);
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    resolver.insert(CardsContract.Cards.CONTENT_URI, values);
+                    resolver.insert(Cards.CONTENT_URI, values);
                 }
             }).run();
         } else {
             final ContentValues valuesOne = new ContentValues();
-            valuesOne.put(CardsContract.Cards.CARD_FRONT, front);
-            valuesOne.put(CardsContract.Cards.CARD_BACK, back);
-            valuesOne.put(CardsContract.Cards.CARD_STACK_ID, stackId);
+            valuesOne.put(Cards.CARD_FRONT, front);
+            valuesOne.put(Cards.CARD_BACK, back);
+            valuesOne.put(Cards.CARD_STACK_ID, stackId);
             final ContentValues valuesTwo = new ContentValues();
-            valuesTwo.put(CardsContract.Cards.CARD_FRONT, back);
-            valuesTwo.put(CardsContract.Cards.CARD_BACK, front);
-            valuesTwo.put(CardsContract.Cards.CARD_STACK_ID, stackId);
+            valuesTwo.put(Cards.CARD_FRONT, back);
+            valuesTwo.put(Cards.CARD_BACK, front);
+            valuesTwo.put(Cards.CARD_STACK_ID, stackId);
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    resolver.insert(CardsContract.Cards.CONTENT_URI, valuesOne);
-                    resolver.insert(CardsContract.Cards.CONTENT_URI, valuesTwo);
+                    resolver.insert(Cards.CONTENT_URI, valuesOne);
+                    resolver.insert(Cards.CONTENT_URI, valuesTwo);
                 }
             }).run();
         }
@@ -134,7 +136,7 @@ public class AddCardFragment extends Fragment
 
         // Columns which we need.
         String[] COLUMNS = {
-                CardsContract.Stacks.STACK_TITLE
+                Stacks.STACK_TITLE
         };
 
         // Here should be the list of ids. These ids are used in Cursor to get
@@ -149,7 +151,7 @@ public class AddCardFragment extends Fragment
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         // Note: When the loader is the only we do not use switch on #id.
         // Because it is simpler to read.
-        return new CursorLoader(getActivity(), stack, StackQuery.COLUMNS, null, null, CardsContract.Stacks.SORT_DEFAULT);
+        return new CursorLoader(getActivity(), stack, StackQuery.COLUMNS, null, null, Stacks.SORT_DEFAULT);
     }
 
     @Override
@@ -161,7 +163,7 @@ public class AddCardFragment extends Fragment
         }
         query.moveToFirst();
         String title = query.getString(StackQuery.TITLE);
-        UriUtils.insertParameter(getActivity(), CardsContract.Stacks.STACK_TITLE, title);
+        UriUtils.insertParameter(getActivity(), Stacks.STACK_TITLE, title);
         btnDone.setOnClickListener(this);
     }
 

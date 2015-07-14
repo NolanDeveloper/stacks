@@ -20,7 +20,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.nolane.stacks.R;
-import com.nolane.stacks.provider.CardsContract;
+import static com.nolane.stacks.provider.CardsContract.*;
 import com.nolane.stacks.utils.MetricsUtils;
 import com.nolane.stacks.utils.UriUtils;
 
@@ -77,8 +77,8 @@ public class PickStackFragment extends Fragment implements LoaderManager.LoaderC
                     @Override
                     public void onClick(View v) {
                         Intent intent = new Intent(getActivity(), TrainingActivity.class);
-                        Uri data = ContentUris.withAppendedId(CardsContract.Stacks.CONTENT_URI, id);
-                        data = UriUtils.insertParameter(data, CardsContract.Stacks.STACK_TITLE, title);
+                        Uri data = ContentUris.withAppendedId(Stacks.CONTENT_URI, id);
+                        data = UriUtils.insertParameter(data, Stacks.STACK_TITLE, title);
                         intent.setData(data);
                         startActivity(intent);
                     }
@@ -143,9 +143,9 @@ public class PickStackFragment extends Fragment implements LoaderManager.LoaderC
         int _TOKEN = 0;
 
         String[] COLUMNS = {
-                CardsContract.Stacks.STACK_ID,
-                CardsContract.Stacks.STACK_TITLE,
-                CardsContract.Stacks.STACK_COUNT_CARDS
+                Stacks.STACK_ID,
+                Stacks.STACK_TITLE,
+                Stacks.STACK_COUNT_CARDS
         };
 
         int ID = 0;
@@ -155,7 +155,7 @@ public class PickStackFragment extends Fragment implements LoaderManager.LoaderC
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return new CursorLoader(getActivity(), CardsContract.Stacks.CONTENT_URI, StacksQuery.COLUMNS, null, null, null);
+        return new CursorLoader(getActivity(), Stacks.CONTENT_URI, StacksQuery.COLUMNS, null, null, null);
     }
 
     @Override

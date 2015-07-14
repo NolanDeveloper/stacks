@@ -1,19 +1,16 @@
 package com.nolane.stacks.ui;
 
 import android.app.LoaderManager;
-import android.content.ContentUris;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 
 import com.nolane.stacks.R;
-import com.nolane.stacks.provider.CardsContract;
-import com.nolane.stacks.utils.UriUtils;
+import static com.nolane.stacks.provider.CardsContract.*;
 
 /**
  * This activity is required to start different activities on launch by condition.
@@ -37,7 +34,7 @@ public class LauncherActivity extends AppCompatActivity implements LoaderManager
 
         // Columns which we need.
         String[] COLUMNS = {
-                CardsContract.Stacks.STACK_ID
+                Stacks.STACK_ID
         };
 
         int ID = 0;
@@ -45,7 +42,7 @@ public class LauncherActivity extends AppCompatActivity implements LoaderManager
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return new CursorLoader(this, CardsContract.Stacks.CONTENT_URI, StacksQuery.COLUMNS, null, null, null);
+        return new CursorLoader(this, Stacks.CONTENT_URI, StacksQuery.COLUMNS, null, null, null);
     }
 
     @Override

@@ -64,6 +64,7 @@
             android:readPermission="com.nolane.stacks.provider.READ"
             android:writePermission="com.nolane.stacks.provider.WRITE"/>
 
+
     </application>
 
 </manifest>

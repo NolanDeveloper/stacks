@@ -56,6 +56,25 @@ public class CardsProvider extends ContentProvider {
     }
 
     @Override
+    public String getType(Uri uri) {
+        switch (URI_MATCHER.match(uri)) {
+            case UriMatcher.NO_MATCH:
+                return null;
+            case STACKS_TABLE:
+                return Stacks.CONTENT_TYPE;
+            case STACKS_ID:
+                return Stacks.CONTENT_ITEM_TYPE;
+            case CARDS_TABLE:
+                return Cards.CONTENT_TYPE;
+            case CARDS_OF_STACK:
+                return Cards.CONTENT_TYPE;
+            case CARDS_ID:
+                return Cards.CONTENT_ITEM_TYPE;
+        }
+        return null;
+    }
+
+    @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         Log.d(LOG_TAG, "Query");
         Log.d(LOG_TAG, "uri: " + uri.toString());
@@ -106,25 +125,6 @@ public class CardsProvider extends ContentProvider {
     }
 
     @Override
-    public String getType(Uri uri) {
-        switch (URI_MATCHER.match(uri)) {
-            case UriMatcher.NO_MATCH:
-                return null;
-            case STACKS_TABLE:
-                return Stacks.CONTENT_TYPE;
-            case STACKS_ID:
-                return Stacks.CONTENT_ITEM_TYPE;
-            case CARDS_TABLE:
-                return Cards.CONTENT_TYPE;
-            case CARDS_OF_STACK:
-                return Cards.CONTENT_TYPE;
-            case CARDS_ID:
-                return Cards.CONTENT_ITEM_TYPE;
-        }
-        return null;
-    }
-
-    @Override
     public Uri insert(Uri uri, ContentValues values) {
         Log.d(LOG_TAG, "Insert");
         Log.d(LOG_TAG, "uri: " + uri.toString());
@@ -144,17 +144,24 @@ public class CardsProvider extends ContentProvider {
                 values.put(Cards.CARD_STACK_ID, uri.getLastPathSegment());
                 break;
             case CARDS_TABLE:
+                if (null == values) {
+                    throw new IllegalArgumentException("values = null");
+                }
+
                 Cursor query = db.getReadableDatabase().query(
                         CardsDatabase.Tables.STACKS,
                         new String[]{StacksColumns.STACK_MAX_IN_LEARNING},
                         StacksColumns.STACK_ID + " = ?",
-                        new String[]{String.valueOf(values.getAsLong(CardsColumns.CARD_STACK_ID))},
+                        new String[]{values.getAsString(CardsColumns.CARD_STACK_ID)},
                         null, null, null);
                 query.moveToFirst();
                 int maxInLearning = query.getInt(0);
                 query.close();
                 query = db.getReadableDatabase().rawQuery(
-                        "SELECT COUNT(*) FROM " + CardsDatabase.Tables.CARDS + " WHERE " + CardsColumns.CARD_IN_LEARNING + " = 1", null);
+                        "SELECT COUNT(*) FROM " + CardsDatabase.Tables.CARDS + " WHERE " +
+                                CardsColumns.CARD_IN_LEARNING + " = 1 AND " +
+                                CardsColumns.CARD_STACK_ID + " = " + values.getAsString(CardsColumns.CARD_STACK_ID),
+                        null);
                 query.moveToFirst();
                 int countInLearning = query.getInt(0);
                 int inLearning = countInLearning < maxInLearning ? 1 : 0;
