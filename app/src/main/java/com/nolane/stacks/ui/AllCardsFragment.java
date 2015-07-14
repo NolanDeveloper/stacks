@@ -8,7 +8,9 @@ import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -18,6 +20,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.nolane.stacks.R;
@@ -219,7 +222,19 @@ public class AllCardsFragment extends Fragment implements LoaderManager.LoaderCa
         switch (loader.getId()) {
             case CardsQuery._TOKEN:
                 Cursor query = (Cursor) data;
-                ((CardsAdapter) rvCards.getAdapter()).setCursor(query);
+                if (0 != query.getCount()) {
+                    ((CardsAdapter) rvCards.getAdapter()).setCursor(query);
+                } else {
+                    getLoaderManager().destroyLoader(CardsQuery._TOKEN);
+                    ViewGroup root = (ViewGroup) getView();
+                    if (null != root){
+                        root.removeAllViews();
+                        ImageView imageView = new ImageView(getActivity());
+                        imageView.setImageResource(R.drawable.no_cards);
+                        imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                        root.addView(imageView);
+                    }
+                }
                 break;
             case RemoveCardQuery._TOKEN:
                 getLoaderManager().destroyLoader(RemoveCardQuery._TOKEN);
