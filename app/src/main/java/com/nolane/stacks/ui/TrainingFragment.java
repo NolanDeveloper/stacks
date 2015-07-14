@@ -6,6 +6,7 @@ import android.content.AsyncTaskLoader;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Loader;
+import android.content.res.ColorStateList;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -19,6 +20,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.nolane.stacks.R;
+import com.nolane.stacks.utils.ColorUtils;
+
 import static com.nolane.stacks.provider.CardsContract.*;
 
 import java.util.Calendar;
@@ -53,6 +56,7 @@ public class TrainingFragment extends Fragment
     private static final String EXTRA_CARD_LAST_SEEN = "card.last.seen";
 
     // UI elements.
+    private View vProgressIndicator;
     private TextView tvFront;
     private EditText etBack;
     private Button btnDone;
@@ -81,7 +85,6 @@ public class TrainingFragment extends Fragment
     public void setClock(@NonNull Clock clock) {
         this.clock = clock;
     }
-
 
     private Random random = new Random();
 
@@ -120,6 +123,7 @@ public class TrainingFragment extends Fragment
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         super.onCreateView(inflater, container, savedInstanceState);
         View view = inflater.inflate(R.layout.frag_training, container, false);
+        vProgressIndicator = view.findViewById(R.id.v_progress_indicator);
         tvFront = (TextView) view.findViewById(R.id.tv_front);
         etBack = (EditText) view.findViewById(R.id.et_back);
         btnDone = (Button) view.findViewById(R.id.btn_done);
@@ -239,6 +243,7 @@ public class TrainingFragment extends Fragment
                 cardBack = query.getString(PickCardQuery.BACK);
                 cardProgress = query.getInt(PickCardQuery.PROGRESS);
                 cardLastSeen = query.getLong(PickCardQuery.LAST_SEEN);
+                vProgressIndicator.setBackgroundColor(getColorForProgress(cardProgress));
                 String cardFront = query.getString(PickCardQuery.FRONT);
                 tvFront.setText(cardFront);
                 // Do not forget to turn button on.
@@ -248,6 +253,27 @@ public class TrainingFragment extends Fragment
                 getLoaderManager().initLoader(PickCardQuery._TOKEN, null, this).forceLoad();
                 break;
         }
+    }
+
+    /**
+     * Returns color which represents current progress.
+     * @param cardProgress Progress value of some card.
+     * @return Color which represents current progress.
+     */
+    private int getColorForProgress(int cardProgress) {
+        int minProgress = getResources().getInteger(R.integer.default_min_progress);
+        int maxProgress = getResources().getInteger(R.integer.default_max_progress);
+        if (cardProgress < minProgress || maxProgress < cardProgress) {
+            throw new IllegalArgumentException("The progress of card is out of limits.");
+        }
+        if (maxProgress <= minProgress) {
+            throw new IllegalStateException("Maximum progress <= minimal progress of card.");
+        }
+        float proportion = (float)(cardProgress - minProgress) / (maxProgress - minProgress);
+        return ColorUtils.interpolateColor(
+                getResources().getColor(R.color.bad_progress),
+                getResources().getColor(R.color.good_progress),
+                proportion);
     }
 
     @Override
