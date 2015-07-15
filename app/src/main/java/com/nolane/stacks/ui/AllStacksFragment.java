@@ -20,12 +20,17 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.nolane.stacks.R;
+import com.nolane.stacks.utils.RecyclerCursorAdapter;
 import com.nolane.stacks.utils.UriUtils;
 
 import static com.nolane.stacks.provider.CardsContract.*;
 
+/**
+ * This fragment shows list of all stacks. When user clicks at one of them {@link EditStackActivity}
+ * is opened to allow editing.
+ */
 public class AllStacksFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, View.OnClickListener {
-    private class StacksAdapter extends RecyclerView.Adapter<StacksAdapter.ViewHolder> {
+    private class StacksAdapter extends RecyclerCursorAdapter<StacksAdapter.ViewHolder> {
         public class ViewHolder extends RecyclerView.ViewHolder {
             public View vRoot;
             public TextView tvTitle;
@@ -37,12 +42,8 @@ public class AllStacksFragment extends Fragment implements LoaderManager.LoaderC
             }
         }
 
-        // The query which this adapter represents through recycler view.
-        private Cursor query;
-
         public StacksAdapter(@Nullable Cursor query) {
-            super();
-            this.query = query;
+            super(query);
         }
 
         @Override
@@ -67,25 +68,6 @@ public class AllStacksFragment extends Fragment implements LoaderManager.LoaderC
                     startActivity(intent);
                 }
             });
-        }
-
-        @Override
-        public int getItemCount() {
-            if (null == query) {
-                return 0;
-            } else {
-                return query.getCount();
-            }
-        }
-
-        public void setCursor(@Nullable Cursor query) {
-            if (this.query == query)
-                return;
-            if (null != this.query) {
-                this.query.close();
-            }
-            this.query = query;
-            notifyDataSetChanged();
         }
     }
 
@@ -132,7 +114,7 @@ public class AllStacksFragment extends Fragment implements LoaderManager.LoaderC
     }
 
     @Override
-    public Loader onCreateLoader(int id, Bundle args) {
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         return new CursorLoader(getActivity(), Stacks.CONTENT_URI, StacksQuery.COLUMNS, null, null, null);
     }
 

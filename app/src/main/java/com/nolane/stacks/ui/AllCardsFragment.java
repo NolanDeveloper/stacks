@@ -25,6 +25,7 @@ import android.widget.TextView;
 
 import com.nolane.stacks.R;
 import com.nolane.stacks.utils.ColorUtils;
+import com.nolane.stacks.utils.RecyclerCursorAdapter;
 
 import static com.nolane.stacks.provider.CardsContract.*;
 
@@ -38,7 +39,7 @@ public class AllCardsFragment extends Fragment implements LoaderManager.LoaderCa
     /**
      * Adapter for RecyclerView.
      */
-    private class CardsAdapter extends RecyclerView.Adapter<CardsAdapter.ViewHolder> {
+    private class CardsAdapter extends RecyclerCursorAdapter<CardsAdapter.ViewHolder> {
         public class ViewHolder extends RecyclerView.ViewHolder {
             public View root;
             public View vProgressIndicator;
@@ -56,11 +57,8 @@ public class AllCardsFragment extends Fragment implements LoaderManager.LoaderCa
             }
         }
 
-        private Cursor query;
-
         public CardsAdapter(@Nullable Cursor query) {
-            super();
-            this.query = query;
+            super(query);
         }
 
         @Override
@@ -121,25 +119,6 @@ public class AllCardsFragment extends Fragment implements LoaderManager.LoaderCa
                     startActivity(intent);
                 }
             });
-        }
-
-        @Override
-        public int getItemCount() {
-            if (null == query) {
-                return 0;
-            } else {
-                return query.getCount();
-            }
-        }
-
-        public void setCursor(@Nullable Cursor query) {
-            if (this.query == query)
-                return;
-            if (null != this.query) {
-                this.query.close();
-            }
-            this.query = query;
-            notifyDataSetChanged();
         }
     }
 

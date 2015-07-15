@@ -22,6 +22,7 @@ import android.widget.TextView;
 import com.nolane.stacks.R;
 import static com.nolane.stacks.provider.CardsContract.*;
 import com.nolane.stacks.utils.MetricsUtils;
+import com.nolane.stacks.utils.RecyclerCursorAdapter;
 import com.nolane.stacks.utils.UriUtils;
 
 /**
@@ -32,7 +33,7 @@ public class PickStackFragment extends Fragment implements LoaderManager.LoaderC
     /**
      * Adapter for the RecyclerView.
      */
-    public class StacksAdapter extends RecyclerView.Adapter<StacksAdapter.ViewHolder> {
+    public class StacksAdapter extends RecyclerCursorAdapter<StacksAdapter.ViewHolder> {
         public class ViewHolder extends RecyclerView.ViewHolder {
             public View root;
             public TextView tvTitle;
@@ -44,11 +45,8 @@ public class PickStackFragment extends Fragment implements LoaderManager.LoaderC
             }
         }
 
-        private Cursor query;
-
         public StacksAdapter(@Nullable Cursor query) {
-            super();
-            this.query = query;
+            super(query);
         }
 
         @Override
@@ -94,25 +92,6 @@ public class PickStackFragment extends Fragment implements LoaderManager.LoaderC
                     }
                 });
             }
-        }
-
-        @Override
-        public int getItemCount() {
-            if (null == query) {
-                return 0;
-            } else {
-                return query.getCount();
-            }
-        }
-
-        public void setCursor(@Nullable Cursor query) {
-            if (this.query == query)
-                return;
-            if (null != this.query) {
-                this.query.close();
-            }
-            this.query = query;
-            notifyDataSetChanged();
         }
     }
 
