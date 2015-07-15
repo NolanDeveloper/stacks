@@ -46,7 +46,7 @@ public class NavigationFragment extends Fragment
                 throw new IllegalArgumentException("Unknown menu item id.");
         }
         if (itemActivityClass.isInstance(getActivity())) {
-            ((PickStackActivity) getActivity()).hideNavigationDrawer();
+            ((BaseNavigationDrawerActivity) getActivity()).hideNavigationDrawer();
         } else {
             Intent intent = new Intent(getActivity().getBaseContext(), itemActivityClass);
             startActivity(intent);

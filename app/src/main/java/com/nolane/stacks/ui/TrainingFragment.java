@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -54,9 +55,32 @@ public class TrainingFragment extends Fragment
     private static final String EXTRA_CARD_BACK = "card.back";
     private static final String EXTRA_CARD_PROGRESS = "card.progress";
     private static final String EXTRA_CARD_LAST_SEEN = "card.last.seen";
+    private static final String EXTRA_STAGE = "stage";
 
     // Key which is used to pass ContentValues though Bundle.
     private static final String EXTRA_VALUES = "values";
+
+    // Stages of this fragment.
+    private enum Stage {
+        LEARNING,
+        REPETITION
+    }
+
+    // Current state of fragment.
+    private Stage stage;
+    // This flag is set when we got 0 items after query on finished cards.
+    // It's necessary to avoid redundant queries.
+    private boolean dontHaveFinishedCards;
+    // This flag is set when we get 0 items after query on cards in learning
+    // on REPETITION stage.
+    private boolean dontHaveCardsInLearning;
+
+    // This is type of query we do to get cards in REPETITION stage.
+    private enum QueryType {
+        REPEAT_LEARNING,
+        REPEAT_LEARNED
+    }
+    private QueryType queryType;
 
     // UI elements.
     private View vProgressIndicator;
@@ -95,6 +119,7 @@ public class TrainingFragment extends Fragment
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         if (null == savedInstanceState) {
+            stage = Stage.LEARNING;
             getLoaderManager().initLoader(PickCardQuery._TOKEN, null, this).forceLoad();
             UriUtils.checkDataTypeOrThrow(getActivity(), Stacks.CONTENT_ITEM_TYPE);
         } else {
@@ -103,6 +128,8 @@ public class TrainingFragment extends Fragment
             cardBack = savedInstanceState.getString(EXTRA_CARD_BACK);
             cardProgress = savedInstanceState.getInt(EXTRA_CARD_PROGRESS);
             cardLastSeen = savedInstanceState.getLong(EXTRA_CARD_LAST_SEEN);
+            vProgressIndicator.setBackgroundColor(ColorUtils.getColorForProgress(getActivity(), cardProgress));
+            stage= (Stage) savedInstanceState.getSerializable(EXTRA_STAGE);
             btnDone.setOnClickListener(this);
             // Reconnect to started loaders.
             if (null != getLoaderManager().getLoader(PickCardQuery._TOKEN))
@@ -120,6 +147,7 @@ public class TrainingFragment extends Fragment
         outState.putString(EXTRA_CARD_BACK, cardBack);
         outState.putInt(EXTRA_CARD_PROGRESS, cardProgress);
         outState.putLong(EXTRA_CARD_PROGRESS, cardLastSeen);
+        outState.putSerializable(EXTRA_STAGE, stage);
     }
 
     @Nullable
@@ -168,9 +196,7 @@ public class TrainingFragment extends Fragment
                 Cards.CARD_BACK,
                 Cards.CARD_PROGRESS,
                 Cards.CARD_LAST_SEEN
-        };
-
-        String SELECTION = Cards.CARD_IN_LEARNING + " = 1";
+        };;
 
         int ID = 0;
         int FRONT = 1;
@@ -188,15 +214,52 @@ public class TrainingFragment extends Fragment
         long stackId = Long.parseLong(getActivity().getIntent().getData().getLastPathSegment());
         switch (id) {
             case PickCardQuery._TOKEN: {
-                // Here we use AsyncTaskLoader instead of CursorLoader because we don't need to have
-                // observation on cursor. We just need to make one-shot load.
                 final Uri cardsOfStack = Cards.buildUriToCardsOfStack(stackId);
-                return new AsyncTaskLoader(getActivity()) {
-                    @Override
-                    public Object loadInBackground() {
-                        return getActivity().getContentResolver().query(cardsOfStack, PickCardQuery.COLUMNS, PickCardQuery.SELECTION, null, Cards.SORT_LAST_SEEN);
-                    }
-                };
+                if (Stage.LEARNING == stage) {
+                    // Here we use AsyncTaskLoader instead of CursorLoader because we don't need to have
+                    // observation on cursor. We just need to make one-shot load.
+                    return new AsyncTaskLoader(getActivity()) {
+                        @Override
+                        public Object loadInBackground() {
+                            long dayInMills = TimeUnit.DAYS.toMillis(1);
+                            return getActivity().getContentResolver().query(
+                                    cardsOfStack,
+                                    PickCardQuery.COLUMNS,
+                                    // Query cards in learning that user haven't seen recently.
+                                    Cards.CARD_IN_LEARNING + " = 1 AND " +
+                                            Cards.CARD_LAST_SEEN + " < " + (clock.getCurrentTime() - dayInMills),
+                                    null,
+                                    Cards.SORT_LAST_SEEN
+                            );
+                        }
+                    };
+                } else if (Stage.REPETITION == stage) {
+                    return new AsyncTaskLoader(getActivity()) {
+                        @Override
+                        public Object loadInBackground() {
+                            String selection;
+                            if (dontHaveFinishedCards || (random.nextFloat() < 0.8f)) {
+                                selection = Cards.CARD_IN_LEARNING + " = 1";
+                                queryType = QueryType.REPEAT_LEARNING;
+                            } else if (!dontHaveCardsInLearning) {
+                                selection = Cards.CARD_PROGRESS + " = " + getResources().getInteger(R.integer.default_max_progress);
+                                queryType = QueryType.REPEAT_LEARNED;
+                            } else {
+                                // User doesn't have any card. Weird o_O
+                                getActivity().finish();
+                                return null;
+                            }
+                            return getActivity().getContentResolver().query(
+                                    cardsOfStack,
+                                    PickCardQuery.COLUMNS,
+                                    selection,
+                                    null,
+                                    Cards.SORT_LAST_SEEN
+                            );
+                        }
+                    };
+                }
+                break;
             } case UpdateProgressQuery._TOKEN: {
                 final Uri uri = ContentUris.withAppendedId(Cards.buildUriToCardsOfStack(stackId), cardId);
                 final ContentValues values = args.getParcelable(EXTRA_VALUES);
@@ -222,26 +285,34 @@ public class TrainingFragment extends Fragment
         switch (loader.getId()) {
             case PickCardQuery._TOKEN:
                 Cursor query = (Cursor) data;
-                int count = query.getCount();
-                if (0 == count) {
-                    // fixme: notify user that we run out of cards.
-//                    Snackbar.make(getView(), getString(R.string.all_done), Snackbar.LENGTH_SHORT)
-//                            .show();
-                    getActivity().finish();
-                    return;
-                }
-                if (1 == count) {
-                    query.moveToFirst();
-                } else {
-                    long cardPrevId = cardId;
-                    // If you get the same card 5 times in a row it means God wants you to see this card.
-                    for (int i = 0; (cardId == cardPrevId) && (i < 5); i++) {
-                        int position = random.nextInt(count);
-                        query.moveToPosition(position);
-                        cardId = query.getLong(PickCardQuery.ID);
+                if (Stage.LEARNING == stage) {
+                    // If learning is done.
+                    if (0 == query.getCount()) {
+                        Snackbar.make(getView(), getString(R.string.all_done), Snackbar.LENGTH_LONG)
+                                .show();
+                        stage = Stage.REPETITION;
+                        getLoaderManager().initLoader(PickCardQuery.ID, null, this).forceLoad();
+                        return;
+                    }
+                } else if (Stage.REPETITION == stage) {
+                    if (0 == query.getCount()) {
+                        if (QueryType.REPEAT_LEARNED == queryType) {
+                            dontHaveFinishedCards = true;
+                        } else {
+                            dontHaveCardsInLearning = true;
+                        }
+                        getLoaderManager().initLoader(PickCardQuery.ID, null, this).forceLoad();
+                        return;
                     }
                 }
-                cardId = query.getLong(PickCardQuery.ID);
+                int count = query.getCount();
+                long cardPrevId = cardId;
+                // If you get the same card 5 times in a row it means God wants you to see this card.
+                for (int i = 0; (cardId == cardPrevId) && (i < 5); i++) {
+                    int position = random.nextInt(count);
+                    query.moveToPosition(position);
+                    cardId = query.getLong(PickCardQuery.ID);
+                }
                 cardBack = query.getString(PickCardQuery.BACK);
                 cardProgress = query.getInt(PickCardQuery.PROGRESS);
                 cardLastSeen = query.getLong(PickCardQuery.LAST_SEEN);

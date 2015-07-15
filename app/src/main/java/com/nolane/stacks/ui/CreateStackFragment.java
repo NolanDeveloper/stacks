@@ -115,8 +115,8 @@ public class CreateStackFragment extends Fragment
         if (null == uri) {
             throw new IllegalArgumentException("Loader was failed. (uri = null)");
         }
-        Intent intent = new Intent(getActivity().getBaseContext(), AddCardActivity.class);
-        intent.setData(uri);
+        Intent intent = new Intent(getActivity(), AllStacksActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         startActivity(intent);
         getActivity().finish();
     }

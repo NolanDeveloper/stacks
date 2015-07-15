@@ -12,7 +12,7 @@
     <string name="right">Right =)</string>
     <string name="wrong">Wrong =(</string>
     <string name="failed">Failed</string>
-    <string name="all_done">All done!</string>
+    <string name="all_done">You learned all cards for today!</string>
     <string name="training">Training</string>
     <string name="cards">Cards</string>
     <string name="stacks">Stacks</string>
