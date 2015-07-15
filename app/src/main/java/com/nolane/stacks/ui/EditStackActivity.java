@@ -6,7 +6,7 @@ import android.support.v7.app.AppCompatActivity;
 import com.nolane.stacks.R;
 import com.nolane.stacks.utils.UriUtils;
 
-import static com.nolane.stacks.provider.CardsContract.*;
+import static com.nolane.stacks.provider.CardsContract.Stacks;
 
 /**
  * This activity allows user to edit stack. <br>

@@ -23,11 +23,12 @@ import com.nolane.stacks.R;
 import com.nolane.stacks.utils.ColorUtils;
 import com.nolane.stacks.utils.UriUtils;
 
-import static com.nolane.stacks.provider.CardsContract.*;
-
 import java.util.Calendar;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
+
+import static com.nolane.stacks.provider.CardsContract.Cards;
+import static com.nolane.stacks.provider.CardsContract.Stacks;
 
 /**
  * This fragment is used for training process. It is used in conjunction with
@@ -43,6 +44,7 @@ public class TrainingFragment extends Fragment
         /**
          * Must return the amount of milliseconds elapsed
          * since any constant point in the past.
+         *
          * @return The amount of milliseconds elapsed
          * since any constant point in the past.
          */
@@ -80,6 +82,7 @@ public class TrainingFragment extends Fragment
         REPEAT_LEARNING,
         REPEAT_LEARNED
     }
+
     private QueryType queryType;
 
     // UI elements.
@@ -107,6 +110,7 @@ public class TrainingFragment extends Fragment
 
     /**
      * It's for testing purposes.
+     *
      * @param clock Object that represents current time.
      */
     public void setClock(@NonNull Clock clock) {
@@ -129,7 +133,7 @@ public class TrainingFragment extends Fragment
             cardProgress = savedInstanceState.getInt(EXTRA_CARD_PROGRESS);
             cardLastSeen = savedInstanceState.getLong(EXTRA_CARD_LAST_SEEN);
             vProgressIndicator.setBackgroundColor(ColorUtils.getColorForProgress(getActivity(), cardProgress));
-            stage= (Stage) savedInstanceState.getSerializable(EXTRA_STAGE);
+            stage = (Stage) savedInstanceState.getSerializable(EXTRA_STAGE);
             btnDone.setOnClickListener(this);
             // Reconnect to started loaders.
             if (null != getLoaderManager().getLoader(PickCardQuery._TOKEN))
@@ -167,7 +171,7 @@ public class TrainingFragment extends Fragment
         // Turn off button until we did not get next card.
         btnDone.setOnClickListener(null);
         long timeNow = clock.getCurrentTime();
-        long timeDiff =  timeNow - cardLastSeen;
+        long timeDiff = timeNow - cardLastSeen;
         long dayInMills = TimeUnit.DAYS.toMillis(1);
         String userAssumption = etBack.getText().toString();
         etBack.getText().clear();
@@ -190,13 +194,14 @@ public class TrainingFragment extends Fragment
     private interface PickCardQuery {
         int _TOKEN = 0;
 
-        String[] COLUMNS = new String[] {
+        String[] COLUMNS = new String[]{
                 Cards.CARD_ID,
                 Cards.CARD_FRONT,
                 Cards.CARD_BACK,
                 Cards.CARD_PROGRESS,
                 Cards.CARD_LAST_SEEN
-        };;
+        };
+        ;
 
         int ID = 0;
         int FRONT = 1;
@@ -260,7 +265,8 @@ public class TrainingFragment extends Fragment
                     };
                 }
                 break;
-            } case UpdateProgressQuery._TOKEN: {
+            }
+            case UpdateProgressQuery._TOKEN: {
                 final Uri uri = ContentUris.withAppendedId(Cards.buildUriToCardsOfStack(stackId), cardId);
                 final ContentValues values = args.getParcelable(EXTRA_VALUES);
                 return new AsyncTaskLoader<Object>(getActivity()) {

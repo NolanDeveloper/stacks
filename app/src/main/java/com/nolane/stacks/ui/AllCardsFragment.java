@@ -25,7 +25,7 @@ import com.nolane.stacks.R;
 import com.nolane.stacks.utils.ColorUtils;
 import com.nolane.stacks.utils.RecyclerCursorAdapter;
 
-import static com.nolane.stacks.provider.CardsContract.*;
+import static com.nolane.stacks.provider.CardsContract.Cards;
 
 /**
  * This fragment shows all cards to user. The user can remove all edit each card.
@@ -206,7 +206,7 @@ public class AllCardsFragment extends Fragment implements LoaderManager.LoaderCa
                 } else {
                     getLoaderManager().destroyLoader(CardsQuery._TOKEN);
                     ViewGroup root = (ViewGroup) getView();
-                    if (null != root){
+                    if (null != root) {
                         root.removeAllViews();
                         ImageView imageView = new ImageView(getActivity());
                         imageView.setImageResource(R.drawable.no_cards);

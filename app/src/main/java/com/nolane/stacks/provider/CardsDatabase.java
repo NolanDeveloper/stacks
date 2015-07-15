@@ -6,7 +6,8 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
 
 import com.nolane.stacks.R;
-import com.nolane.stacks.provider.CardsContract.*;
+import com.nolane.stacks.provider.CardsContract.CardsColumns;
+import com.nolane.stacks.provider.CardsContract.StacksColumns;
 
 /**
  * This class provides convenient database access. It's used by {@link CardsProvider}
@@ -81,6 +82,7 @@ public class CardsDatabase extends SQLiteOpenHelper {
      * unset flag "in learning" when progress becomes maximum. But the trigger
      * requires this max value. So use this method each time the maximum progress
      * value is changed.
+     *
      * @param value The maximum progress.
      */
     public void setMaxProgressTrigger(@NonNull SQLiteDatabase db, int value) {
@@ -94,16 +96,16 @@ public class CardsDatabase extends SQLiteOpenHelper {
                     " BEGIN" +
                     // Unset flag "in learning".
                     " UPDATE " + Tables.CARDS +
-                        " SET " + CardsColumns.CARD_IN_LEARNING + " = 0" +
-                        " WHERE " + CardsColumns.CARD_ID + " = NEW." + CardsColumns.CARD_ID + ";" +
+                    " SET " + CardsColumns.CARD_IN_LEARNING + " = 0" +
+                    " WHERE " + CardsColumns.CARD_ID + " = NEW." + CardsColumns.CARD_ID + ";" +
                     // And find another card to set "in learning".
                     " UPDATE " + Tables.CARDS +
-                        " SET " + CardsColumns.CARD_IN_LEARNING + " = 1" +
-                        " WHERE " + CardsColumns.CARD_ID + " = " +
-                            "(SELECT " + CardsColumns.CARD_ID + " FROM " + Tables.CARDS +
-                            " WHERE " + CardsColumns.CARD_PROGRESS + " != " + value +
-                            " ORDER BY " + CardsColumns.CARD_LAST_SEEN + " ASC " +
-                            " LIMIT 1);" +
+                    " SET " + CardsColumns.CARD_IN_LEARNING + " = 1" +
+                    " WHERE " + CardsColumns.CARD_ID + " = " +
+                    "(SELECT " + CardsColumns.CARD_ID + " FROM " + Tables.CARDS +
+                    " WHERE " + CardsColumns.CARD_PROGRESS + " != " + value +
+                    " ORDER BY " + CardsColumns.CARD_LAST_SEEN + " ASC " +
+                    " LIMIT 1);" +
                     " END");
             db.setTransactionSuccessful();
         } finally {

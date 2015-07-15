@@ -26,7 +26,7 @@ import com.nolane.stacks.R;
 import com.nolane.stacks.utils.RecyclerCursorAdapter;
 import com.nolane.stacks.utils.UriUtils;
 
-import static com.nolane.stacks.provider.CardsContract.*;
+import static com.nolane.stacks.provider.CardsContract.Stacks;
 
 /**
  * This fragment shows list of all stacks. When user clicks at one of them {@link EditStackActivity}

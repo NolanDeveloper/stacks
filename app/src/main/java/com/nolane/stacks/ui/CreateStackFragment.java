@@ -1,6 +1,5 @@
 package com.nolane.stacks.ui;
 
-import android.app.Dialog;
 import android.app.Fragment;
 import android.app.LoaderManager;
 import android.content.AsyncTaskLoader;
@@ -19,18 +18,17 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.nolane.stacks.R;
 
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
 
-import static com.nolane.stacks.provider.CardsContract.*;
+import static com.nolane.stacks.provider.CardsContract.Stacks;
 
 /**
  * This fragment is for creating new stacks.
- * <p>
+ * <p/>
  * {@link CreateStackActivity} and {@link CreateFirstStackActivity} use this.
  */
 public class CreateStackFragment extends Fragment

@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.graphics.PorterDuff;
-import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -23,10 +22,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.nolane.stacks.R;
-import static com.nolane.stacks.provider.CardsContract.*;
-import com.nolane.stacks.utils.MetricsUtils;
 import com.nolane.stacks.utils.RecyclerCursorAdapter;
 import com.nolane.stacks.utils.UriUtils;
+
+import static com.nolane.stacks.provider.CardsContract.Stacks;
 
 /**
  * This fragment finds out which stack user wants to train and then

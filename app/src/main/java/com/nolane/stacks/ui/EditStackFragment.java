@@ -20,7 +20,7 @@ import android.widget.TextView;
 import com.nolane.stacks.R;
 import com.nolane.stacks.utils.UriUtils;
 
-import static com.nolane.stacks.provider.CardsContract.*;
+import static com.nolane.stacks.provider.CardsContract.Stacks;
 
 /**
  * This fragment allows user to edit stack. <br>
@@ -97,7 +97,7 @@ public class EditStackFragment extends Fragment implements View.OnClickListener,
     public void onClick(View v) {
         final String newTitle = etTitle.getText().toString();
         final String newLanguage = etLanguage.getText().toString();
-        final int newColor = ((ColorDrawable)ibPickColor.getDrawable()).getColor();
+        final int newColor = ((ColorDrawable) ibPickColor.getDrawable()).getColor();
         if (!newTitle.equals(title) || !newLanguage.equals(language) || color != newColor) {
             new Thread(new Runnable() {
                 @Override

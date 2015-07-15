@@ -12,7 +12,8 @@ public class UriUtils {
     /**
      * Checks correctness of data specified for activity. If checking fails throws
      * {@link IllegalArgumentException}.
-     * @param activity Activity to check against.
+     *
+     * @param activity     Activity to check against.
      * @param requiredType Required type of {@code activity.getIntent().getData()}.
      * @throws IllegalArgumentException
      */
@@ -30,8 +31,9 @@ public class UriUtils {
     /**
      * Checks that activity data uri specifies parameter {@code key}. If checking fails throws
      * {@link IllegalArgumentException}.
+     *
      * @param activity Activity to check against.
-     * @param key In other words parameter name.
+     * @param key      In other words parameter name.
      */
     public static void checkSpecifiesParameterOrThrow(@NonNull Activity activity, @NonNull String key) throws IllegalArgumentException {
         Uri uri = activity.getIntent().getData();
@@ -44,9 +46,10 @@ public class UriUtils {
      * Inserts parameter to activity data uri. If such parameter already exists updates its value.
      * Otherwise appends it. So we can store loaded data in there and don't requery this information
      * time after time in new activities and fragments.
+     *
      * @param activity Activity to change data uri in.
-     * @param key In other words parameter name.
-     * @param value The object which string representation of will be placed as parameter value.
+     * @param key      In other words parameter name.
+     * @param value    The object which string representation of will be placed as parameter value.
      */
     public static void insertParameter(@NonNull Activity activity, @NonNull String key, @NonNull Object value) {
         Uri data = activity.getIntent().getData();
@@ -77,8 +80,9 @@ public class UriUtils {
      * time after time in new activities and fragments. This function is similar to it's overloaded
      * analog but it can insert parameter into uri explicitly. So we can use this to call start
      * new activities with desired parameters.
-     * @param data Where to insert into.
-     * @param key In other words parameter name.
+     *
+     * @param data  Where to insert into.
+     * @param key   In other words parameter name.
      * @param value The object which string representation of will be placed as parameter value.
      */
     public static Uri insertParameter(@NonNull Uri data, @NonNull String key, @NonNull Object value) {

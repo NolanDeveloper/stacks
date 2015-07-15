@@ -10,11 +10,12 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 
 import com.nolane.stacks.R;
-import static com.nolane.stacks.provider.CardsContract.*;
+
+import static com.nolane.stacks.provider.CardsContract.Stacks;
 
 /**
  * This activity is required to start different activities on launch by condition.
- * <p>
+ * <p/>
  * Another useful future function of this activity is initializing and downloading
  * some information on the start and showing app logo over float screen during this
  * process.

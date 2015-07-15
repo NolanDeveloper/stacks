@@ -23,7 +23,8 @@ import android.widget.TextView;
 import com.nolane.stacks.R;
 import com.nolane.stacks.utils.UriUtils;
 
-import static com.nolane.stacks.provider.CardsContract.*;
+import static com.nolane.stacks.provider.CardsContract.Cards;
+import static com.nolane.stacks.provider.CardsContract.Stacks;
 
 /**
  * This fragment is for adding new cards to existing stack. It is used in

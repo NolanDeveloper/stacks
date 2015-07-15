@@ -17,12 +17,12 @@ import com.nolane.stacks.R;
  * This activity is base class for activities with navigation drawer. It assumes all
  * responsibilities for the processing of the navigation drawer including action
  * bar toggle.
- * <p>
+ * <p/>
  * The ui of it consists of two fragments: navigation fragment and main content fragment.
- * <p>
+ * <p/>
  * Navigation fragment is {@link NavigationFragment} class. So if you want to change
  * navigation drawer look there.
- * <p>
+ * <p/>
  * Main content fragment places on the whole screen. Derivative classes can specify it using
  * {@link #setMainFragment(Fragment)}.
  */
@@ -143,6 +143,7 @@ public abstract class BaseNavigationDrawerActivity extends AppCompatActivity {
     /**
      * Sets the main fragment of the activity. This function should be used by derivative
      * classes to specify main fragment.
+     *
      * @param fragment Fragment to placed as main.
      */
     protected void setMainFragment(@NonNull Fragment fragment) {

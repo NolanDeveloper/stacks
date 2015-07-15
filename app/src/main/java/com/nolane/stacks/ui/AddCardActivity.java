@@ -8,7 +8,7 @@ import android.support.v7.app.AppCompatActivity;
 import com.nolane.stacks.R;
 import com.nolane.stacks.utils.UriUtils;
 
-import static com.nolane.stacks.provider.CardsContract.*;
+import static com.nolane.stacks.provider.CardsContract.Stacks;
 
 /**
  * This activity is for adding new cards into existing stack. <br>
@@ -32,6 +32,7 @@ public class AddCardActivity extends AppCompatActivity {
                     .commit();
         }
     }
+
     @Override
     public void onBackPressed() {
         super.onBackPressed();

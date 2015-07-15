@@ -3,12 +3,11 @@ package com.nolane.stacks.provider;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.net.Uri;
-import android.text.TextUtils;
 
 /**
  * This class is public interface of CardsProvider. You can access it using
  * field of this class.
- * */
+ */
 public class CardsContract {
     public static final String CONTENT_AUTHORITY = "com.nolane.stacks.provider";
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
@@ -34,6 +33,7 @@ public class CardsContract {
         // (read-write)
         String STACK_COLOR = "STACK_COLOR";
     }
+
     interface CardsColumns {
         // Id column.
         // (read-only)
@@ -65,7 +65,7 @@ public class CardsContract {
 
     /**
      * This class holds fields and methods to easily make requests to stacks table of CardsProvider.
-     * */
+     */
     public static class Stacks implements StacksColumns {
         // Uri pointing to the table of stacks.
         public static final Uri CONTENT_URI =
@@ -87,6 +87,7 @@ public class CardsContract {
         public static boolean checkTitle(String title) {
             return (null != title) && (title.length() <= MAX_TITLE_LEN);
         }
+
         public static boolean checkLanguage(String language) {
             return (null != language) && (language.length() <= MAX_LANGUAGE_LEN);
         }
@@ -94,16 +95,18 @@ public class CardsContract {
 
     /**
      * This class holds fields and methods to easily make requests to cards table of CardsProvider.
-     * */
+     */
     public static class Cards implements CardsColumns {
         // Uri pointing to the table of cards.
         public static final Uri CONTENT_URI =
                 BASE_CONTENT_URI.buildUpon().appendPath(PATH_CARDS).build();
+
         /**
          * Creates uri for all cards that belongs to the {@code id}.
+         *
          * @param id Id of the stack.
          * @return uri for all cards that belong to the {@code id}.
-         * */
+         */
         public static Uri buildUriToCardsOfStack(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
         }
@@ -111,10 +114,11 @@ public class CardsContract {
         /**
          * Creates uri to the card with id equal to {@code cardId} of stack
          * with id equal to {@code stackId}.
+         *
          * @param stackId Id of stack.
-         * @param cardId Id of card.
+         * @param cardId  Id of card.
          * @return Uri to the card with id equal to {@code cardId} of stack
-         * */
+         */
         public static Uri buildUriToCard(long stackId, long cardId) {
             return ContentUris.withAppendedId(buildUriToCardsOfStack(stackId), cardId);
         }
@@ -125,8 +129,8 @@ public class CardsContract {
                 ContentResolver.CURSOR_ITEM_BASE_TYPE + "/vnd." + CONTENT_AUTHORITY + ".card";
 
         // Sorting orders.
-        public static final String SORT_FRONT = CardsColumns.CARD_FRONT  + " DESC";
-        public static final String SORT_BACK = CardsColumns.CARD_BACK  + " DESC";
+        public static final String SORT_FRONT = CardsColumns.CARD_FRONT + " DESC";
+        public static final String SORT_BACK = CardsColumns.CARD_BACK + " DESC";
         public static final String SORT_LAST_SEEN = CardsColumns.CARD_LAST_SEEN + " ASC";
 
         // Maximum length of front text.
@@ -137,6 +141,7 @@ public class CardsContract {
         public static boolean checkFront(String front) {
             return (null != front) && (front.length() <= MAX_FRONT_LEN);
         }
+
         public static boolean checkBack(String back) {
             return (null != back) && (back.length() <= MAX_BACK_LEN);
         }

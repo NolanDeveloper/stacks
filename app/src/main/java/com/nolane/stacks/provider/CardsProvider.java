@@ -12,9 +12,12 @@ import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
 
-import java.util.Arrays;
+import com.nolane.stacks.provider.CardsContract.Cards;
+import com.nolane.stacks.provider.CardsContract.CardsColumns;
+import com.nolane.stacks.provider.CardsContract.Stacks;
+import com.nolane.stacks.provider.CardsContract.StacksColumns;
 
-import com.nolane.stacks.provider.CardsContract.*;
+import java.util.Arrays;
 
 /**
  * This class provides access to the database of this application. These methods are implicitly
@@ -32,6 +35,7 @@ public class CardsProvider extends ContentProvider {
     private static final int CARDS_ID = 202;
 
     private static final UriMatcher URI_MATCHER = new UriMatcher(UriMatcher.NO_MATCH);
+
     static {
         final String authority = CardsContract.CONTENT_AUTHORITY;
         URI_MATCHER.addURI(authority, CardsContract.PATH_STACKS, STACKS_TABLE);
@@ -110,11 +114,13 @@ public class CardsProvider extends ContentProvider {
                 String id = uri.getLastPathSegment();
                 selection = DatabaseUtils.concatenateWhere(selection, Stacks.STACK_ID + " = " + id);
                 break;
-            } case CARDS_ID: {
+            }
+            case CARDS_ID: {
                 String id = uri.getLastPathSegment();
                 selection = DatabaseUtils.concatenateWhere(selection, Cards.CARD_ID + " = " + id);
                 break;
-            } case CARDS_OF_STACK: {
+            }
+            case CARDS_OF_STACK: {
                 String id = uri.getLastPathSegment();
                 selection = DatabaseUtils.concatenateWhere(selection, Cards.CARD_STACK_ID + " = " + id);
             }
@@ -195,11 +201,13 @@ public class CardsProvider extends ContentProvider {
                 String id = uri.getLastPathSegment();
                 selection = DatabaseUtils.concatenateWhere(selection, Stacks.STACK_ID + " = " + id);
                 break;
-            } case CARDS_ID: {
+            }
+            case CARDS_ID: {
                 String id = uri.getLastPathSegment();
                 selection = DatabaseUtils.concatenateWhere(selection, Cards.CARD_ID + " = " + id);
                 break;
-            } case CARDS_OF_STACK: {
+            }
+            case CARDS_OF_STACK: {
                 String id = uri.getLastPathSegment();
                 selection = DatabaseUtils.concatenateWhere(selection, Cards.CARD_STACK_ID + " = " + id);
                 break;
@@ -229,11 +237,13 @@ public class CardsProvider extends ContentProvider {
                 String id = uri.getLastPathSegment();
                 selection = DatabaseUtils.concatenateWhere(selection, Stacks.STACK_ID + " = " + id);
                 break;
-            } case CARDS_ID: {
+            }
+            case CARDS_ID: {
                 String id = uri.getLastPathSegment();
                 selection = DatabaseUtils.concatenateWhere(selection, Cards.CARD_ID + " = " + id);
                 break;
-            } case CARDS_OF_STACK: {
+            }
+            case CARDS_OF_STACK: {
                 String id = uri.getLastPathSegment();
                 selection = DatabaseUtils.concatenateWhere(selection, Cards.CARD_STACK_ID + " = " + id);
                 break;
@@ -250,10 +260,11 @@ public class CardsProvider extends ContentProvider {
     /**
      * Checks values before updating and inserting and throws {@code IllegalArgumentException}
      * in case of any mistake in parameters.
-     * @param uri Uri argument of {@link #insert} or {@link #update}.
+     *
+     * @param uri    Uri argument of {@link #insert} or {@link #update}.
      * @param values ContentValues argument of {@link #insert} or {@link #update}.
      * @throws IllegalArgumentException This is thrown in case of failing check. It also provides
-     * message describing the reason of failing.
+     *                                  message describing the reason of failing.
      */
     private void checkOrThrow(Uri uri, ContentValues values) throws IllegalArgumentException {
         switch (URI_MATCHER.match(uri)) {

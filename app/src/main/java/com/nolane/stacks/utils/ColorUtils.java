@@ -20,10 +20,11 @@ public class ColorUtils {
      * Colors are interpolated in hsv so interpolation will be smooth.
      * Thanks to <a href="http://stackoverflow.com/a/7871291/4626533">Mark Renouf</a>
      * and StackOverflow.
-     * @param colorZero The color where interpolation hav start. If proportion == 0 this
-     *                  color will be returned.
-     * @param colorOne The color where interpolation has finish. If proportion == 1 this
-     *                 color will be returned.
+     *
+     * @param colorZero  The color where interpolation hav start. If proportion == 0 this
+     *                   color will be returned.
+     * @param colorOne   The color where interpolation has finish. If proportion == 1 this
+     *                   color will be returned.
      * @param proportion Proportion in which to mix colors.
      * @return Interpolated color.
      */
@@ -43,6 +44,7 @@ public class ColorUtils {
 
     /**
      * Returns color which represents current progress.
+     *
      * @param cardProgress Progress value of some card.
      * @return Color which represents current progress.
      */
@@ -55,7 +57,7 @@ public class ColorUtils {
         if (maxProgress <= minProgress) {
             throw new IllegalStateException("Maximum progress <= minimal progress of card.");
         }
-        float proportion = (float)(cardProgress - minProgress) / (maxProgress - minProgress);
+        float proportion = (float) (cardProgress - minProgress) / (maxProgress - minProgress);
         return ColorUtils.interpolateColor(
                 context.getResources().getColor(R.color.bad_progress),
                 context.getResources().getColor(R.color.good_progress),

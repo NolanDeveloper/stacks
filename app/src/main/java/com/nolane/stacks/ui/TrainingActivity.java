@@ -4,8 +4,9 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
 import com.nolane.stacks.R;
-import static com.nolane.stacks.provider.CardsContract.*;
 import com.nolane.stacks.utils.UriUtils;
+
+import static com.nolane.stacks.provider.CardsContract.Stacks;
 
 /**
  * This activity is for training in cards of certain stack. <br>
