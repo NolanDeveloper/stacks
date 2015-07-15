@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/ll_content"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -20,11 +20,16 @@
             android:text="@string/speed"
             android:layout_gravity="center_vertical"/>
 
-        <SeekBar
+        <org.adw.library.widgets.discreteseekbar.DiscreteSeekBar
             android:id="@+id/sb_max_in_learning"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_weight="1"/>
+            android:layout_weight="1"
+            app:dsb_progressColor="@color/accent"
+            app:dsb_trackColor="@color/accent"
+            app:dsb_indicatorColor="@color/accent"
+            app:dsb_indicatorElevation="4dp"
+            app:dsb_rippleColor="@color/accent"/>
 
     </LinearLayout>
 
@@ -41,6 +46,21 @@
             android:hint="@string/hint_title"
             android:inputType="textCapWords"
             android:text="Text to move hint up."/>
+
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp">
+
+        <EditText
+            android:id="@+id/et_language"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/hint_language"
+            android:text=""
+            android:imeOptions="actionDone"/>
 
     </android.support.design.widget.TextInputLayout>
 

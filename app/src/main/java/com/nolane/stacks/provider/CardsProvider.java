@@ -263,6 +263,10 @@ public class CardsProvider extends ContentProvider {
                 if (null != title && !Stacks.checkTitle(title)) {
                     throw new IllegalArgumentException("The title is too long. (max len is " + Stacks.MAX_TITLE_LEN + ")");
                 }
+                String language = values.getAsString(StacksColumns.STACK_LANGUAGE);
+                if (null != title && !Stacks.checkLanguage(language)) {
+                    throw new IllegalArgumentException("The language is too long. (max len is " + Stacks.MAX_LANGUAGE_LEN + ")");
+                }
                 break;
             case CARDS_TABLE:
             case CARDS_ID:

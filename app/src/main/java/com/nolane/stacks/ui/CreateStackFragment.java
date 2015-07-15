@@ -20,6 +20,9 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import com.nolane.stacks.R;
+
+import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
+
 import static com.nolane.stacks.provider.CardsContract.*;
 
 /**
@@ -31,8 +34,9 @@ public class CreateStackFragment extends Fragment
         implements View.OnClickListener, LoaderManager.LoaderCallbacks<Uri>, TextView.OnEditorActionListener {
     // UI elements.
     private EditText etTitle;
+    private EditText etLanguage;
     private Button btnDone;
-    private SeekBar sbMaxInLearning;
+    private DiscreteSeekBar sbMaxInLearning;
 
     // Limits of max in learning cards.
     private int minMaxInLearning;
@@ -44,8 +48,9 @@ public class CreateStackFragment extends Fragment
         View view = inflater.inflate(R.layout.frag_create_stack, container, false);
 
         etTitle = (EditText) view.findViewById(R.id.et_title);
+        etLanguage = (EditText) view.findViewById(R.id.et_language);
         btnDone = (Button) view.findViewById(R.id.btn_done);
-        sbMaxInLearning = (SeekBar) view.findViewById(R.id.sb_max_in_learning);
+        sbMaxInLearning = (DiscreteSeekBar) view.findViewById(R.id.sb_max_in_learning);
 
         minMaxInLearning = getResources().getInteger(R.integer.min_max_in_learning);
         maxMaxInLearning = getResources().getInteger(R.integer.max_max_in_learning);
@@ -59,9 +64,14 @@ public class CreateStackFragment extends Fragment
             etTitle.setFilters(filterArray);
             etTitle.setText(null);
 
-            sbMaxInLearning.setMax(maxMaxInLearning - minMaxInLearning);
+            filterArray = new InputFilter[1];
+            filterArray[0] = new InputFilter.LengthFilter(Stacks.MAX_LANGUAGE_LEN);
+            etLanguage.setFilters(filterArray);
+
+            sbMaxInLearning.setMin(minMaxInLearning);
+            sbMaxInLearning.setMax(maxMaxInLearning);
             int defaultMaxInLearning = getResources().getInteger(R.integer.default_max_in_learning);
-            sbMaxInLearning.setProgress(defaultMaxInLearning - minMaxInLearning);
+            sbMaxInLearning.setProgress(defaultMaxInLearning);
         }
         return view;
     }
@@ -73,12 +83,14 @@ public class CreateStackFragment extends Fragment
     public void onClick(View v) {
         btnDone.setOnClickListener(null);
         String title = etTitle.getText().toString();
-        int maxInLearning = sbMaxInLearning.getProgress() + minMaxInLearning;
+        String language = etLanguage.getText().toString();
+        int maxInLearning = sbMaxInLearning.getProgress();
         // If you know better way to pass values though Bundle please,
         // make pull request on https://github.com/Nolane/learn-english-words
         Bundle args = new Bundle();
         ContentValues values = new ContentValues();
         values.put(Stacks.STACK_TITLE, title);
+        values.put(Stacks.STACK_LANGUAGE, language);
         values.put(Stacks.STACK_MAX_IN_LEARNING, maxInLearning);
         args.putParcelable(EXTRA_VALUES, values);
         getLoaderManager().initLoader(0, args, this).forceLoad();

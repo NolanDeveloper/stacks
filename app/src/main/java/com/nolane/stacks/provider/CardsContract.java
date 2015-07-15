@@ -3,6 +3,7 @@ package com.nolane.stacks.provider;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.net.Uri;
+import android.text.TextUtils;
 
 /**
  * This class is public interface of CardsProvider. You can access it using
@@ -14,18 +15,21 @@ public class CardsContract {
 
     // Columns for creating table and making queries.
     interface StacksColumns {
-        // Id column.
+        // The id of column.
         // (read-only)
         String STACK_ID = "STACK_ID";
-        // Title.
+        // The Title.
         // (read/write)
         String STACK_TITLE = "STACK_TITLE";
-        // Maximum card in "in learning" state.
+        // Maximum of cards in "in learning" state.
         // (read/write)
         String STACK_MAX_IN_LEARNING = "STACK_MAX_IN_LEARNING";
         // The amount of cards in this stack.
         // (read-only)
         String STACK_COUNT_CARDS = "STACK_COUNT_CARDS";
+        // The language of this stack.
+        // (read-write)
+        String STACK_LANGUAGE = "STACK_LANGUAGE";
     }
     interface CardsColumns {
         // Id column.
@@ -74,9 +78,14 @@ public class CardsContract {
 
         // Maximum length of title.
         public static final int MAX_TITLE_LEN = 35;
+        // Maximum length of language.
+        public static final int MAX_LANGUAGE_LEN = 20;
 
         public static boolean checkTitle(String title) {
             return (null != title) && (title.length() <= MAX_TITLE_LEN);
+        }
+        public static boolean checkLanguage(String language) {
+            return (null != language) && (language.length() <= MAX_LANGUAGE_LEN);
         }
     }
 

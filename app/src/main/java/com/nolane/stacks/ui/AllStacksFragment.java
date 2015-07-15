@@ -60,6 +60,7 @@ public class AllStacksFragment extends Fragment implements LoaderManager.LoaderC
             query.moveToPosition(position);
             final long id = query.getLong(StacksQuery.ID);
             final String title = query.getString(StacksQuery.TITLE);
+            final String language = query.getString(StacksQuery.LANGUAGE);
             final Uri thisStack = ContentUris.withAppendedId(Stacks.CONTENT_URI, id);
             holder.tvTitle.setText(title);
             holder.vRoot.setOnClickListener(new View.OnClickListener() {
@@ -67,6 +68,7 @@ public class AllStacksFragment extends Fragment implements LoaderManager.LoaderC
                 public void onClick(View v) {
                     Intent intent = new Intent(getActivity(), EditStackActivity.class);
                     Uri data = UriUtils.insertParameter(thisStack, Stacks.STACK_TITLE, title);
+                    data = UriUtils.insertParameter(data, Stacks.STACK_LANGUAGE, language);
                     intent.setData(data);
                     startActivity(intent);
                 }
@@ -109,11 +111,13 @@ public class AllStacksFragment extends Fragment implements LoaderManager.LoaderC
 
         String[] COLUMNS = {
                 Stacks.STACK_ID,
-                Stacks.STACK_TITLE
+                Stacks.STACK_TITLE,
+                Stacks.STACK_LANGUAGE
         };
 
         int ID = 0;
         int TITLE = 1;
+        int LANGUAGE = 2;
     }
 
     @Override
