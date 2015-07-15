@@ -32,8 +32,6 @@ public class CreateStackFragment extends Fragment
     // UI elements.
     private EditText etTitle;
     private Button btnDone;
-    private TextView tvMin;
-    private TextView tvMax;
     private SeekBar sbMaxInLearning;
 
     // Limits of max in learning cards.
@@ -47,8 +45,6 @@ public class CreateStackFragment extends Fragment
 
         etTitle = (EditText) view.findViewById(R.id.et_title);
         btnDone = (Button) view.findViewById(R.id.btn_done);
-        tvMin = (TextView) view.findViewById(R.id.tv_min);
-        tvMax = (TextView) view.findViewById(R.id.tv_max);
         sbMaxInLearning = (SeekBar) view.findViewById(R.id.sb_max_in_learning);
 
         minMaxInLearning = getResources().getInteger(R.integer.min_max_in_learning);
@@ -63,8 +59,6 @@ public class CreateStackFragment extends Fragment
             etTitle.setFilters(filterArray);
             etTitle.setText(null);
 
-            tvMin.setText(String.valueOf(minMaxInLearning));
-            tvMax.setText(String.valueOf(maxMaxInLearning));
             sbMaxInLearning.setMax(maxMaxInLearning - minMaxInLearning);
             int defaultMaxInLearning = getResources().getInteger(R.integer.default_max_in_learning);
             sbMaxInLearning.setProgress(defaultMaxInLearning - minMaxInLearning);

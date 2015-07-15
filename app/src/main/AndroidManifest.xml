@@ -43,6 +43,10 @@
             android:parentActivityName=".ui.AllCardsActivity"/>
 
         <activity
+            android:name=".ui.EditStackActivity"
+            android:parentActivityName=".ui.AllStacksActivity"/>
+
+        <activity
             android:name=".ui.PickStackActivity"/>
 
         <activity

@@ -11,48 +11,34 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 
 import com.nolane.stacks.R;
-import static com.nolane.stacks.provider.CardsContract.*;
+import com.nolane.stacks.utils.UriUtils;
 
-import java.util.Timer;
-import java.util.TimerTask;
+import static com.nolane.stacks.provider.CardsContract.*;
 
 public class AllStacksFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, View.OnClickListener {
     private class StacksAdapter extends RecyclerView.Adapter<StacksAdapter.ViewHolder> {
         public class ViewHolder extends RecyclerView.ViewHolder {
-            private TextView tvTitle;
-            private Button btnAddCard;
-            private Button btnDelete;
+            public View vRoot;
+            public TextView tvTitle;
 
             public ViewHolder(View itemView) {
                 super(itemView);
+                vRoot = itemView;
                 tvTitle = (TextView) itemView.findViewById(R.id.tv_title);
-                btnAddCard = (Button) itemView.findViewById(R.id.btn_add_card);
-                btnDelete = (Button) itemView.findViewById(R.id.btn_delete);
             }
         }
 
         // The query which this adapter represents through recycler view.
         private Cursor query;
-        // The element of the list that we want to hide. This is necessary because
-        // we must have opportunity to restore all stack after deletion. Instead of
-        // deleting we just hide element. And if user will decide to undo deletion
-        // we just show this element up. Otherwise if user is going to delete this
-        // stack we just do this after the moment the button "undo" will move out
-        // of screen. The value -1 means nothing is hidden.
-        private int hiddenPosition = -1;
-        // Timer and TimerTask that will do actual deletion.
-        Timer timer;
-        TimerTask timerTask;
 
         public StacksAdapter(@Nullable Cursor query) {
             super();
@@ -61,76 +47,24 @@ public class AllStacksFragment extends Fragment implements LoaderManager.LoaderC
 
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_stack_1, parent, false);
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_stack, parent, false);
             return new ViewHolder(view);
         }
 
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
-            // Make offset to actual position.
-            if ((-1 != hiddenPosition) && (hiddenPosition < position)) {
-                position += 1;
-            }
             query.moveToPosition(position);
             final long id = query.getLong(StacksQuery.ID);
             final String title = query.getString(StacksQuery.TITLE);
             final Uri thisStack = ContentUris.withAppendedId(Stacks.CONTENT_URI, id);
             holder.tvTitle.setText(title);
-            holder.btnAddCard.setOnClickListener(new View.OnClickListener() {
+            holder.vRoot.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(getActivity(), AddCardActivity.class);
-                    intent.setData(thisStack);
+                    Intent intent = new Intent(getActivity(), EditStackActivity.class);
+                    Uri data = UriUtils.insertParameter(thisStack, Stacks.STACK_TITLE, title);
+                    intent.setData(data);
                     startActivity(intent);
-                }
-            });
-            final int finalPosition = position;
-            holder.btnDelete.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    // Here the dancing begin.
-                    // Firstly hide element which the user wants to delete.
-                    hiddenPosition = finalPosition;
-                    // And don't forget about updating list.
-                    notifyDataSetChanged();
-                    // Then create snackbar and start timer for deletion.
-                    int snackDuration = 2000;
-                    timer = new Timer();
-                    // Here we use explicit duration because we didn't find a way to find out
-                    // duration of constant values Snackbar.LENGTH_SHORT and Snackbar.LENGTH_LONG.
-                    // I want to meet the man who created these constants and ask him what he
-                    // wanted to achieve using them. IMHO they are useless. The better way is
-                    // create constant values that represent actual time.
-                    //noinspection ResourceType
-                    Snackbar.make(getView(), getString(R.string.deleted), snackDuration)
-                            .setAction(getString(R.string.undo), new View.OnClickListener() {
-                                @Override
-                                public void onClick(View v) {
-                                    // Just show hidden element and stop timer.
-                                    timer.cancel();
-                                    hiddenPosition = -1;
-                                    notifyDataSetChanged();
-                                    timer = null;
-                                    timerTask = null;
-                                }
-                            })
-                            .setActionTextColor(getResources().getColor(R.color.snack_bar_positive))
-                            .show();
-                    timerTask = new TimerTask() {
-                        @Override
-                        public void run() {
-                            // Here is actual deletion.
-                            new Thread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    getActivity().getContentResolver().delete(thisStack, null, null);
-                                }
-                            }).run();
-                            timer = null;
-                            timerTask = null;
-                        }
-                    };
-                    timer.schedule(timerTask, snackDuration);
                 }
             });
         }
@@ -140,14 +74,13 @@ public class AllStacksFragment extends Fragment implements LoaderManager.LoaderC
             if (null == query) {
                 return 0;
             } else {
-                return query.getCount() - (-1 == hiddenPosition ? 0 : 1);
+                return query.getCount();
             }
         }
 
         public void setCursor(@Nullable Cursor query) {
             if (this.query == query)
                 return;
-            hiddenPosition = -1;
             if (null != this.query) {
                 this.query.close();
             }
@@ -167,7 +100,7 @@ public class AllStacksFragment extends Fragment implements LoaderManager.LoaderC
         rvStacks = (RecyclerView) view.findViewById(R.id.rv_stacks);
         fab = (FloatingActionButton) view.findViewById(R.id.fab);
 
-        rvStacks.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
+        rvStacks.setLayoutManager(new GridLayoutManager(getActivity(), 2, LinearLayoutManager.VERTICAL, false));
         rvStacks.setAdapter(new StacksAdapter(null));
 
         fab.setOnClickListener(this);
@@ -178,11 +111,6 @@ public class AllStacksFragment extends Fragment implements LoaderManager.LoaderC
     @Override
     public void onPause() {
         super.onPause();
-        StacksAdapter adapter = (StacksAdapter) rvStacks.getAdapter();
-        if (null != adapter.timer) {
-            adapter.timer.cancel();
-            adapter.timerTask.run();
-        }
     }
 
     @Override

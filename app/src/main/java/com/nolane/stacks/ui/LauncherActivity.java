@@ -46,7 +46,7 @@ public class LauncherActivity extends AppCompatActivity implements LoaderManager
             @Override
             public Cursor loadInBackground() {
                 try {
-                    Thread.sleep(1000);
+                    Thread.sleep(700);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

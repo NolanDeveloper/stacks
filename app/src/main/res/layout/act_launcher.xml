@@ -10,8 +10,8 @@
         android:background="@color/primary"/>
 
     <ImageView
-        android:layout_width="96dp"
-        android:layout_height="96dp"
+        android:layout_width="144dp"
+        android:layout_height="144dp"
         android:src="@drawable/ic_launcher"
         android:layout_gravity="center"/>
 

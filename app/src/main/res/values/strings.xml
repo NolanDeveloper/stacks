@@ -22,4 +22,5 @@
     <string name="delete">Delete</string>
     <string name="add_card">Add card</string>
     <string name="bidirectional">bidirectional</string>
+    <string name="speed">Speed</string>
 </resources>

@@ -90,7 +90,7 @@ public class EditCardFragment extends Fragment implements View.OnClickListener, 
                 }
             }).run();
         }
-        getActivity().onBackPressed();
+        getActivity().finish();
     }
 
     @Override
