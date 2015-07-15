@@ -13,7 +13,8 @@ import static com.nolane.stacks.provider.CardsContract.*;
  * Required: <br>
  * data type: {@link Stacks#CONTENT_ITEM_TYPE} <br>
  * data parameter: {@link Stacks#STACK_TITLE} <br>
- * data parameter: {@link Stacks#STACK_LANGUAGE}
+ * data parameter: {@link Stacks#STACK_LANGUAGE} <br>
+ * data parameter: {@link Stacks#STACK_COLOR}
  */
 public class EditStackActivity extends AppCompatActivity {
     @Override
@@ -24,6 +25,7 @@ public class EditStackActivity extends AppCompatActivity {
             UriUtils.checkDataTypeOrThrow(this, Stacks.CONTENT_ITEM_TYPE);
             UriUtils.checkSpecifiesParameterOrThrow(this, Stacks.STACK_TITLE);
             UriUtils.checkSpecifiesParameterOrThrow(this, Stacks.STACK_LANGUAGE);
+            UriUtils.checkSpecifiesParameterOrThrow(this, Stacks.STACK_COLOR);
             getFragmentManager()
                     .beginTransaction()
                     .replace(R.id.fl_root, new EditStackFragment())

@@ -12,4 +12,14 @@
     <color name="good_progress">#ff90ff7e</color>
     <color name="snack_bar_positive">#ff81ff87</color>
     <color name="snack_bar_negative">#ffff6462</color>
+
+    <color name="stack_color_1">#1dd2af</color>
+    <color name="stack_color_2">#2ecc71</color>
+    <color name="stack_color_3">#3498db</color>
+    <color name="stack_color_4">#9b59b6</color>
+    <color name="stack_color_5">#34495e</color>
+    <color name="stack_color_6">#f1c40f</color>
+    <color name="stack_color_7">#e74c3c</color>
+    <color name="stack_color_8">#7f8c8d</color>
+    <color name="stack_color_9">#d35400</color>
 </resources>

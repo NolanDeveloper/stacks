@@ -30,6 +30,9 @@ public class CardsContract {
         // The language of this stack.
         // (read-write)
         String STACK_LANGUAGE = "STACK_LANGUAGE";
+        // The color associated with this stack. Integer value.
+        // (read-write)
+        String STACK_COLOR = "STACK_COLOR";
     }
     interface CardsColumns {
         // Id column.

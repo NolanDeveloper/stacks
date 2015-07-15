@@ -7,9 +7,11 @@ import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
+import android.graphics.PorterDuff;
 import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.GridLayoutManager;
@@ -17,6 +19,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.nolane.stacks.R;
@@ -36,12 +39,18 @@ public class PickStackFragment extends Fragment implements LoaderManager.LoaderC
     public class StacksAdapter extends RecyclerCursorAdapter<StacksAdapter.ViewHolder> {
         public class ViewHolder extends RecyclerView.ViewHolder {
             public View root;
+            public ImageView ivIcon;
             public TextView tvTitle;
+            public TextView tvLanguage;
+            public TextView tvCountCards;
 
             public ViewHolder(View itemView) {
                 super(itemView);
                 root = itemView;
+                ivIcon = (ImageView) itemView.findViewById(R.id.iv_icon);
                 tvTitle = (TextView) itemView.findViewById(R.id.tv_title);
+                tvLanguage = (TextView) itemView.findViewById(R.id.tv_language);
+                tvCountCards = (TextView) itemView.findViewById(R.id.tv_count_cards);
             }
         }
 
@@ -55,13 +64,28 @@ public class PickStackFragment extends Fragment implements LoaderManager.LoaderC
             return new ViewHolder(item);
         }
 
+        private String shortenLanguage(@NonNull String language) {
+            if (language.length() < 2) {
+                return "";
+            }
+            if (language.length() == 2) {
+                return String.valueOf(Character.toUpperCase(language.charAt(0))) + Character.toLowerCase(language.charAt(1));
+            }
+            return Character.toUpperCase(language.charAt(0)) + language.substring(1, 3).toLowerCase();
+        }
+
         @Override
         public void onBindViewHolder(ViewHolder holder, final int position) {
             query.moveToPosition(position);
             final long id = query.getLong(StacksQuery.ID);
             final String title = query.getString(StacksQuery.TITLE);
+            final String language = query.getString(StacksQuery.LANGUAGE);
             final int count = query.getInt(StacksQuery.COUNT_CARDS);
+            final int color = query.getInt(StacksQuery.COLOR);
             holder.tvTitle.setText(title);
+            holder.tvLanguage.setText(shortenLanguage(language));
+            holder.ivIcon.getDrawable().setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
+            holder.tvCountCards.setText(String.valueOf(count));
             if (0 == count) {
                 holder.root.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -103,8 +127,7 @@ public class PickStackFragment extends Fragment implements LoaderManager.LoaderC
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.frag_pick_stack, container, false);
         rvStacks = (RecyclerView) view.findViewById(R.id.rv_stacks);
-        rvStacks.setLayoutManager(new GridLayoutManager(
-                getActivity(), 2, GridLayoutManager.VERTICAL, false));
+        rvStacks.setLayoutManager(new GridLayoutManager(getActivity(), 2, GridLayoutManager.VERTICAL, false));
         getActivity().setTitle(getString(R.string.choose_stack));
         rvStacks.setAdapter(new StacksAdapter(null));
         return view;
@@ -122,12 +145,16 @@ public class PickStackFragment extends Fragment implements LoaderManager.LoaderC
         String[] COLUMNS = {
                 Stacks.STACK_ID,
                 Stacks.STACK_TITLE,
-                Stacks.STACK_COUNT_CARDS
+                Stacks.STACK_LANGUAGE,
+                Stacks.STACK_COUNT_CARDS,
+                Stacks.STACK_COLOR
         };
 
         int ID = 0;
         int TITLE = 1;
-        int COUNT_CARDS = 2;
+        int LANGUAGE = 2;
+        int COUNT_CARDS = 3;
+        int COLOR = 4;
     }
 
     @Override

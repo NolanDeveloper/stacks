@@ -7,8 +7,10 @@ import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
+import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.GridLayoutManager;
@@ -17,6 +19,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.nolane.stacks.R;
@@ -36,12 +39,18 @@ public class AllStacksFragment extends Fragment implements LoaderManager.LoaderC
     private class StacksAdapter extends RecyclerCursorAdapter<StacksAdapter.ViewHolder> {
         public class ViewHolder extends RecyclerView.ViewHolder {
             public View vRoot;
+            public ImageView ivIcon;
             public TextView tvTitle;
+            public TextView tvLanguage;
+            public TextView tvCountCards;
 
             public ViewHolder(View itemView) {
                 super(itemView);
                 vRoot = itemView;
+                ivIcon = (ImageView) itemView.findViewById(R.id.iv_icon);
                 tvTitle = (TextView) itemView.findViewById(R.id.tv_title);
+                tvLanguage = (TextView) itemView.findViewById(R.id.tv_language);
+                tvCountCards = (TextView) itemView.findViewById(R.id.tv_count_cards);
             }
         }
 
@@ -55,20 +64,36 @@ public class AllStacksFragment extends Fragment implements LoaderManager.LoaderC
             return new ViewHolder(view);
         }
 
+        private String shortenLanguage(@NonNull String language) {
+            if (language.length() < 2) {
+                return "";
+            }
+            if (language.length() == 2) {
+                return String.valueOf(Character.toUpperCase(language.charAt(0))) + Character.toLowerCase(language.charAt(1));
+            }
+            return Character.toUpperCase(language.charAt(0)) + language.substring(1, 3).toLowerCase();
+        }
+
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
             query.moveToPosition(position);
             final long id = query.getLong(StacksQuery.ID);
             final String title = query.getString(StacksQuery.TITLE);
             final String language = query.getString(StacksQuery.LANGUAGE);
+            final int count = query.getInt(StacksQuery.COUNT_CARDS);
+            final int color = query.getInt(StacksQuery.COLOR);
             final Uri thisStack = ContentUris.withAppendedId(Stacks.CONTENT_URI, id);
             holder.tvTitle.setText(title);
+            holder.tvLanguage.setText(shortenLanguage(language));
+            holder.tvCountCards.setText(String.valueOf(count));
+            holder.ivIcon.getDrawable().setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
             holder.vRoot.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(getActivity(), EditStackActivity.class);
                     Uri data = UriUtils.insertParameter(thisStack, Stacks.STACK_TITLE, title);
                     data = UriUtils.insertParameter(data, Stacks.STACK_LANGUAGE, language);
+                    data = UriUtils.insertParameter(data, Stacks.STACK_COLOR, color);
                     intent.setData(data);
                     startActivity(intent);
                 }
@@ -112,12 +137,16 @@ public class AllStacksFragment extends Fragment implements LoaderManager.LoaderC
         String[] COLUMNS = {
                 Stacks.STACK_ID,
                 Stacks.STACK_TITLE,
-                Stacks.STACK_LANGUAGE
+                Stacks.STACK_LANGUAGE,
+                Stacks.STACK_COUNT_CARDS,
+                Stacks.STACK_COLOR
         };
 
         int ID = 0;
         int TITLE = 1;
         int LANGUAGE = 2;
+        int COUNT_CARDS = 3;
+        int COLOR = 4;
     }
 
     @Override

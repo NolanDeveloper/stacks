@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_gravity="center"
+    android:orientation="vertical"
+    android:padding="16dp"
+    style="@style/Theme.AppCompat.Dialog">
+
+    <GridLayout
+        android:id="@+id/gl_root"
+        android:orientation="vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:rowCount="3">
+
+        <View
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:layout_margin="4dp"
+            android:background="@color/stack_color_2"/>
+
+        <View
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:layout_margin="4dp"
+            android:background="@color/stack_color_2"/>
+
+        <View
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:layout_margin="4dp"
+            android:background="@color/stack_color_3"/>
+
+        <View
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:layout_margin="4dp"
+            android:background="@color/stack_color_4"/>
+
+        <View
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:layout_margin="4dp"
+            android:background="@color/stack_color_5"/>
+
+        <View
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:layout_margin="4dp"
+            android:background="@color/stack_color_6"/>
+
+        <View
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:layout_margin="4dp"
+            android:background="@color/stack_color_7"/>
+
+        <View
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:layout_margin="4dp"
+            android:background="@color/stack_color_8"/>
+
+        <View
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:layout_margin="4dp"
+            android:background="@color/stack_color_9"/>
+
+    </GridLayout>
+
+    <Button
+        android:id="@+id/btn_cancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_gravity="right"
+        style="?android:attr/borderlessButtonStyle"
+        android:text="@android:string/cancel"/>
+
+</LinearLayout>

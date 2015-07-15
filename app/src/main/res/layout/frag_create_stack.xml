@@ -26,10 +26,34 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             app:dsb_progressColor="@color/accent"
-            app:dsb_trackColor="@color/accent"
             app:dsb_indicatorColor="@color/accent"
             app:dsb_indicatorElevation="4dp"
             app:dsb_rippleColor="@color/accent"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="8dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:text="Color"/>
+
+        <ImageButton
+            android:id="@+id/ib_pick_color"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="16dp"
+            android:src="@color/stack_color_2"
+            android:padding="8dp"
+            android:background="?android:attr/selectableItemBackground"
+            android:elevation="4dp"/>
 
     </LinearLayout>
 

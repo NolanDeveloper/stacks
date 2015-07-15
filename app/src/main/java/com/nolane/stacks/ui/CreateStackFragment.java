@@ -1,11 +1,13 @@
 package com.nolane.stacks.ui;
 
+import android.app.Dialog;
 import android.app.Fragment;
 import android.app.LoaderManager;
 import android.content.AsyncTaskLoader;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.content.Loader;
+import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -16,6 +18,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.SeekBar;
 import android.widget.TextView;
 
@@ -32,11 +35,18 @@ import static com.nolane.stacks.provider.CardsContract.*;
  */
 public class CreateStackFragment extends Fragment
         implements View.OnClickListener, LoaderManager.LoaderCallbacks<Uri>, TextView.OnEditorActionListener {
+    // Save instance state keys.
+    private static final String EXTRA_COLOR = "color";
+
     // UI elements.
     private EditText etTitle;
     private EditText etLanguage;
+    private ImageButton ibPickColor;
     private Button btnDone;
     private DiscreteSeekBar sbMaxInLearning;
+
+    // Color that user picked.
+    private int color;
 
     // Limits of max in learning cards.
     private int minMaxInLearning;
@@ -49,6 +59,7 @@ public class CreateStackFragment extends Fragment
 
         etTitle = (EditText) view.findViewById(R.id.et_title);
         etLanguage = (EditText) view.findViewById(R.id.et_language);
+        ibPickColor = (ImageButton) view.findViewById(R.id.ib_pick_color);
         btnDone = (Button) view.findViewById(R.id.btn_done);
         sbMaxInLearning = (DiscreteSeekBar) view.findViewById(R.id.sb_max_in_learning);
 
@@ -57,6 +68,18 @@ public class CreateStackFragment extends Fragment
 
         btnDone.setOnClickListener(this);
         etTitle.setOnEditorActionListener(this);
+        ibPickColor.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new ColorPickerDialog(getActivity(), new ColorPickerDialog.OnPickedColorListener() {
+                    @Override
+                    public void onPickedColor(int color) {
+                        CreateStackFragment.this.color = color;
+                        ibPickColor.setImageDrawable(new ColorDrawable(color));
+                    }
+                }).show();
+            }
+        });
 
         if (null == savedInstanceState) {
             InputFilter[] filterArray = new InputFilter[1];
@@ -72,8 +95,19 @@ public class CreateStackFragment extends Fragment
             sbMaxInLearning.setMax(maxMaxInLearning);
             int defaultMaxInLearning = getResources().getInteger(R.integer.default_max_in_learning);
             sbMaxInLearning.setProgress(defaultMaxInLearning);
+
+            color = ((ColorDrawable) ibPickColor.getDrawable()).getColor();
+        } else {
+            color = savedInstanceState.getInt(EXTRA_COLOR);
+            ibPickColor.setImageDrawable(new ColorDrawable(color));
         }
         return view;
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(EXTRA_COLOR, color);
     }
 
     // Key to store ContentValues in Bundle.
@@ -92,6 +126,7 @@ public class CreateStackFragment extends Fragment
         values.put(Stacks.STACK_TITLE, title);
         values.put(Stacks.STACK_LANGUAGE, language);
         values.put(Stacks.STACK_MAX_IN_LEARNING, maxInLearning);
+        values.put(Stacks.STACK_COLOR, color);
         args.putParcelable(EXTRA_VALUES, values);
         getLoaderManager().initLoader(0, args, this).forceLoad();
     }

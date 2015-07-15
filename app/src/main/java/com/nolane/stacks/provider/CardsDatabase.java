@@ -55,7 +55,8 @@ public class CardsDatabase extends SQLiteOpenHelper {
                 StacksColumns.STACK_ID + " INTEGER PRIMARY KEY, " +
                 StacksColumns.STACK_TITLE + " TEXT NOT NULL, " +
                 StacksColumns.STACK_MAX_IN_LEARNING + " INTEGER NOT NULL," +
-                StacksColumns.STACK_LANGUAGE + " TEXT NOT NULL)");
+                StacksColumns.STACK_LANGUAGE + " TEXT NOT NULL," +
+                StacksColumns.STACK_COLOR + " INTEGER NOT NULL)");
 
         db.execSQL("CREATE TABLE " + Tables.CARDS + "(" +
                 CardsColumns.CARD_ID + " INTEGER PRIMARY KEY, " +
