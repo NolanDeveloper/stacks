@@ -3,6 +3,7 @@ package com.nolane.stacks.provider;
 import android.content.ContentProvider;
 import android.content.ContentUris;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.DatabaseUtils;
@@ -15,6 +16,10 @@ import java.util.Arrays;
 
 import com.nolane.stacks.provider.CardsContract.*;
 
+/**
+ * This class provides access to the database of this application. These methods are implicitly
+ * called when {@link Context#getContentResolver()} with {@link CardsContract} is used.
+ */
 public class CardsProvider extends ContentProvider {
     // Tag for logging. (e.g. Log.i(LOG_TAG, "all right!"))
     private static final String LOG_TAG = CardsProvider.class.getName();
@@ -42,14 +47,11 @@ public class CardsProvider extends ContentProvider {
     public boolean onCreate() {
         db = new CardsDatabase(getContext());
         try {
+            // Perform actual creation.
             db.getWritableDatabase();
             Log.d(LOG_TAG, "Provider was created.");
             return true;
         } catch (SQLiteException e) {
-            // This can happen for example if there is no free memory. This case definitely
-            // must be tested but I don't know any way to do it except of making tons of
-            // garbage in memory of my phone which is definitely wrong.
-            // fixme: create test case
             e.printStackTrace();
             return false;
         }

@@ -1,6 +1,5 @@
 package com.nolane.stacks.ui;
 
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
@@ -10,8 +9,9 @@ import com.nolane.stacks.utils.UriUtils;
 import static com.nolane.stacks.provider.CardsContract.*;
 
 /**
- * This activity is for adding new cards into existing stack. You must specify uri for
- * the stack using {@link android.content.Intent#setData(Uri)}.
+ * This activity is for adding new cards into existing stack. <br>
+ * Required: <br>
+ * data type: {@link Stacks#CONTENT_ITEM_TYPE}
  */
 public class AddCardActivity extends AppCompatActivity {
     @Override

@@ -66,7 +66,8 @@ public class CreateStackFragment extends Fragment
         return view;
     }
 
-    private static final String VALUES = "values";
+    // Key to store ContentValues in Bundle.
+    private static final String EXTRA_VALUES = "values";
 
     @Override
     public void onClick(View v) {
@@ -79,7 +80,7 @@ public class CreateStackFragment extends Fragment
         ContentValues values = new ContentValues();
         values.put(Stacks.STACK_TITLE, title);
         values.put(Stacks.STACK_MAX_IN_LEARNING, maxInLearning);
-        args.putParcelable(VALUES, values);
+        args.putParcelable(EXTRA_VALUES, values);
         getLoaderManager().initLoader(0, args, this).forceLoad();
     }
 
@@ -88,7 +89,7 @@ public class CreateStackFragment extends Fragment
         // Here we use AsyncTaskLoader instead of simple AsyncTask because we need
         // to start another activity after inserting even if this activity was recreated during
         // inserting.
-        final ContentValues values = args.getParcelable(VALUES);
+        final ContentValues values = args.getParcelable(EXTRA_VALUES);
         return new AsyncTaskLoader<Uri>(getActivity()) {
             @Override
             public Uri loadInBackground() {
@@ -115,7 +116,7 @@ public class CreateStackFragment extends Fragment
 
     @Override
     public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-        onClick(null);
+        onClick(btnDone);
         return true;
     }
 }

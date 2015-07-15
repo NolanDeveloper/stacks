@@ -8,7 +8,12 @@ import android.support.annotation.NonNull;
 import com.nolane.stacks.R;
 import com.nolane.stacks.provider.CardsContract.*;
 
+/**
+ * This class provides convenient database access. It's used by {@link CardsProvider}
+ * and shouldn't be used elsewhere.
+ */
 public class CardsDatabase extends SQLiteOpenHelper {
+    // The name of the database.
     public static final String DATABASE_NAME = "cards";
 
     // Current version of data base. It must be updated for each new scheme.

@@ -62,6 +62,9 @@
             android:readPermission="com.nolane.stacks.provider.READ"
             android:writePermission="com.nolane.stacks.provider.WRITE"/>
 
+        <meta-data
+            android:name="com.google.android.backup.api_key"
+            android:value="AEdPqrEAAAAIrofR_Ayyu6Tnw5KkLC83sa2iqDi4scG2Dk0gTg" />
 
     </application>
 

@@ -15,19 +15,19 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.nolane.stacks.R;
+import com.nolane.stacks.utils.UriUtils;
+
 import static com.nolane.stacks.provider.CardsContract.*;
 
 /**
- * This fragment allows user to edit cards(eg to change front, to change back).
- * The activity that uses this fragment must specify data with the type
- * {@link Cards#CONTENT_ITEM_TYPE} and contain parameters:
- * {@link Cards#CARD_FRONT}, {@link Cards#CARD_BACK},
- * {@link Cards#CARD_PROGRESS}. This fragment is used in
- * conjunction with {@link EditCardActivity}.
+ * This fragment allows user to edit cards.
+ * Requires: <br>
+ * data type: {@link Cards#CONTENT_ITEM_TYPE} <br>
+ * data parameter: {@link Cards#CARD_FRONT} <br>
+ * data parameter: {@link Cards#CARD_BACK}
  */
 public class EditCardFragment extends Fragment implements View.OnClickListener, TextView.OnEditorActionListener {
     // UI elements.
-    private TextView tvProgress;
     private EditText etFront;
     private EditText etBack;
     private Button btnDone;
@@ -41,21 +41,18 @@ public class EditCardFragment extends Fragment implements View.OnClickListener, 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.frag_edit_card, container, false);
-        tvProgress = (TextView) view.findViewById(R.id.tv_progress);
         etFront = (EditText) view.findViewById(R.id.et_front);
         etBack = (EditText) view.findViewById(R.id.et_back);
         btnDone = (Button) view.findViewById(R.id.btn_done);
 
         Uri data = getActivity().getIntent().getData();
         id = Long.parseLong(data.getLastPathSegment());
-        String progress = data.getQueryParameter(Cards.CARD_PROGRESS);
         front = data.getQueryParameter(Cards.CARD_FRONT);
         back = data.getQueryParameter(Cards.CARD_BACK);
 
         etBack.setOnEditorActionListener(this);
 
         if (null == savedInstanceState) {
-            tvProgress.setText(progress);
             etFront.setText(front);
             etBack.setText(back);
 
@@ -71,6 +68,14 @@ public class EditCardFragment extends Fragment implements View.OnClickListener, 
         btnDone.setOnClickListener(this);
 
         return view;
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        UriUtils.checkDataTypeOrThrow(getActivity(), Cards.CONTENT_ITEM_TYPE);
+        UriUtils.checkSpecifiesParameterOrThrow(getActivity(), Cards.CARD_FRONT);
+        UriUtils.checkSpecifiesParameterOrThrow(getActivity(), Cards.CARD_BACK);
     }
 
     @Override
@@ -95,7 +100,7 @@ public class EditCardFragment extends Fragment implements View.OnClickListener, 
 
     @Override
     public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-        onClick(null);
+        onClick(btnDone);
         return true;
     }
 }

@@ -29,7 +29,10 @@ import static com.nolane.stacks.provider.CardsContract.*;
  * This fragment shows list of all stacks. When user clicks at one of them {@link EditStackActivity}
  * is opened to allow editing.
  */
-public class AllStacksFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor>, View.OnClickListener {
+public class AllStacksFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+    /**
+     * Adapter for the RecyclerView.
+     */
     private class StacksAdapter extends RecyclerCursorAdapter<StacksAdapter.ViewHolder> {
         public class ViewHolder extends RecyclerView.ViewHolder {
             public View vRoot;
@@ -85,20 +88,20 @@ public class AllStacksFragment extends Fragment implements LoaderManager.LoaderC
         rvStacks.setLayoutManager(new GridLayoutManager(getActivity(), 2, LinearLayoutManager.VERTICAL, false));
         rvStacks.setAdapter(new StacksAdapter(null));
 
-        fab.setOnClickListener(this);
-        getLoaderManager().initLoader(StacksQuery._TOKEN, null, this);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getActivity(), CreateStackActivity.class);
+                startActivity(intent);
+            }
+        });
         return view;
     }
 
     @Override
-    public void onPause() {
-        super.onPause();
-    }
-
-    @Override
-    public void onClick(View v) {
-        Intent intent = new Intent(getActivity(), CreateStackActivity.class);
-        startActivity(intent);
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        getLoaderManager().initLoader(StacksQuery._TOKEN, null, this);
     }
 
     private interface StacksQuery {

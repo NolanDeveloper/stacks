@@ -12,11 +12,15 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.nolane.stacks.R;
+import com.nolane.stacks.utils.UriUtils;
 
 import static com.nolane.stacks.provider.CardsContract.*;
 
 /**
- * todo
+ * This fragment allows user to edit stack. <br>
+ * Required: <br>
+ * data type: {@link Stacks#CONTENT_ITEM_TYPE}
+ * data parameter: {@link Stacks#STACK_TITLE}
  */
 public class EditStackFragment extends Fragment implements View.OnClickListener {
     // Actual values of stack.
@@ -55,5 +59,12 @@ public class EditStackFragment extends Fragment implements View.OnClickListener 
             }).run();
         }
         getActivity().finish();
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        UriUtils.checkDataTypeOrThrow(getActivity(), Stacks.CONTENT_ITEM_TYPE);
+        UriUtils.checkSpecifiesParameterOrThrow(getActivity(), Stacks.STACK_TITLE);
     }
 }

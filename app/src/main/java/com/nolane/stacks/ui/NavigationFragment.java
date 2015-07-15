@@ -31,34 +31,27 @@ public class NavigationFragment extends Fragment
 
     @Override
     public boolean onNavigationItemSelected(MenuItem menuItem) {
-        Intent intent;
+        Class itemActivityClass;
         switch (menuItem.getItemId()) {
             case R.id.mi_training:
-                if (getActivity() instanceof PickStackActivity) {
-                    ((PickStackActivity) getActivity()).hideNavigationDrawer();
-                    return true;
-                }
-                intent = new Intent(getActivity().getBaseContext(), PickStackActivity.class);
-                startActivity(intent);
+                itemActivityClass = PickStackActivity.class;
                 break;
             case R.id.mi_cards:
-                if (getActivity() instanceof AllCardsActivity) {
-                    ((AllCardsActivity) getActivity()).hideNavigationDrawer();
-                    return true;
-                }
-                intent = new Intent(getActivity().getBaseContext(), AllCardsActivity.class);
-                startActivity(intent);
+                itemActivityClass = AllCardsActivity.class;
                 break;
             case R.id.mi_stacks:
-                if (getActivity() instanceof AllStacksActivity) {
-                    ((AllStacksActivity) getActivity()).hideNavigationDrawer();
-                    return true;
-                }
-                intent = new Intent(getActivity().getBaseContext(), AllStacksActivity.class);
-                startActivity(intent);
+                itemActivityClass = AllStacksActivity.class;
                 break;
+            default:
+                throw new IllegalArgumentException("Unknown menu item id.");
         }
-        getActivity().finish();
+        if (itemActivityClass.isInstance(getActivity())) {
+            ((PickStackActivity) getActivity()).hideNavigationDrawer();
+        } else {
+            Intent intent = new Intent(getActivity().getBaseContext(), itemActivityClass);
+            startActivity(intent);
+            getActivity().finish();
+        }
         return true;
     }
 }

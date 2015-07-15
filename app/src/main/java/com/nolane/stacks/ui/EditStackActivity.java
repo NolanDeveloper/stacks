@@ -9,7 +9,10 @@ import com.nolane.stacks.utils.UriUtils;
 import static com.nolane.stacks.provider.CardsContract.*;
 
 /**
- * todo
+ * This activity allows user to edit stack. <br>
+ * Required: <br>
+ * data type: {@link Stacks#CONTENT_ITEM_TYPE}
+ * data parameter: {@link Stacks#STACK_TITLE}
  */
 public class EditStackActivity extends AppCompatActivity {
     @Override

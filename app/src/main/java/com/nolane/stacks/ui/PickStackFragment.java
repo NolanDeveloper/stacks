@@ -26,8 +26,8 @@ import com.nolane.stacks.utils.RecyclerCursorAdapter;
 import com.nolane.stacks.utils.UriUtils;
 
 /**
- * This fragment must find out which stack user wants to train and then
- * start TrainingActivity with this stack as data.
+ * This fragment finds out which stack user wants to train and then
+ * start {@link TrainingActivity} with this stack as data.
  */
 public class PickStackFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
     /**
@@ -105,19 +105,7 @@ public class PickStackFragment extends Fragment implements LoaderManager.LoaderC
         rvStacks = (RecyclerView) view.findViewById(R.id.rv_stacks);
         rvStacks.setLayoutManager(new GridLayoutManager(
                 getActivity(), 2, GridLayoutManager.VERTICAL, false));
-        rvStacks.addItemDecoration(
-                new RecyclerView.ItemDecoration() {
-                    @Override
-                    public void getItemOffsets(Rect outRect, View view, RecyclerView parent, RecyclerView.State state) {
-                        super.getItemOffsets(outRect, view, parent, state);
-                        int margin = MetricsUtils.convertDpToPx(4);
-                        outRect.top = margin;
-                        outRect.right = margin;
-                        outRect.bottom = margin;
-                        outRect.left = margin;
-                    }
-                });
-                getActivity().setTitle(getString(R.string.choose_stack));
+        getActivity().setTitle(getString(R.string.choose_stack));
         rvStacks.setAdapter(new StacksAdapter(null));
         return view;
     }

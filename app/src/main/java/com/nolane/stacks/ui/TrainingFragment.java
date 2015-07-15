@@ -5,9 +5,7 @@ import android.app.LoaderManager.LoaderCallbacks;
 import android.content.AsyncTaskLoader;
 import android.content.ContentUris;
 import android.content.ContentValues;
-import android.content.Context;
 import android.content.Loader;
-import android.content.res.ColorStateList;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -22,6 +20,7 @@ import android.widget.TextView;
 
 import com.nolane.stacks.R;
 import com.nolane.stacks.utils.ColorUtils;
+import com.nolane.stacks.utils.UriUtils;
 
 import static com.nolane.stacks.provider.CardsContract.*;
 
@@ -55,6 +54,9 @@ public class TrainingFragment extends Fragment
     private static final String EXTRA_CARD_BACK = "card.back";
     private static final String EXTRA_CARD_PROGRESS = "card.progress";
     private static final String EXTRA_CARD_LAST_SEEN = "card.last.seen";
+
+    // Key which is used to pass ContentValues though Bundle.
+    private static final String EXTRA_VALUES = "values";
 
     // UI elements.
     private View vProgressIndicator;
@@ -94,6 +96,7 @@ public class TrainingFragment extends Fragment
         super.onActivityCreated(savedInstanceState);
         if (null == savedInstanceState) {
             getLoaderManager().initLoader(PickCardQuery._TOKEN, null, this).forceLoad();
+            UriUtils.checkDataTypeOrThrow(getActivity(), Stacks.CONTENT_ITEM_TYPE);
         } else {
             cardId = savedInstanceState.getLong(EXTRA_CARD_ID);
             tvFront.setText(savedInstanceState.getString(EXTRA_CARD_FRONT));
@@ -131,8 +134,6 @@ public class TrainingFragment extends Fragment
         return view;
     }
 
-    private static final String VALUES = "values";
-
     @Override
     public void onClick(View v) {
         // Turn off button until we did not get next card.
@@ -151,7 +152,7 @@ public class TrainingFragment extends Fragment
             if (getResources().getInteger(R.integer.default_min_progress) <= newProgress)
                 values.put(Cards.CARD_PROGRESS, newProgress);
             values.put(Cards.CARD_LAST_SEEN, timeNow);
-            arguments.putParcelable(VALUES, values);
+            arguments.putParcelable(EXTRA_VALUES, values);
             getLoaderManager().initLoader(UpdateProgressQuery._TOKEN, arguments, this).forceLoad();
         } else {
             getLoaderManager().initLoader(PickCardQuery._TOKEN, null, this).forceLoad();
@@ -198,7 +199,7 @@ public class TrainingFragment extends Fragment
                 };
             } case UpdateProgressQuery._TOKEN: {
                 final Uri uri = ContentUris.withAppendedId(Cards.buildUriToCardsOfStack(stackId), cardId);
-                final ContentValues values = args.getParcelable(VALUES);
+                final ContentValues values = args.getParcelable(EXTRA_VALUES);
                 return new AsyncTaskLoader<Object>(getActivity()) {
                     @Override
                     public Object loadInBackground() {

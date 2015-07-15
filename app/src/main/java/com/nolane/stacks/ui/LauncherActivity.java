@@ -42,17 +42,7 @@ public class LauncherActivity extends AppCompatActivity implements LoaderManager
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return new CursorLoader(this, Stacks.CONTENT_URI, StacksQuery.COLUMNS, null, null, null) {
-            @Override
-            public Cursor loadInBackground() {
-                try {
-                    Thread.sleep(700);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                return super.loadInBackground();
-            }
-        };
+        return new CursorLoader(this, Stacks.CONTENT_URI, StacksQuery.COLUMNS, null, null, null);
     }
 
     @Override
@@ -60,7 +50,7 @@ public class LauncherActivity extends AppCompatActivity implements LoaderManager
         if (null == query) {
             throw new IllegalArgumentException("Loader was failed. (query = null)");
         }
-        // The logic is simple. If there is no stacks we start CreateFirstStackActivity
+        // If there is no stacks we start CreateFirstStackActivity
         // otherwise we start TrainingActivity.
         if (0 == query.getCount()) {
             Intent intent = new Intent(getBaseContext(), CreateFirstStackActivity.class);

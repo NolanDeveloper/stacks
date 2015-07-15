@@ -8,9 +8,7 @@ import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
-import android.graphics.drawable.Drawable;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -34,6 +32,7 @@ import static com.nolane.stacks.provider.CardsContract.*;
  * This fragment is used in conjunction with {@link AllCardsActivity}.
  */
 public class AllCardsFragment extends Fragment implements LoaderManager.LoaderCallbacks<Object> {
+    // Key to put ContentValues inside Bundle.
     public static final String EXTRA_VALUES = "values";
 
     /**
@@ -41,6 +40,7 @@ public class AllCardsFragment extends Fragment implements LoaderManager.LoaderCa
      */
     private class CardsAdapter extends RecyclerCursorAdapter<CardsAdapter.ViewHolder> {
         public class ViewHolder extends RecyclerView.ViewHolder {
+            // UI elements.
             public View root;
             public View vProgressIndicator;
             public TextView tvFront;
@@ -86,7 +86,7 @@ public class AllCardsFragment extends Fragment implements LoaderManager.LoaderCa
                     new Thread(new Runnable() {
                         @Override
                         public void run() {
-                            // We need to save all information about card we want to remove to
+                            // We need to save all information about card that we want to remove to
                             // be able to restore it in the future.
                             Bundle arguments = new Bundle();
                             ContentValues values = new ContentValues();

@@ -4,6 +4,9 @@ import android.database.Cursor;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
 
+/**
+ * Base class for recycler view adapters which use cursors.
+ */
 public abstract class RecyclerCursorAdapter<VH extends RecyclerView.ViewHolder>
         extends RecyclerView.Adapter<VH> {
     // Query which this adapter wraps. This also available in subclasses.

@@ -8,11 +8,11 @@ import static com.nolane.stacks.provider.CardsContract.*;
 import com.nolane.stacks.utils.UriUtils;
 
 /**
- * This activity allows user to edit cards(eg to change front, to change back).
- * The intent that will call this activity must specify the data. The data must
- * have type {@link Cards#CONTENT_ITEM_TYPE} and contain parameters:
- * {@link Cards#CARD_FRONT}, {@link Cards#CARD_BACK},
- * {@link Cards#CARD_PROGRESS}.
+ * This activity allows user to edit cards. <br>
+ * Requires: <br>
+ * data type: {@link Cards#CONTENT_ITEM_TYPE} <br>
+ * data parameter: {@link Cards#CARD_FRONT} <br>
+ * data parameter: {@link Cards#CARD_BACK}
  */
 public class EditCardActivity extends AppCompatActivity {
     @Override
@@ -23,7 +23,6 @@ public class EditCardActivity extends AppCompatActivity {
             UriUtils.checkDataTypeOrThrow(this, Cards.CONTENT_ITEM_TYPE);
             UriUtils.checkSpecifiesParameterOrThrow(this, Cards.CARD_FRONT);
             UriUtils.checkSpecifiesParameterOrThrow(this, Cards.CARD_BACK);
-            UriUtils.checkSpecifiesParameterOrThrow(this, Cards.CARD_PROGRESS);
             getFragmentManager()
                     .beginTransaction()
                     .replace(R.id.fl_root, new EditCardFragment())

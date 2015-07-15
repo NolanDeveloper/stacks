@@ -26,12 +26,14 @@ import com.nolane.stacks.utils.UriUtils;
 import static com.nolane.stacks.provider.CardsContract.*;
 
 /**
- * This fragment is for adding new cards to existing stack. It is used with
- * conjunction with {@link AddCardActivity}.
+ * This fragment is for adding new cards to existing stack. It is used in
+ * conjunction with {@link AddCardActivity}. <br>
+ * Required: <br>
+ * data type: {@link Stacks#CONTENT_ITEM_TYPE}
  */
 public class AddCardFragment extends Fragment
         implements View.OnClickListener, LoaderManager.LoaderCallbacks<Cursor>, TextView.OnEditorActionListener {
-    // Uri pointing to stack where to put new cards to.
+    // Uri which points to stack where to put new cards to.
     private Uri stack;
 
     // Id of the specified stack.
@@ -80,6 +82,7 @@ public class AddCardFragment extends Fragment
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        UriUtils.checkDataTypeOrThrow(getActivity(), Stacks.CONTENT_ITEM_TYPE);
         getLoaderManager().initLoader(StackQuery._TOKEN, null, this);
     }
 
