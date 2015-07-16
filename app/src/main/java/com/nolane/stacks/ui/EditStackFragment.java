@@ -73,7 +73,7 @@ public class EditStackFragment extends Fragment implements View.OnClickListener,
                 new AlertDialog.Builder(getActivity())
                         .setTitle(R.string.remove)
                         .setMessage(getString(R.string.ask_delete))
-                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 final Context context = getActivity().getApplicationContext();
@@ -87,7 +87,7 @@ public class EditStackFragment extends Fragment implements View.OnClickListener,
                                 getActivity().finish();
                             }
                         })
-                        .setNegativeButton(android.R.string.no, null)
+                        .setNegativeButton(R.string.no, null)
                         .show();
             }
         });

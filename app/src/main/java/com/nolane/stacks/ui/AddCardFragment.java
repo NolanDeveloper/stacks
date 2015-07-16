@@ -73,7 +73,7 @@ public class AddCardFragment extends Fragment
                 new AlertDialog.Builder(getActivity())
                         .setTitle(R.string.bidirectional)
                         .setMessage(getString(R.string.bidirectional_help))
-                        .setNegativeButton(android.R.string.ok, null)
+                        .setNegativeButton(R.string.ok, null)
                         .show();
             }
         });

@@ -75,7 +75,7 @@ public class CreateStackFragment extends Fragment
                 new AlertDialog.Builder(getActivity())
                         .setTitle(R.string.speed)
                         .setMessage(getString(R.string.speed_help))
-                        .setNegativeButton(android.R.string.ok, null)
+                        .setNegativeButton(R.string.ok, null)
                         .show();
             }
         });

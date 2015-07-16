@@ -30,4 +30,7 @@
     <string name="color">Color</string>
     <string name="speed_help">Speed is amount cards you can learn at the same time. More speed means more cards in less days, but also more time to repeat them every day.</string>
     <string name="bidirectional_help">"Bidirectional means that two cards will be created. One is that you want to create and the flipped one. "</string>
+    <string name="ok">Ok</string>
+    <string name="no">Cancel</string>
+    <string name="cancel">Cancel</string>
 </resources>
