@@ -16,6 +16,8 @@ public class AllCardsActivity extends BaseNavigationDrawerActivity {
         if (null == savedInstanceState) {
             fragment = new AllCardsFragment();
             setMainFragment(fragment);
+        } else {
+            fragment = getMainFragment();
         }
     }
 

@@ -1,7 +1,11 @@
 package com.nolane.stacks.ui;
 
+import android.app.AlertDialog;
+import android.app.DialogFragment;
 import android.app.Fragment;
 import android.content.ContentValues;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
@@ -41,6 +45,7 @@ public class EditStackFragment extends Fragment implements View.OnClickListener,
     private EditText etLanguage;
     private ImageButton ibPickColor;
     private Button btnAddCards;
+    private Button btnRemove;
     private Button btnDone;
 
     @Nullable
@@ -51,6 +56,7 @@ public class EditStackFragment extends Fragment implements View.OnClickListener,
         etLanguage = (EditText) view.findViewById(R.id.et_language);
         ibPickColor = (ImageButton) view.findViewById(R.id.ib_pick_color);
         btnAddCards = (Button) view.findViewById(R.id.btn_add_cards);
+        btnRemove = (Button) view.findViewById(R.id.btn_remove);
         btnDone = (Button) view.findViewById(R.id.btn_done);
         btnAddCards.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -62,6 +68,30 @@ public class EditStackFragment extends Fragment implements View.OnClickListener,
             }
         });
         btnDone.setOnClickListener(this);
+        btnRemove.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new AlertDialog.Builder(getActivity())
+                        .setTitle(R.string.remove)
+                        .setMessage(getString(R.string.ask_delete))
+                        .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                final Context context = getActivity().getApplicationContext();
+                                final Uri data = getActivity().getIntent().getData();
+                                new Thread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        context.getContentResolver().delete(data, null, null);
+                                    }
+                                }).run();
+                                getActivity().finish();
+                            }
+                        })
+                        .setNegativeButton(android.R.string.no, null)
+                        .show();
+            }
+        });
         etLanguage.setOnEditorActionListener(this);
         ibPickColor.setOnClickListener(new View.OnClickListener() {
             @Override

@@ -9,8 +9,9 @@
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="8dp">
+        android:layout_marginTop="8dp"
+        android:layout_gravity="center_vertical"
+        android:orientation="horizontal">
 
         <TextView
             android:layout_width="wrap_content"
@@ -69,11 +70,20 @@
         android:gravity="right">
 
         <Button
+            android:id="@+id/btn_remove"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="right"
+            android:text="@string/remove"
+            android:textColor="@android:color/holo_red_light"
+            style="?attr/borderlessButtonStyle"/>
+
+        <Button
             android:id="@+id/btn_add_cards"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="right"
-            android:text="Add cards"
+            android:text="@string/add_cards"
             android:textColor="@android:color/holo_green_dark"
             style="?attr/borderlessButtonStyle"/>
 

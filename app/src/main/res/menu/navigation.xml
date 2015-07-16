@@ -2,7 +2,7 @@
 <menu
     xmlns:android="http://schemas.android.com/apk/res/android">
     <item
-        android:icon="@drawable/ic_alpha"
+        android:icon="@drawable/ic_eye"
         android:id="@+id/mi_training"
         android:title="@string/training"/>
     <item

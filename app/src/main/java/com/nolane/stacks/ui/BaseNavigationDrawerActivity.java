@@ -153,6 +153,14 @@ public abstract class BaseNavigationDrawerActivity extends AppCompatActivity {
                 .commit();
     }
 
+    /**
+     * Returns the fragment which is on the place of main view.
+     * @return the fragment which is on the place of main view.
+     */
+    protected Fragment getMainFragment() {
+        return getFragmentManager().findFragmentById(R.id.fl_main_content);
+    }
+
     @Override
     public void onBackPressed() {
         if (isDrawerOpened) {

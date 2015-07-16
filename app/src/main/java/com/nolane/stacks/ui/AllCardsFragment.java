@@ -275,8 +275,8 @@ public class AllCardsFragment extends Fragment implements LoaderManager.LoaderCa
     public boolean onQueryTextChange(String newText) {
         Bundle args = new Bundle();
         args.putString(EXTRA_QUERY, newText);
-        getLoaderManager().restartLoader(CardsQuery._TOKEN, args, this);
-        return true;
+        getLoaderManager().restartLoader(CardsQuery._TOKEN, args, this).forceLoad();
+        return false;
     }
 
 }

@@ -25,4 +25,8 @@
     <string name="speed">Speed</string>
     <string name="hint_language">Language</string>
     <string name="pick_color">Pick color</string>
+    <string name="help">help</string>
+    <string name="add_cards">Add cards</string>
+    <string name="remove">Remove</string>
+    <string name="ask_delete">Do you really want to remove the stack?</string>
 </resources>
