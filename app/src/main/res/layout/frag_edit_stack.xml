@@ -75,16 +75,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="right"
             android:text="@string/remove"
-            android:textColor="@android:color/holo_red_light"
-            style="?attr/borderlessButtonStyle"/>
-
-        <Button
-            android:id="@+id/btn_add_cards"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="right"
-            android:text="@string/add_cards"
-            android:textColor="@android:color/holo_green_dark"
+            android:textColor="#ffff4c4a"
             style="?attr/borderlessButtonStyle"/>
 
         <Button
@@ -92,8 +83,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="right"
-            android:text="@string/abc_action_mode_done"
-            android:textColor="@android:color/holo_blue_light"
+            android:text="@string/done"
+            android:textColor="@color/accent"
             style="?attr/borderlessButtonStyle"/>
 
     </LinearLayout>

@@ -7,6 +7,9 @@ import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Bundle;
@@ -19,6 +22,7 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -39,6 +43,7 @@ public class AllStacksFragment extends Fragment implements LoaderManager.LoaderC
     private class StacksAdapter extends RecyclerCursorAdapter<StacksAdapter.ViewHolder> {
         public class ViewHolder extends RecyclerView.ViewHolder {
             public View vRoot;
+            public ImageButton ibAddCard;
             public ImageView ivIcon;
             public TextView tvTitle;
             public TextView tvLanguage;
@@ -47,6 +52,7 @@ public class AllStacksFragment extends Fragment implements LoaderManager.LoaderC
             public ViewHolder(View itemView) {
                 super(itemView);
                 vRoot = itemView;
+                ibAddCard = (ImageButton) itemView.findViewById(R.id.ib_add_card);
                 ivIcon = (ImageView) itemView.findViewById(R.id.iv_icon);
                 tvTitle = (TextView) itemView.findViewById(R.id.tv_title);
                 tvLanguage = (TextView) itemView.findViewById(R.id.tv_language);
@@ -60,7 +66,7 @@ public class AllStacksFragment extends Fragment implements LoaderManager.LoaderC
 
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_stack, parent, false);
+            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_stack_1, parent, false);
             return new ViewHolder(view);
         }
 
@@ -83,6 +89,15 @@ public class AllStacksFragment extends Fragment implements LoaderManager.LoaderC
             final int count = query.getInt(StacksQuery.COUNT_CARDS);
             final int color = query.getInt(StacksQuery.COLOR);
             final Uri thisStack = ContentUris.withAppendedId(Stacks.CONTENT_URI, id);
+            holder.ibAddCard.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(getActivity(), AddCardActivity.class);
+                    Uri data = ContentUris.withAppendedId(Stacks.CONTENT_URI, id);
+                    intent.setData(data);
+                    startActivity(intent);
+                }
+            });
             holder.tvTitle.setText(title);
             holder.tvLanguage.setText(shortenLanguage(language));
             holder.tvCountCards.setText(String.valueOf(count));
@@ -112,7 +127,30 @@ public class AllStacksFragment extends Fragment implements LoaderManager.LoaderC
         rvStacks = (RecyclerView) view.findViewById(R.id.rv_stacks);
         fab = (FloatingActionButton) view.findViewById(R.id.fab);
 
-        rvStacks.setLayoutManager(new GridLayoutManager(getActivity(), 2, LinearLayoutManager.VERTICAL, false));
+        rvStacks.setLayoutManager(new GridLayoutManager(getActivity(),
+                getResources().getInteger(R.integer.all_stacks_columns), LinearLayoutManager.VERTICAL, false));
+        rvStacks.addItemDecoration(new RecyclerView.ItemDecoration() {
+            @Override
+            public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
+                Paint paint = new Paint();
+                paint.setColor(Color.BLACK);
+                int i;
+                for (i = 0; i < parent.getChildCount() - 1; i++) {
+                    View item = parent.getChildAt(i);
+                    float[] points = {
+                            item.getX(), item.getY() + item.getHeight(),
+                            item.getX() + item.getWidth(), item.getY() + item.getHeight(),
+                            item.getX() + item.getWidth(), item.getY() + item.getHeight(),
+                            item.getX() + item.getWidth(), item.getY()
+                    };
+                    c.drawLines(points, paint);
+                }
+                View item = parent.getChildAt(i);
+                c.drawLine(item.getX() + item.getWidth(), item.getY() + item.getHeight(),
+                        item.getX() + item.getWidth(), item.getY(), paint);
+                super.onDraw(c, parent, state);
+            }
+        });
         rvStacks.setAdapter(new StacksAdapter(null));
 
         fab.setOnClickListener(new View.OnClickListener() {

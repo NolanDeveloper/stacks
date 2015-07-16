@@ -139,7 +139,7 @@ public class AllCardsFragment extends Fragment implements LoaderManager.LoaderCa
         View view = inflater.inflate(R.layout.frag_all_cards, container, false);
         ivNoCards = (ImageView) view.findViewById(R.id.iv_no_cards);
         rvCards = (RecyclerView) view.findViewById(R.id.rv_cards);
-        rvCards.setLayoutManager(new GridLayoutManager(getActivity(), 2, GridLayoutManager.VERTICAL, false));
+        rvCards.setLayoutManager(new GridLayoutManager(getActivity(), getResources().getInteger(R.integer.all_cards_columns), GridLayoutManager.VERTICAL, false));
         rvCards.setAdapter(new CardsAdapter(null));
         getActivity().setTitle(getString(R.string.cards));
         return view;

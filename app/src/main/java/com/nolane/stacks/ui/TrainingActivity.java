@@ -30,18 +30,4 @@ public class TrainingActivity extends AppCompatActivity {
                     .commit();
         }
     }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.help, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        if (R.id.mi_help == item.getItemId()) {
-
-        }
-        return false;
-    }
 }

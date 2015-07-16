@@ -44,6 +44,8 @@
         android:layout_height="wrap_content"
         android:layout_gravity="right"
         android:layout_marginTop="16dp"
-        android:text="@string/abc_action_mode_done"/>
+        android:text="@string/done"
+        android:textColor="@color/accent"
+        style="?attr/borderlessButtonStyle"/>
 
 </LinearLayout>

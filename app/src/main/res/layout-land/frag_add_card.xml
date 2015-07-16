@@ -31,35 +31,43 @@
 
     </FrameLayout>
 
-    <android.support.design.widget.TextInputLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp">
+        android:orientation="horizontal">
 
-        <EditText
-            android:id="@+id/et_front"
-            android:layout_width="match_parent"
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:hint="@string/front"
-            android:singleLine="true"
-            android:text="some text to move hint up"/>
+            android:layout_weight="1">
 
-    </android.support.design.widget.TextInputLayout>
+            <EditText
+                android:id="@+id/et_front"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/front"
+                android:singleLine="true"
+                android:text="some text to move hint up"/>
 
-    <android.support.design.widget.TextInputLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp">
+        </android.support.design.widget.TextInputLayout>
 
-        <EditText
-            android:id="@+id/et_back"
-            android:layout_width="match_parent"
+        <android.support.design.widget.TextInputLayout
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:hint="@string/back"
-            android:singleLine="true"
-            android:imeOptions="actionDone"/>
+            android:layout_weight="1"
+            android:layout_marginLeft="8dp">
 
-    </android.support.design.widget.TextInputLayout>
+            <EditText
+                android:id="@+id/et_back"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="@string/back"
+                android:singleLine="true"
+                android:imeOptions="actionDone"/>
+
+        </android.support.design.widget.TextInputLayout>
+
+    </LinearLayout>
 
     <Button
         android:id="@+id/btn_done"

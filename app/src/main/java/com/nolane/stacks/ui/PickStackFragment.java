@@ -126,7 +126,7 @@ public class PickStackFragment extends Fragment implements LoaderManager.LoaderC
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.frag_pick_stack, container, false);
         rvStacks = (RecyclerView) view.findViewById(R.id.rv_stacks);
-        rvStacks.setLayoutManager(new GridLayoutManager(getActivity(), 2, GridLayoutManager.VERTICAL, false));
+        rvStacks.setLayoutManager(new GridLayoutManager(getActivity(), getResources().getInteger(R.integer.pick_stack_columns), GridLayoutManager.VERTICAL, false));
         getActivity().setTitle(getString(R.string.choose_stack));
         rvStacks.setAdapter(new StacksAdapter(null));
         return view;

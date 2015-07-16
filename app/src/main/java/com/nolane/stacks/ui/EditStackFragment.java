@@ -43,7 +43,6 @@ public class EditStackFragment extends Fragment implements View.OnClickListener,
     private EditText etTitle;
     private EditText etLanguage;
     private ImageButton ibPickColor;
-    private Button btnAddCards;
     private Button btnRemove;
     private Button btnDone;
 
@@ -54,18 +53,8 @@ public class EditStackFragment extends Fragment implements View.OnClickListener,
         etTitle = (EditText) view.findViewById(R.id.et_title);
         etLanguage = (EditText) view.findViewById(R.id.et_language);
         ibPickColor = (ImageButton) view.findViewById(R.id.ib_pick_color);
-        btnAddCards = (Button) view.findViewById(R.id.btn_add_cards);
         btnRemove = (Button) view.findViewById(R.id.btn_remove);
         btnDone = (Button) view.findViewById(R.id.btn_done);
-        btnAddCards.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), AddCardActivity.class);
-                intent.setData(getActivity().getIntent().getData());
-                startActivity(intent);
-                getActivity().finish();
-            }
-        });
         btnDone.setOnClickListener(this);
         btnRemove.setOnClickListener(new View.OnClickListener() {
             @Override

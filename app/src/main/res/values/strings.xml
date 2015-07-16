@@ -33,4 +33,6 @@
     <string name="ok">Ok</string>
     <string name="no">Cancel</string>
     <string name="cancel">Cancel</string>
+    <string name="done">done</string>
+    <string name="search">Search</string>
 </resources>

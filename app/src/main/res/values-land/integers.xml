@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer name="pick_stack_columns">3</integer>
+    <integer name="all_cards_columns">3</integer>
+    <integer name="all_stacks_columns">2</integer>
+</resources>
