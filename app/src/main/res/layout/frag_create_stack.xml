@@ -81,7 +81,7 @@
             android:singleLine="true"
             android:hint="@string/hint_title"
             android:inputType="textCapWords"
-            android:text="Text to move hint up."/>
+            android:text="@string/general"/>
 
     </android.support.design.widget.TextInputLayout>
 

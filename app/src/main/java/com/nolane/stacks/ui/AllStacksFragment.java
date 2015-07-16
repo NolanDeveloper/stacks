@@ -135,7 +135,7 @@ public class AllStacksFragment extends Fragment implements LoaderManager.LoaderC
                 Paint paint = new Paint();
                 paint.setColor(Color.BLACK);
                 int i;
-                for (i = 0; i < parent.getChildCount() - 1; i++) {
+                for (i = 0; i < parent.getChildCount(); i++) {
                     View item = parent.getChildAt(i);
                     float[] points = {
                             item.getX(), item.getY() + item.getHeight(),
@@ -145,9 +145,6 @@ public class AllStacksFragment extends Fragment implements LoaderManager.LoaderC
                     };
                     c.drawLines(points, paint);
                 }
-                View item = parent.getChildAt(i);
-                c.drawLine(item.getX() + item.getWidth(), item.getY() + item.getHeight(),
-                        item.getX() + item.getWidth(), item.getY(), paint);
                 super.onDraw(c, parent, state);
             }
         });

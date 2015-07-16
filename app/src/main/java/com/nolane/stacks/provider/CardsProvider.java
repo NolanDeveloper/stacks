@@ -1,5 +1,6 @@
 package com.nolane.stacks.provider;
 
+import android.app.backup.BackupManager;
 import android.content.ContentProvider;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -53,6 +54,7 @@ public class CardsProvider extends ContentProvider {
         try {
             // Perform actual creation.
             db.getWritableDatabase();
+            new BackupManager(getContext()).dataChanged();
             Log.d(LOG_TAG, "Provider was created.");
             return true;
         } catch (SQLiteException e) {
@@ -184,6 +186,7 @@ public class CardsProvider extends ContentProvider {
         if (CARDS_OF_STACK == URI_MATCHER.match(uri)) {
             getContext().getContentResolver().notifyChange(Stacks.CONTENT_URI, null);
         }
+        new BackupManager(getContext()).dataChanged();
         return uri;
     }
 
@@ -218,6 +221,7 @@ public class CardsProvider extends ContentProvider {
         if (0 < count) {
             getContext().getContentResolver().notifyChange(uri, null);
         }
+        new BackupManager(getContext()).dataChanged();
         return count;
     }
 
@@ -254,6 +258,7 @@ public class CardsProvider extends ContentProvider {
         if (0 < count) {
             getContext().getContentResolver().notifyChange(uri, null);
         }
+        new BackupManager(getContext()).dataChanged();
         return count;
     }
 

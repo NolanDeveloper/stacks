@@ -15,7 +15,7 @@ import com.nolane.stacks.provider.CardsContract.StacksColumns;
  */
 public class CardsDatabase extends SQLiteOpenHelper {
     // The name of the database.
-    public static final String DATABASE_NAME = "cards";
+    public static final String DATABASE_NAME = "cards.db";
 
     // Current version of data base. It must be updated for each new scheme.
     // We can use this value to correctly update db in #onUpdate.

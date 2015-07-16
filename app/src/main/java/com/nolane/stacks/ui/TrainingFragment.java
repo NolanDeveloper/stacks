@@ -12,6 +12,8 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
+import android.text.InputFilter;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -163,6 +165,18 @@ public class TrainingFragment extends Fragment
         tvFront = (TextView) view.findViewById(R.id.tv_front);
         etBack = (EditText) view.findViewById(R.id.et_back);
         btnDone = (Button) view.findViewById(R.id.btn_done);
+        etBack.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                onClick(btnDone);
+                return true;
+            }
+        });
+        if (null == savedInstanceState) {
+            InputFilter[] filter = new InputFilter[1];
+            filter[0] = new InputFilter.LengthFilter(Cards.MAX_BACK_LEN);
+            etBack.setFilters(filter);
+        }
         return view;
     }
 

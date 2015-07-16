@@ -68,7 +68,7 @@ public class CreateStackFragment extends Fragment
         maxMaxInLearning = getResources().getInteger(R.integer.max_max_in_learning);
 
         btnDone.setOnClickListener(this);
-        etTitle.setOnEditorActionListener(this);
+        etLanguage.setOnEditorActionListener(this);
         ibSpeedHelp.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -96,7 +96,6 @@ public class CreateStackFragment extends Fragment
             InputFilter[] filterArray = new InputFilter[1];
             filterArray[0] = new InputFilter.LengthFilter(Stacks.MAX_TITLE_LEN);
             etTitle.setFilters(filterArray);
-            etTitle.setText(null);
 
             filterArray = new InputFilter[1];
             filterArray[0] = new InputFilter.LengthFilter(Stacks.MAX_LANGUAGE_LEN);
