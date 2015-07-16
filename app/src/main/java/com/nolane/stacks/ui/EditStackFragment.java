@@ -1,7 +1,6 @@
 package com.nolane.stacks.ui;
 
 import android.app.AlertDialog;
-import android.app.DialogFragment;
 import android.app.Fragment;
 import android.content.ContentValues;
 import android.content.Context;

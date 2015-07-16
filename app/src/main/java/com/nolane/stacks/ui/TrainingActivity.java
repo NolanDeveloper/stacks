@@ -2,6 +2,8 @@ package com.nolane.stacks.ui;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import com.nolane.stacks.R;
 import com.nolane.stacks.utils.UriUtils;
@@ -27,5 +29,19 @@ public class TrainingActivity extends AppCompatActivity {
                     .replace(R.id.fl_root, new TrainingFragment())
                     .commit();
         }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.help, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (R.id.mi_help == item.getItemId()) {
+
+        }
+        return false;
     }
 }

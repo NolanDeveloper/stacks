@@ -25,10 +25,22 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:layout_gravity="center_vertical"
             app:dsb_progressColor="@color/accent"
             app:dsb_indicatorColor="@color/accent"
             app:dsb_indicatorElevation="4dp"
             app:dsb_rippleColor="@color/accent"/>
+
+        <ImageButton
+            android:id="@+id/ib_speed_help"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:padding="8dp"
+            android:layout_gravity="center_vertical"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_help"
+            android:tint="@android:color/darker_gray"
+            android:background="?attr/selectableItemBackground"/>
 
     </LinearLayout>
 
@@ -42,7 +54,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
-            android:text="Color"/>
+            android:text="@string/color"/>
 
         <ImageButton
             android:id="@+id/ib_pick_color"

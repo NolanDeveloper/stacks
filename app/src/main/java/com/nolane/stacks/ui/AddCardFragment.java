@@ -1,5 +1,6 @@
 package com.nolane.stacks.ui;
 
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.LoaderManager;
 import android.content.ContentResolver;
@@ -18,6 +19,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.nolane.stacks.R;
@@ -43,6 +45,7 @@ public class AddCardFragment extends Fragment
     // UI elements.
     private EditText etFront;
     private EditText etBack;
+    private ImageButton ibBidirectionalHelp;
     private CheckBox cbBidirectional;
     private Button btnDone;
 
@@ -59,11 +62,21 @@ public class AddCardFragment extends Fragment
         View view = inflater.inflate(R.layout.frag_add_card, container, false);
         etFront = (EditText) view.findViewById(R.id.et_front);
         etBack = (EditText) view.findViewById(R.id.et_back);
+        ibBidirectionalHelp = (ImageButton) view.findViewById(R.id.ib_bidirectional_help);
         cbBidirectional = (CheckBox) view.findViewById(R.id.cb_bidirectional);
         btnDone = (Button) view.findViewById(R.id.btn_done);
 
         etBack.setOnEditorActionListener(this);
-
+        ibBidirectionalHelp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new AlertDialog.Builder(getActivity())
+                        .setTitle(R.string.bidirectional)
+                        .setMessage(getString(R.string.bidirectional_help))
+                        .setNegativeButton(android.R.string.ok, null)
+                        .show();
+            }
+        });
         getActivity().setTitle(getString(R.string.add_card));
 
         if (null == savedInstanceState) {

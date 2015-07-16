@@ -6,12 +6,30 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent">
 
-    <CheckBox
-        android:id="@+id/cb_bidirectional"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/bidirectional"
-        android:checked="true"/>
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <CheckBox
+            android:id="@+id/cb_bidirectional"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/bidirectional"
+            android:layout_gravity="center_vertical"
+            android:checked="true"/>
+
+        <ImageButton
+            android:id="@+id/ib_bidirectional_help"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:padding="8dp"
+            android:layout_gravity="right|center_vertical"
+            android:scaleType="centerCrop"
+            android:src="@drawable/ic_help"
+            android:tint="@android:color/darker_gray"
+            android:background="?attr/selectableItemBackground"/>
+
+    </FrameLayout>
 
     <android.support.design.widget.TextInputLayout
         android:layout_width="match_parent"

@@ -1,5 +1,6 @@
 package com.nolane.stacks.ui;
 
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.LoaderManager;
 import android.content.AsyncTaskLoader;
@@ -39,8 +40,9 @@ public class CreateStackFragment extends Fragment
     // UI elements.
     private EditText etTitle;
     private EditText etLanguage;
-    private ImageButton ibPickColor;
+    private ImageButton ibSpeedHelp;
     private Button btnDone;
+    private ImageButton ibPickColor;
     private DiscreteSeekBar sbMaxInLearning;
 
     // Color that user picked.
@@ -57,6 +59,7 @@ public class CreateStackFragment extends Fragment
 
         etTitle = (EditText) view.findViewById(R.id.et_title);
         etLanguage = (EditText) view.findViewById(R.id.et_language);
+        ibSpeedHelp = (ImageButton) view.findViewById(R.id.ib_speed_help);
         ibPickColor = (ImageButton) view.findViewById(R.id.ib_pick_color);
         btnDone = (Button) view.findViewById(R.id.btn_done);
         sbMaxInLearning = (DiscreteSeekBar) view.findViewById(R.id.sb_max_in_learning);
@@ -66,6 +69,16 @@ public class CreateStackFragment extends Fragment
 
         btnDone.setOnClickListener(this);
         etTitle.setOnEditorActionListener(this);
+        ibSpeedHelp.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                new AlertDialog.Builder(getActivity())
+                        .setTitle(R.string.speed)
+                        .setMessage(getString(R.string.speed_help))
+                        .setNegativeButton(android.R.string.ok, null)
+                        .show();
+            }
+        });
         ibPickColor.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
