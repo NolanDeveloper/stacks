@@ -166,7 +166,16 @@ public class PickStackFragment extends Fragment implements LoaderManager.LoaderC
         if (null == query) {
             throw new IllegalArgumentException("Loader was failed. (query = null)");
         }
-        ((StacksAdapter) rvStacks.getAdapter()).setCursor(query);
+        if (1 == query.getCount()) {
+            query.moveToFirst();
+            long id = query.getLong(StacksQuery.ID);
+            Intent intent = new Intent(getActivity(), AddCardActivity.class);
+            Uri data = ContentUris.withAppendedId(Stacks.CONTENT_URI, id);
+            intent.setData(data);
+            startActivity(intent);
+        } else {
+            ((StacksAdapter) rvStacks.getAdapter()).setCursor(query);
+        }
     }
 
     @Override
