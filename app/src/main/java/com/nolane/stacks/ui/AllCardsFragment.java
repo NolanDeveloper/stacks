@@ -14,7 +14,12 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
@@ -31,9 +36,11 @@ import static com.nolane.stacks.provider.CardsContract.Cards;
  * This fragment shows all cards to user. The user can remove all edit each card.
  * This fragment is used in conjunction with {@link AllCardsActivity}.
  */
-public class AllCardsFragment extends Fragment implements LoaderManager.LoaderCallbacks<Object> {
+public class AllCardsFragment extends Fragment implements LoaderManager.LoaderCallbacks<Object>, SearchView.OnQueryTextListener {
     // Key to put ContentValues inside Bundle.
     public static final String EXTRA_VALUES = "values";
+    // Key to deliver query to loader.
+    public static final String EXTRA_QUERY = "query";
 
     /**
      * Adapter for RecyclerView.
@@ -123,12 +130,14 @@ public class AllCardsFragment extends Fragment implements LoaderManager.LoaderCa
     }
 
     // UI elements.
+    private ImageView ivNoCards;
     private RecyclerView rvCards;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.frag_all_cards, container, false);
+        ivNoCards = (ImageView) view.findViewById(R.id.iv_no_cards);
         rvCards = (RecyclerView) view.findViewById(R.id.rv_cards);
         rvCards.setLayoutManager(new GridLayoutManager(getActivity(), 2, GridLayoutManager.VERTICAL, false));
         rvCards.setAdapter(new CardsAdapter(null));
@@ -176,7 +185,17 @@ public class AllCardsFragment extends Fragment implements LoaderManager.LoaderCa
     public Loader onCreateLoader(int id, final Bundle args) {
         switch (id) {
             case CardsQuery._TOKEN:
-                return new CursorLoader(getActivity(), Cards.CONTENT_URI, CardsQuery.COLUMNS, null, null, null);
+                String selection = null;
+                String[] selectionArgs = null;
+                if (null != args) {
+                    String query = args.getString(EXTRA_QUERY);
+                    if (!TextUtils.isEmpty(query)) {
+                        selection = "(" + Cards.CARD_FRONT + " LIKE ?) OR (" + Cards.CARD_BACK + " LIKE ?)";
+                        query = "%" + query + "%";
+                        selectionArgs = new String[]{ query, query };
+                    }
+                }
+                return new CursorLoader(getActivity(), Cards.CONTENT_URI, CardsQuery.COLUMNS, selection, selectionArgs, null);
             case RemoveCardQuery._TOKEN:
                 return new AsyncTaskLoader(getActivity()) {
                     @Override
@@ -202,17 +221,10 @@ public class AllCardsFragment extends Fragment implements LoaderManager.LoaderCa
             case CardsQuery._TOKEN:
                 Cursor query = (Cursor) data;
                 if (0 != query.getCount()) {
+                    ivNoCards.setVisibility(View.INVISIBLE);
                     ((CardsAdapter) rvCards.getAdapter()).setCursor(query);
                 } else {
-                    getLoaderManager().destroyLoader(CardsQuery._TOKEN);
-                    ViewGroup root = (ViewGroup) getView();
-                    if (null != root) {
-                        root.removeAllViews();
-                        ImageView imageView = new ImageView(getActivity());
-                        imageView.setImageResource(R.drawable.no_cards);
-                        imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
-                        root.addView(imageView);
-                    }
+                    ivNoCards.setVisibility(View.VISIBLE);
                 }
                 break;
             case RemoveCardQuery._TOKEN:
@@ -241,4 +253,30 @@ public class AllCardsFragment extends Fragment implements LoaderManager.LoaderCa
     public void onLoaderReset(Loader<Object> loader) {
 
     }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.frag_all_cards, menu);
+        MenuItem searchItem = menu.findItem(R.id.action_search);
+        SearchView searchView = (SearchView) searchItem.getActionView();
+        searchView.setOnQueryTextListener(this);
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        Bundle args = new Bundle();
+        args.putString(EXTRA_QUERY, query);
+        getLoaderManager().restartLoader(CardsQuery._TOKEN, args, this).forceLoad();
+        return true;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        Bundle args = new Bundle();
+        args.putString(EXTRA_QUERY, newText);
+        getLoaderManager().restartLoader(CardsQuery._TOKEN, args, this);
+        return true;
+    }
+
 }
