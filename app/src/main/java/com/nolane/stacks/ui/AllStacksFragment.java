@@ -30,6 +30,10 @@ import com.nolane.stacks.R;
 import com.nolane.stacks.utils.RecyclerCursorAdapter;
 import com.nolane.stacks.utils.UriUtils;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
 import static com.nolane.stacks.provider.CardsContract.Stacks;
 
 /**
@@ -40,23 +44,24 @@ public class AllStacksFragment extends Fragment implements LoaderManager.LoaderC
     /**
      * Adapter for the RecyclerView.
      */
-    private class StacksAdapter extends RecyclerCursorAdapter<StacksAdapter.ViewHolder> {
+    class StacksAdapter extends RecyclerCursorAdapter<StacksAdapter.ViewHolder> {
         public class ViewHolder extends RecyclerView.ViewHolder {
-            public View vRoot;
-            public ImageButton ibAddCard;
-            public ImageView ivIcon;
-            public TextView tvTitle;
-            public TextView tvLanguage;
-            public TextView tvCountCards;
+            View vRoot;
+            @Bind(R.id.ib_add_card)
+            ImageButton ibAddCard;
+            @Bind(R.id.iv_icon)
+            ImageView ivIcon;
+            @Bind(R.id.tv_title)
+            TextView tvTitle;
+            @Bind(R.id.tv_language)
+            TextView tvLanguage;
+            @Bind(R.id.tv_count_cards)
+            TextView tvCountCards;
 
             public ViewHolder(View itemView) {
                 super(itemView);
                 vRoot = itemView;
-                ibAddCard = (ImageButton) itemView.findViewById(R.id.ib_add_card);
-                ivIcon = (ImageView) itemView.findViewById(R.id.iv_icon);
-                tvTitle = (TextView) itemView.findViewById(R.id.tv_title);
-                tvLanguage = (TextView) itemView.findViewById(R.id.tv_language);
-                tvCountCards = (TextView) itemView.findViewById(R.id.tv_count_cards);
+                ButterKnife.bind(this, itemView);
             }
         }
 
@@ -70,6 +75,21 @@ public class AllStacksFragment extends Fragment implements LoaderManager.LoaderC
             return new ViewHolder(view);
         }
 
+        /**
+         * Shortens names of languages. <br>
+         * Examples: <br>
+         *     Russian -> Rus <br>
+         *     russian -> Rus <br>
+         *     rUssian -> Rus <br>
+         *     Ru -> Ru <br>
+         *     ru -> Ru <br>
+         *     r -> [empty string]
+         * @param language Full language name.
+         * @return <li>({@code language}.length < 2) returns empty string.
+         * <li>({@code language}.length == 2) returns first two characters: first in upper case, second
+         * in lower case.
+         * <li>Otherwise returns first 3 characters: first in upper case, other in lower case.
+         */
         private String shortenLanguage(@NonNull String language) {
             if (language.length() < 2) {
                 return "";
@@ -117,25 +137,36 @@ public class AllStacksFragment extends Fragment implements LoaderManager.LoaderC
     }
 
     // UI elements.
-    private RecyclerView rvStacks;
-    private FloatingActionButton fab;
+    @Bind(R.id.rv_stacks)
+    RecyclerView rvStacks;
+    @Bind(R.id.fab)
+    FloatingActionButton fab;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.frag_all_stacks, container, false);
-        rvStacks = (RecyclerView) view.findViewById(R.id.rv_stacks);
-        fab = (FloatingActionButton) view.findViewById(R.id.fab);
+        ButterKnife.bind(this, view);
 
         rvStacks.setLayoutManager(new GridLayoutManager(getActivity(),
                 getResources().getInteger(R.integer.all_stacks_columns), LinearLayoutManager.VERTICAL, false));
+        /*
+        The following item decoration draws narrow border lines.
+        Each look like this ____|
+        And in grid they look like this
+        ___|___|___|
+        ___|___|___|
+        ___|___|___|
+        ___|___|___|
+        But the most right is too narrow to be visible
+        so it looks pretty good.
+         */
         rvStacks.addItemDecoration(new RecyclerView.ItemDecoration() {
             @Override
             public void onDraw(Canvas c, RecyclerView parent, RecyclerView.State state) {
                 Paint paint = new Paint();
                 paint.setColor(Color.BLACK);
-                int i;
-                for (i = 0; i < parent.getChildCount(); i++) {
+                for (int i = 0; i < parent.getChildCount(); i++) {
                     View item = parent.getChildAt(i);
                     float[] points = {
                             item.getX(), item.getY() + item.getHeight(),
@@ -149,21 +180,28 @@ public class AllStacksFragment extends Fragment implements LoaderManager.LoaderC
             }
         });
         rvStacks.setAdapter(new StacksAdapter(null));
-
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), CreateStackActivity.class);
-                startActivity(intent);
-            }
-        });
         return view;
+    }
+
+    /**
+     * Start CreateStackActivity.
+     */
+    @OnClick(R.id.fab)
+    public void createStack() {
+        Intent intent = new Intent(getActivity(), CreateStackActivity.class);
+        startActivity(intent);
     }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         getLoaderManager().initLoader(StacksQuery._TOKEN, null, this);
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        ButterKnife.unbind(this);
     }
 
     private interface StacksQuery {
