@@ -25,6 +25,10 @@ import com.nolane.stacks.R;
 
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
 import static com.nolane.stacks.provider.CardsContract.Stacks;
 
 /**
@@ -32,18 +36,25 @@ import static com.nolane.stacks.provider.CardsContract.Stacks;
  * <p/>
  * {@link CreateStackActivity} and {@link CreateFirstStackActivity} use this.
  */
-public class CreateStackFragment extends Fragment
-        implements View.OnClickListener, LoaderManager.LoaderCallbacks<Uri>, TextView.OnEditorActionListener {
+public class CreateStackFragment extends Fragment implements LoaderManager.LoaderCallbacks<Uri> {
+    // Key to store ContentValues in Bundle.
+    private static final String EXTRA_VALUES = "values";
     // Save instance state keys.
     private static final String EXTRA_COLOR = "color";
 
     // UI elements.
-    private EditText etTitle;
-    private EditText etLanguage;
-    private ImageButton ibSpeedHelp;
-    private Button btnDone;
-    private ImageButton ibPickColor;
-    private DiscreteSeekBar sbMaxInLearning;
+    @Bind(R.id.et_title)
+    EditText etTitle;
+    @Bind(R.id.et_language)
+    EditText etLanguage;
+    @Bind(R.id.ib_speed_help)
+    ImageButton ibSpeedHelp;
+    @Bind(R.id.btn_done)
+    Button btnDone;
+    @Bind(R.id.ib_pick_color)
+    ImageButton ibPickColor;
+    @Bind(R.id.sb_max_in_learning)
+    DiscreteSeekBar sbMaxInLearning;
 
     // Color that user picked.
     private int color;
@@ -52,31 +63,32 @@ public class CreateStackFragment extends Fragment
     private int minMaxInLearning;
     private int maxMaxInLearning;
 
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putInt(EXTRA_COLOR, color);
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.frag_create_stack, container, false);
-
-        etTitle = (EditText) view.findViewById(R.id.et_title);
-        etLanguage = (EditText) view.findViewById(R.id.et_language);
-        ibSpeedHelp = (ImageButton) view.findViewById(R.id.ib_speed_help);
-        ibPickColor = (ImageButton) view.findViewById(R.id.ib_pick_color);
-        btnDone = (Button) view.findViewById(R.id.btn_done);
-        sbMaxInLearning = (DiscreteSeekBar) view.findViewById(R.id.sb_max_in_learning);
+        ButterKnife.bind(this, view);
 
         minMaxInLearning = getResources().getInteger(R.integer.min_max_in_learning);
         maxMaxInLearning = getResources().getInteger(R.integer.max_max_in_learning);
 
-        btnDone.setOnClickListener(this);
-        etLanguage.setOnEditorActionListener(this);
-        ibSpeedHelp.setOnClickListener(new View.OnClickListener() {
+        btnDone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                new AlertDialog.Builder(getActivity())
-                        .setTitle(R.string.speed)
-                        .setMessage(getString(R.string.speed_help))
-                        .setNegativeButton(R.string.ok, null)
-                        .show();
+                createStack();
+            }
+        });
+        etLanguage.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                createStack();
+                return true;
             }
         });
         ibPickColor.setOnClickListener(new View.OnClickListener() {
@@ -114,23 +126,27 @@ public class CreateStackFragment extends Fragment
         return view;
     }
 
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putInt(EXTRA_COLOR, color);
+    /**
+     * Show help dialog that explains what parameter "speed" means.
+     */
+    @OnClick(R.id.ib_speed_help)
+    void showSpeedHelp() {
+        new AlertDialog.Builder(getActivity())
+                .setTitle(R.string.speed)
+                .setMessage(getString(R.string.speed_help))
+                .setNegativeButton(R.string.ok, null)
+                .show();
     }
 
-    // Key to store ContentValues in Bundle.
-    private static final String EXTRA_VALUES = "values";
-
-    @Override
-    public void onClick(View v) {
+    /**
+     * Performs creation of the stack according to the views on the screen.
+     */
+    private void createStack() {
         btnDone.setOnClickListener(null);
         String title = etTitle.getText().toString();
         String language = etLanguage.getText().toString();
         int maxInLearning = sbMaxInLearning.getProgress();
-        // If you know better way to pass values though Bundle please,
-        // make pull request on https://github.com/Nolane/learn-english-words
+        // If you know better way to pass values though nolane16@gmail.com
         Bundle args = new Bundle();
         ContentValues values = new ContentValues();
         values.put(Stacks.STACK_TITLE, title);
@@ -161,6 +177,23 @@ public class CreateStackFragment extends Fragment
             throw new IllegalArgumentException("Loader was failed. (uri = null)");
         }
         Intent intent = new Intent(getActivity(), AllStacksActivity.class);
+        // This frag is required because this fragment is used in two places.
+        // First is CreateStackActivity and second is CreateFirstStackActivity.
+        // Using this flag allows to keep code simpler. Scheme below shows problem.
+        // We don't want to see two AllStacksActivity in back stack.
+        /*
+            LauncherActivity (finished to clear back stack)
+                    |
+            CreateFirstStackActivity (finished to clear back stack)
+            <CreateStackFragment>
+                    |
+            AllStacksActivity (not finished)
+                    |
+            CreateStackActivity (finished to clear back stack)
+            <CreateStackFragment>
+                    |
+            AllStacksActivity (not finished)
+         */
         intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         startActivity(intent);
         getActivity().finish();
@@ -169,11 +202,5 @@ public class CreateStackFragment extends Fragment
     @Override
     public void onLoaderReset(Loader<Uri> loader) {
 
-    }
-
-    @Override
-    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-        onClick(btnDone);
-        return true;
     }
 }
