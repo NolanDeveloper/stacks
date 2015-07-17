@@ -11,9 +11,11 @@ import android.widget.GridLayout;
 
 import com.nolane.stacks.R;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
 /**
- * This dialog allows user to pick color from one of nine.
- * These colors are in resources.
+ * This dialog allows user to pick color from one of nine that are defined in resources.
  */
 public class ColorPickerDialog extends Dialog implements View.OnClickListener {
     public interface OnPickedColorListener {
@@ -29,21 +31,26 @@ public class ColorPickerDialog extends Dialog implements View.OnClickListener {
         this.listener = listener;
     }
 
+    // UI elements.
+    @Bind(R.id.gl_root)
+    GridLayout glRoot;
+    @Bind(R.id.btn_cancel)
+    Button btnCancel;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.dialog_color_picker);
         setTitle(getContext().getString(R.string.pick_color));
-        GridLayout gvRoot = (GridLayout) findViewById(R.id.gl_root);
-        Button cancel = (Button) findViewById(R.id.btn_cancel);
-        cancel.setOnClickListener(new View.OnClickListener() {
+        ButterKnife.bind(this);
+        btnCancel.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 cancel();
             }
         });
         for (int i = 0; i < 9; i++) {
-            View colorView = gvRoot.getChildAt(i);
+            View colorView = glRoot.getChildAt(i);
             colorView.setOnClickListener(this);
         }
     }
