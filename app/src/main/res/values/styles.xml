@@ -6,6 +6,7 @@
         <item name="android:textColorPrimary">@color/primary_text</item>
         <item name="android:textColorSecondary">@color/secondary_text</item>
         <item name="drawerArrowStyle">@style/DrawerArrowStyle</item>
+        <item name="android:actionModeBackground">@color/primary</item>
     </style>
 
     <style name="DrawerArrowStyle" parent="Widget.AppCompat.DrawerArrowToggle">
