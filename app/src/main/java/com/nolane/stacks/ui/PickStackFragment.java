@@ -10,7 +10,6 @@ import android.database.Cursor;
 import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.GridLayoutManager;
@@ -22,8 +21,12 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.nolane.stacks.R;
+import com.nolane.stacks.utils.LanguageUtils;
 import com.nolane.stacks.utils.RecyclerCursorAdapter;
 import com.nolane.stacks.utils.UriUtils;
+
+import butterknife.Bind;
+import butterknife.ButterKnife;
 
 import static com.nolane.stacks.provider.CardsContract.Stacks;
 
@@ -37,19 +40,20 @@ public class PickStackFragment extends Fragment implements LoaderManager.LoaderC
      */
     public class StacksAdapter extends RecyclerCursorAdapter<StacksAdapter.ViewHolder> {
         public class ViewHolder extends RecyclerView.ViewHolder {
-            public View root;
-            public ImageView ivIcon;
-            public TextView tvTitle;
-            public TextView tvLanguage;
-            public TextView tvCountCards;
+            View root;
+            @Bind(R.id.iv_icon)
+            ImageView ivIcon;
+            @Bind(R.id.tv_title)
+            TextView tvTitle;
+            @Bind(R.id.tv_language)
+            TextView tvLanguage;
+            @Bind(R.id.tv_count_cards)
+            TextView tvCountCards;
 
             public ViewHolder(View itemView) {
                 super(itemView);
                 root = itemView;
-                ivIcon = (ImageView) itemView.findViewById(R.id.iv_icon);
-                tvTitle = (TextView) itemView.findViewById(R.id.tv_title);
-                tvLanguage = (TextView) itemView.findViewById(R.id.tv_language);
-                tvCountCards = (TextView) itemView.findViewById(R.id.tv_count_cards);
+                ButterKnife.bind(this, itemView);
             }
         }
 
@@ -63,16 +67,6 @@ public class PickStackFragment extends Fragment implements LoaderManager.LoaderC
             return new ViewHolder(item);
         }
 
-        private String shortenLanguage(@NonNull String language) {
-            if (language.length() < 2) {
-                return "";
-            }
-            if (language.length() == 2) {
-                return String.valueOf(Character.toUpperCase(language.charAt(0))) + Character.toLowerCase(language.charAt(1));
-            }
-            return Character.toUpperCase(language.charAt(0)) + language.substring(1, 3).toLowerCase();
-        }
-
         @Override
         public void onBindViewHolder(ViewHolder holder, final int position) {
             query.moveToPosition(position);
@@ -82,7 +76,7 @@ public class PickStackFragment extends Fragment implements LoaderManager.LoaderC
             final int count = query.getInt(StacksQuery.COUNT_CARDS);
             final int color = query.getInt(StacksQuery.COLOR);
             holder.tvTitle.setText(title);
-            holder.tvLanguage.setText(shortenLanguage(language));
+            holder.tvLanguage.setText(LanguageUtils.shortenLanguage(language));
             holder.ivIcon.getDrawable().setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
             holder.tvCountCards.setText(String.valueOf(count));
             if (0 == count) {
@@ -119,13 +113,14 @@ public class PickStackFragment extends Fragment implements LoaderManager.LoaderC
     }
 
     // UI elements.
-    private RecyclerView rvStacks;
+    @Bind(R.id.rv_stacks)
+    RecyclerView rvStacks;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.frag_pick_stack, container, false);
-        rvStacks = (RecyclerView) view.findViewById(R.id.rv_stacks);
+        ButterKnife.bind(this, view);
         rvStacks.setLayoutManager(new GridLayoutManager(getActivity(), getResources().getInteger(R.integer.pick_stack_columns), GridLayoutManager.VERTICAL, false));
         getActivity().setTitle(getString(R.string.choose_stack));
         rvStacks.setAdapter(new StacksAdapter(null));

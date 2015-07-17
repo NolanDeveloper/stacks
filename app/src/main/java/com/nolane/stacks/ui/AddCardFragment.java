@@ -25,17 +25,18 @@ import android.widget.TextView;
 import com.nolane.stacks.R;
 import com.nolane.stacks.utils.UriUtils;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+
 import static com.nolane.stacks.provider.CardsContract.Cards;
 import static com.nolane.stacks.provider.CardsContract.Stacks;
 
 /**
  * This fragment is for adding new cards to existing stack. It is used in
- * conjunction with {@link AddCardActivity}. <br>
- * Required: <br>
- * data type: {@link Stacks#CONTENT_ITEM_TYPE}
+ * conjunction with {@link AddCardActivity}.
  */
-public class AddCardFragment extends Fragment
-        implements View.OnClickListener, LoaderManager.LoaderCallbacks<Cursor>, TextView.OnEditorActionListener {
+public class AddCardFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
     // Uri which points to stack where to put new cards to.
     private Uri stack;
 
@@ -43,11 +44,16 @@ public class AddCardFragment extends Fragment
     private long stackId;
 
     // UI elements.
-    private EditText etFront;
-    private EditText etBack;
-    private ImageButton ibBidirectionalHelp;
-    private CheckBox cbBidirectional;
-    private Button btnDone;
+    @Bind(R.id.et_front)
+    EditText etFront;
+    @Bind(R.id.et_back)
+    EditText etBack;
+    @Bind(R.id.ib_bidirectional_help)
+    ImageButton ibBidirectionalHelp;
+    @Bind(R.id.cb_bidirectional)
+    CheckBox cbBidirectional;
+    @Bind(R.id.btn_done)
+    Button btnDone;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -60,23 +66,8 @@ public class AddCardFragment extends Fragment
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.frag_add_card, container, false);
-        etFront = (EditText) view.findViewById(R.id.et_front);
-        etBack = (EditText) view.findViewById(R.id.et_back);
-        ibBidirectionalHelp = (ImageButton) view.findViewById(R.id.ib_bidirectional_help);
-        cbBidirectional = (CheckBox) view.findViewById(R.id.cb_bidirectional);
-        btnDone = (Button) view.findViewById(R.id.btn_done);
+        ButterKnife.bind(this, view);
 
-        etBack.setOnEditorActionListener(this);
-        ibBidirectionalHelp.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new AlertDialog.Builder(getActivity())
-                        .setTitle(R.string.bidirectional)
-                        .setMessage(getString(R.string.bidirectional_help))
-                        .setNegativeButton(R.string.ok, null)
-                        .show();
-            }
-        });
         getActivity().setTitle(getString(R.string.add_card));
 
         if (null == savedInstanceState) {
@@ -93,15 +84,31 @@ public class AddCardFragment extends Fragment
         return view;
     }
 
+    @OnClick(R.id.ib_bidirectional_help)
+    public void showBidirectionalHelpDialog() {
+        new AlertDialog.Builder(getActivity())
+                .setTitle(R.string.bidirectional)
+                .setMessage(getString(R.string.bidirectional_help))
+                .setNegativeButton(R.string.ok, null)
+                .show();
+    }
+
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        UriUtils.checkDataTypeOrThrow(getActivity(), Stacks.CONTENT_ITEM_TYPE);
         getLoaderManager().initLoader(StackQuery._TOKEN, null, this);
     }
 
     @Override
-    public void onClick(View v) {
+    public void onDestroyView() {
+        super.onDestroyView();
+        ButterKnife.unbind(this);
+    }
+
+    /**
+     * Adds card into database according to the state of the views.
+     */
+    public void addCard() {
         String front = etFront.getText().toString();
         String back = etBack.getText().toString();
         final ContentResolver resolver = getActivity().getContentResolver();
@@ -135,12 +142,6 @@ public class AddCardFragment extends Fragment
         }
         etFront.getText().clear();
         etBack.getText().clear();
-    }
-
-    @Override
-    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-        onClick(null);
-        return true;
     }
 
     /**
@@ -181,7 +182,19 @@ public class AddCardFragment extends Fragment
         query.moveToFirst();
         String title = query.getString(StackQuery.TITLE);
         UriUtils.insertParameter(getActivity(), Stacks.STACK_TITLE, title);
-        btnDone.setOnClickListener(this);
+        btnDone.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                addCard();
+            }
+        });
+        etBack.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                addCard();
+                return true;
+            }
+        });
     }
 
     @Override

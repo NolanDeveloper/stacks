@@ -29,6 +29,9 @@ import java.util.Calendar;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
 import static com.nolane.stacks.provider.CardsContract.Cards;
 import static com.nolane.stacks.provider.CardsContract.Stacks;
 
@@ -74,10 +77,10 @@ public class TrainingFragment extends Fragment
     private Stage stage;
     // This flag is set when we got 0 items after query on finished cards.
     // It's necessary to avoid redundant queries.
-    private boolean dontHaveFinishedCards;
+    private boolean notHaveFinishedCards;
     // This flag is set when we get 0 items after query on cards in learning
     // on REPETITION stage.
-    private boolean dontHaveCardsInLearning;
+    private boolean notHaveCardsInLearning;
 
     // This is type of query we do to get cards in REPETITION stage.
     private enum QueryType {
@@ -88,10 +91,14 @@ public class TrainingFragment extends Fragment
     private QueryType queryType;
 
     // UI elements.
-    private View vProgressIndicator;
-    private TextView tvFront;
-    private EditText etBack;
-    private Button btnDone;
+    @Bind(R.id.v_progress_indicator)
+    View vProgressIndicator;
+    @Bind(R.id.tv_front)
+    TextView tvFront;
+    @Bind(R.id.et_back)
+    EditText etBack;
+    @Bind(R.id.btn_done)
+    Button btnDone;
 
     // Card.CARD_ID value of showing card.
     private long cardId;
@@ -120,6 +127,27 @@ public class TrainingFragment extends Fragment
     }
 
     private Random random = new Random();
+
+    @Nullable
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        super.onCreateView(inflater, container, savedInstanceState);
+        View view = inflater.inflate(R.layout.frag_training, container, false);
+        ButterKnife.bind(this, view);
+        etBack.setOnEditorActionListener(new TextView.OnEditorActionListener() {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
+                onClick(btnDone);
+                return true;
+            }
+        });
+        if (null == savedInstanceState) {
+            InputFilter[] filter = new InputFilter[1];
+            filter[0] = new InputFilter.LengthFilter(Cards.MAX_BACK_LEN);
+            etBack.setFilters(filter);
+        }
+        return view;
+    }
 
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
@@ -156,40 +184,16 @@ public class TrainingFragment extends Fragment
         outState.putSerializable(EXTRA_STAGE, stage);
     }
 
-    @Nullable
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        super.onCreateView(inflater, container, savedInstanceState);
-        View view = inflater.inflate(R.layout.frag_training, container, false);
-        vProgressIndicator = view.findViewById(R.id.v_progress_indicator);
-        tvFront = (TextView) view.findViewById(R.id.tv_front);
-        etBack = (EditText) view.findViewById(R.id.et_back);
-        btnDone = (Button) view.findViewById(R.id.btn_done);
-        etBack.setOnEditorActionListener(new TextView.OnEditorActionListener() {
-            @Override
-            public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                onClick(btnDone);
-                return true;
-            }
-        });
-        if (null == savedInstanceState) {
-            InputFilter[] filter = new InputFilter[1];
-            filter[0] = new InputFilter.LengthFilter(Cards.MAX_BACK_LEN);
-            etBack.setFilters(filter);
-        }
-        return view;
-    }
-
     @Override
     public void onClick(View v) {
         // Turn off button until we did not get next card.
         btnDone.setOnClickListener(null);
         long timeNow = clock.getCurrentTime();
         long timeDiff = timeNow - cardLastSeen;
-        long dayInMills = TimeUnit.DAYS.toMillis(1);
+        long updatePeriod = (long)(0.75 * TimeUnit.DAYS.toMillis(1));
         String userAssumption = etBack.getText().toString();
         etBack.getText().clear();
-        if (dayInMills < timeDiff) {
+        if (updatePeriod < timeDiff) {
             // Update progress.
             Bundle arguments = new Bundle();
             int newProgress = cardProgress + (userAssumption.equals(cardBack) ? 1 : -1);
@@ -257,10 +261,10 @@ public class TrainingFragment extends Fragment
                         @Override
                         public Object loadInBackground() {
                             String selection;
-                            if (dontHaveFinishedCards || (random.nextFloat() < 0.8f)) {
+                            if (notHaveFinishedCards || (random.nextFloat() < 0.8f)) {
                                 selection = Cards.CARD_IN_LEARNING + " = 1";
                                 queryType = QueryType.REPEAT_LEARNING;
-                            } else if (!dontHaveCardsInLearning) {
+                            } else if (!notHaveCardsInLearning) {
                                 selection = Cards.CARD_PROGRESS + " = " + getResources().getInteger(R.integer.default_max_progress);
                                 queryType = QueryType.REPEAT_LEARNED;
                             } else {
@@ -317,9 +321,9 @@ public class TrainingFragment extends Fragment
                 } else if (Stage.REPETITION == stage) {
                     if (0 == query.getCount()) {
                         if (QueryType.REPEAT_LEARNED == queryType) {
-                            dontHaveFinishedCards = true;
+                            notHaveFinishedCards = true;
                         } else {
-                            dontHaveCardsInLearning = true;
+                            notHaveCardsInLearning = true;
                         }
                         getLoaderManager().initLoader(PickCardQuery.ID, null, this).forceLoad();
                         return;

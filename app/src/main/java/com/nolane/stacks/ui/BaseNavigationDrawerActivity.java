@@ -13,6 +13,9 @@ import android.view.View;
 
 import com.nolane.stacks.R;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
 /**
  * This activity is base class for activities with navigation drawer. It assumes all
  * responsibilities for the processing of the navigation drawer including action
@@ -33,7 +36,9 @@ public abstract class BaseNavigationDrawerActivity extends AppCompatActivity {
     // when user swipes from the left side of the screen.
     private NavigationFragment navigationFragment;
 
-    private DrawerLayout dlRoot;
+    @Bind(R.id.dl_root)
+    DrawerLayout dlRoot;
+
     private ActionBarDrawerToggle actionBarDrawerToggle;
 
     private boolean isDrawerOpened;
@@ -46,6 +51,7 @@ public abstract class BaseNavigationDrawerActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.act_base_navigation_drawer);
+        ButterKnife.bind(this);
 
         if (null != savedInstanceState) {
             isDrawerOpened = savedInstanceState.getBoolean(EXTRA_IS_DRAWER_OPENED);
@@ -58,7 +64,6 @@ public abstract class BaseNavigationDrawerActivity extends AppCompatActivity {
                 .commit();
 
 
-        dlRoot = (DrawerLayout) findViewById(R.id.dl_root);
         actionBarDrawerToggle = new ActionBarDrawerToggle(
                 this,
                 dlRoot,

@@ -10,6 +10,7 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v7.widget.GridLayoutManager;
@@ -30,13 +31,16 @@ import com.nolane.stacks.R;
 import com.nolane.stacks.utils.ColorUtils;
 import com.nolane.stacks.utils.RecyclerCursorAdapter;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
+
 import static com.nolane.stacks.provider.CardsContract.Cards;
 
 /**
  * This fragment shows all cards to user. The user can remove all edit each card.
  * This fragment is used in conjunction with {@link AllCardsActivity}.
  */
-public class AllCardsFragment extends Fragment implements LoaderManager.LoaderCallbacks<Object>, SearchView.OnQueryTextListener {
+public class AllCardsFragment extends Fragment implements LoaderManager.LoaderCallbacks<Object> {
     // Key to put ContentValues inside Bundle.
     public static final String EXTRA_VALUES = "values";
     // Key to deliver query to loader.
@@ -45,22 +49,23 @@ public class AllCardsFragment extends Fragment implements LoaderManager.LoaderCa
     /**
      * Adapter for RecyclerView.
      */
-    private class CardsAdapter extends RecyclerCursorAdapter<CardsAdapter.ViewHolder> {
+    class CardsAdapter extends RecyclerCursorAdapter<CardsAdapter.ViewHolder> {
         public class ViewHolder extends RecyclerView.ViewHolder {
             // UI elements.
-            public View root;
-            public View vProgressIndicator;
-            public TextView tvFront;
-            public TextView tvBack;
-            public ImageButton ibRemove;
+            View root;
+            @Bind(R.id.v_progress_indicator)
+            View vProgressIndicator;
+            @Bind(R.id.tv_front)
+            TextView tvFront;
+            @Bind(R.id.tv_back)
+            TextView tvBack;
+            @Bind(R.id.ib_remove)
+            ImageButton ibRemove;
 
             public ViewHolder(View itemView) {
                 super(itemView);
                 root = itemView;
-                vProgressIndicator = itemView.findViewById(R.id.v_progress_indicator);
-                tvFront = (TextView) itemView.findViewById(R.id.tv_front);
-                tvBack = (TextView) itemView.findViewById(R.id.tv_back);
-                ibRemove = (ImageButton) itemView.findViewById(R.id.ib_remove);
+                ButterKnife.bind(this, itemView);
             }
         }
 
@@ -130,23 +135,31 @@ public class AllCardsFragment extends Fragment implements LoaderManager.LoaderCa
     }
 
     // UI elements.
-    private ImageView ivNoCards;
-    private RecyclerView rvCards;
+    @Bind(R.id.iv_no_cards)
+    ImageView ivNoCards;
+    @Bind(R.id.rv_cards)
+    RecyclerView rvCards;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.frag_all_cards, container, false);
-        ivNoCards = (ImageView) view.findViewById(R.id.iv_no_cards);
-        rvCards = (RecyclerView) view.findViewById(R.id.rv_cards);
-        rvCards.setLayoutManager(new GridLayoutManager(getActivity(), getResources().getInteger(R.integer.all_cards_columns), GridLayoutManager.VERTICAL, false));
+        ButterKnife.bind(this, view);
+        rvCards.setLayoutManager(new GridLayoutManager(getActivity(),
+                getResources().getInteger(R.integer.all_cards_columns), GridLayoutManager.VERTICAL, false));
         rvCards.setAdapter(new CardsAdapter(null));
         getActivity().setTitle(getString(R.string.cards));
         return view;
     }
 
     @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+    public void onDestroyView() {
+        super.onDestroyView();
+        ButterKnife.unbind(this);
+    }
+
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         getLoaderManager().initLoader(CardsQuery._TOKEN, null, this);
         // Catch started loader.
@@ -195,7 +208,13 @@ public class AllCardsFragment extends Fragment implements LoaderManager.LoaderCa
                         selectionArgs = new String[]{ query, query };
                     }
                 }
-                return new CursorLoader(getActivity(), Cards.CONTENT_URI, CardsQuery.COLUMNS, selection, selectionArgs, null);
+                return new CursorLoader(
+                        getActivity(),
+                        Cards.CONTENT_URI,
+                        CardsQuery.COLUMNS,
+                        selection,
+                        selectionArgs,
+                        null);
             case RemoveCardQuery._TOKEN:
                 return new AsyncTaskLoader(getActivity()) {
                     @Override
@@ -254,29 +273,34 @@ public class AllCardsFragment extends Fragment implements LoaderManager.LoaderCa
 
     }
 
+    /**
+     * Performs search query that finds all occurrences of {@code query} at the front and
+     * back of cards.
+     * @param query Line that user is looking for.
+     */
+    private void querySearch(@NonNull String query) {
+        Bundle args = new Bundle();
+        args.putString(EXTRA_QUERY, query);
+        getLoaderManager().restartLoader(CardsQuery._TOKEN, args, this).forceLoad();
+    }
+
     @Override
     public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
         super.onCreateOptionsMenu(menu, inflater);
         inflater.inflate(R.menu.frag_all_cards, menu);
         MenuItem searchItem = menu.findItem(R.id.action_search);
         SearchView searchView = (SearchView) searchItem.getActionView();
-        searchView.setOnQueryTextListener(this);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                querySearch(query);
+                return true;
+            }
+            @Override
+            public boolean onQueryTextChange(String query) {
+                querySearch(query);
+                return true;
+            }
+        });
     }
-
-    @Override
-    public boolean onQueryTextSubmit(String query) {
-        Bundle args = new Bundle();
-        args.putString(EXTRA_QUERY, query);
-        getLoaderManager().restartLoader(CardsQuery._TOKEN, args, this).forceLoad();
-        return true;
-    }
-
-    @Override
-    public boolean onQueryTextChange(String newText) {
-        Bundle args = new Bundle();
-        args.putString(EXTRA_QUERY, newText);
-        getLoaderManager().restartLoader(CardsQuery._TOKEN, args, this).forceLoad();
-        return false;
-    }
-
 }

@@ -5,93 +5,53 @@ import android.app.Fragment;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.InputFilter;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
-import android.widget.TextView;
 
 import com.nolane.stacks.R;
-import com.nolane.stacks.utils.UriUtils;
+
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import butterknife.OnEditorAction;
 
 import static com.nolane.stacks.provider.CardsContract.Stacks;
 
 /**
- * This fragment allows user to edit stack. <br>
- * Required: <br>
- * data type: {@link Stacks#CONTENT_ITEM_TYPE} <br>
- * data parameter: {@link Stacks#STACK_TITLE} <br>
- * data parameter: {@link Stacks#STACK_LANGUAGE} <br>
- * data parameter: {@link Stacks#STACK_COLOR}
+ * This fragment allows user to edit stack.
  */
-public class EditStackFragment extends Fragment implements View.OnClickListener, TextView.OnEditorActionListener {
+public class EditStackFragment extends Fragment {
     // Actual values of stack.
     private String title;
     private String language;
     private int color;
 
     // UI elements.
-    private EditText etTitle;
-    private EditText etLanguage;
-    private ImageButton ibPickColor;
-    private Button btnRemove;
-    private Button btnDone;
+    @Bind(R.id.et_title)
+    EditText etTitle;
+    @Bind(R.id.et_language)
+    EditText etLanguage;
+    @Bind(R.id.ib_pick_color)
+    ImageButton ibPickColor;
+    @Bind(R.id.btn_remove)
+    Button btnRemove;
+    @Bind(R.id.btn_done)
+    Button btnDone;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.frag_edit_stack, container, false);
-        etTitle = (EditText) view.findViewById(R.id.et_title);
-        etLanguage = (EditText) view.findViewById(R.id.et_language);
-        ibPickColor = (ImageButton) view.findViewById(R.id.ib_pick_color);
-        btnRemove = (Button) view.findViewById(R.id.btn_remove);
-        btnDone = (Button) view.findViewById(R.id.btn_done);
-        btnDone.setOnClickListener(this);
-        btnRemove.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new AlertDialog.Builder(getActivity())
-                        .setTitle(R.string.remove)
-                        .setMessage(getString(R.string.ask_delete))
-                        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                final Context context = getActivity().getApplicationContext();
-                                final Uri data = getActivity().getIntent().getData();
-                                new Thread(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        context.getContentResolver().delete(data, null, null);
-                                    }
-                                }).run();
-                                getActivity().finish();
-                            }
-                        })
-                        .setNegativeButton(R.string.no, null)
-                        .show();
-            }
-        });
-        etLanguage.setOnEditorActionListener(this);
-        ibPickColor.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                new ColorPickerDialog(getActivity(), new ColorPickerDialog.OnPickedColorListener() {
-                    @Override
-                    public void onPickedColor(int color) {
-                        ibPickColor.setImageDrawable(new ColorDrawable(color));
-                    }
-                }).show();
-            }
-        });
+        ButterKnife.bind(this, view);
         title = getActivity().getIntent().getData().getQueryParameter(Stacks.STACK_TITLE);
         language = getActivity().getIntent().getData().getQueryParameter(Stacks.STACK_LANGUAGE);
         color = Integer.parseInt(getActivity().getIntent().getData().getQueryParameter(Stacks.STACK_COLOR));
@@ -111,8 +71,8 @@ public class EditStackFragment extends Fragment implements View.OnClickListener,
         return view;
     }
 
-    @Override
-    public void onClick(View v) {
+    @OnClick(R.id.btn_done)
+    public void finishEditing(View v) {
         final String newTitle = etTitle.getText().toString();
         final String newLanguage = etLanguage.getText().toString();
         final int newColor = ((ColorDrawable) ibPickColor.getDrawable()).getColor();
@@ -132,18 +92,42 @@ public class EditStackFragment extends Fragment implements View.OnClickListener,
         getActivity().finish();
     }
 
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        UriUtils.checkDataTypeOrThrow(getActivity(), Stacks.CONTENT_ITEM_TYPE);
-        UriUtils.checkSpecifiesParameterOrThrow(getActivity(), Stacks.STACK_TITLE);
-        UriUtils.checkSpecifiesParameterOrThrow(getActivity(), Stacks.STACK_LANGUAGE);
-        UriUtils.checkSpecifiesParameterOrThrow(getActivity(), Stacks.STACK_COLOR);
+    @OnEditorAction(R.id.et_language)
+    public boolean finishEditing() {
+        finishEditing(btnDone);
+        return true;
     }
 
-    @Override
-    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-        onClick(btnDone);
-        return true;
+    @OnClick(R.id.btn_remove)
+    public void deleteAfterConfirmation() {
+        new AlertDialog.Builder(getActivity())
+                .setTitle(R.string.remove)
+                .setMessage(getString(R.string.ask_delete))
+                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        final Context context = getActivity().getApplicationContext();
+                        final Uri data = getActivity().getIntent().getData();
+                        new Thread(new Runnable() {
+                            @Override
+                            public void run() {
+                                context.getContentResolver().delete(data, null, null);
+                            }
+                        }).run();
+                        getActivity().finish();
+                    }
+                })
+                .setNegativeButton(R.string.no, null)
+                .show();
+    }
+
+    @OnClick(R.id.ib_pick_color)
+    public void showPickColorDialog() {
+        new ColorPickerDialog(getActivity(), new ColorPickerDialog.OnPickedColorListener() {
+            @Override
+            public void onPickedColor(int color) {
+                ibPickColor.setImageDrawable(new ColorDrawable(color));
+            }
+        }).show();
     }
 }
