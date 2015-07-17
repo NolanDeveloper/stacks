@@ -49,22 +49,23 @@ public class AllCardsFragment extends Fragment implements LoaderManager.LoaderCa
     /**
      * Adapter for RecyclerView.
      */
-    private class CardsAdapter extends RecyclerCursorAdapter<CardsAdapter.ViewHolder> {
+    class CardsAdapter extends RecyclerCursorAdapter<CardsAdapter.ViewHolder> {
         public class ViewHolder extends RecyclerView.ViewHolder {
             // UI elements.
-            public View root;
-            public View vProgressIndicator;
-            public TextView tvFront;
-            public TextView tvBack;
-            public ImageButton ibRemove;
+            View root;
+            @Bind(R.id.v_progress_indicator)
+            View vProgressIndicator;
+            @Bind(R.id.tv_front)
+            TextView tvFront;
+            @Bind(R.id.tv_back)
+            TextView tvBack;
+            @Bind(R.id.ib_remove)
+            ImageButton ibRemove;
 
             public ViewHolder(View itemView) {
                 super(itemView);
                 root = itemView;
-                vProgressIndicator = itemView.findViewById(R.id.v_progress_indicator);
-                tvFront = (TextView) itemView.findViewById(R.id.tv_front);
-                tvBack = (TextView) itemView.findViewById(R.id.tv_back);
-                ibRemove = (ImageButton) itemView.findViewById(R.id.ib_remove);
+                ButterKnife.bind(this, itemView);
             }
         }
 
@@ -149,6 +150,12 @@ public class AllCardsFragment extends Fragment implements LoaderManager.LoaderCa
         rvCards.setAdapter(new CardsAdapter(null));
         getActivity().setTitle(getString(R.string.cards));
         return view;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        ButterKnife.unbind(this);
     }
 
     @Override

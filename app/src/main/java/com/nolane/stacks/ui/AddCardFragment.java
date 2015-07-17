@@ -99,6 +99,12 @@ public class AddCardFragment extends Fragment implements LoaderManager.LoaderCal
         getLoaderManager().initLoader(StackQuery._TOKEN, null, this);
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        ButterKnife.unbind(this);
+    }
+
     /**
      * Adds card into database according to the state of the views.
      */
