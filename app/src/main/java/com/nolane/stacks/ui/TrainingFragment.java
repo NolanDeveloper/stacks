@@ -186,10 +186,10 @@ public class TrainingFragment extends Fragment
         btnDone.setOnClickListener(null);
         long timeNow = clock.getCurrentTime();
         long timeDiff = timeNow - cardLastSeen;
-        long dayInMills = TimeUnit.DAYS.toMillis(1);
+        long updatePeriod = (long)(0.75 * TimeUnit.DAYS.toMillis(1));
         String userAssumption = etBack.getText().toString();
         etBack.getText().clear();
-        if (dayInMills < timeDiff) {
+        if (updatePeriod < timeDiff) {
             // Update progress.
             Bundle arguments = new Bundle();
             int newProgress = cardProgress + (userAssumption.equals(cardBack) ? 1 : -1);
