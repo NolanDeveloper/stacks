@@ -13,7 +13,6 @@ import android.graphics.Paint;
 import android.graphics.PorterDuff;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.GridLayoutManager;
@@ -27,6 +26,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.nolane.stacks.R;
+import com.nolane.stacks.utils.LanguageUtils;
 import com.nolane.stacks.utils.RecyclerCursorAdapter;
 import com.nolane.stacks.utils.UriUtils;
 
@@ -75,31 +75,6 @@ public class AllStacksFragment extends Fragment implements LoaderManager.LoaderC
             return new ViewHolder(view);
         }
 
-        /**
-         * Shortens names of languages. <br>
-         * Examples: <br>
-         *     Russian -> Rus <br>
-         *     russian -> Rus <br>
-         *     rUssian -> Rus <br>
-         *     Ru -> Ru <br>
-         *     ru -> Ru <br>
-         *     r -> [empty string]
-         * @param language Full language name.
-         * @return <li>({@code language}.length < 2) returns empty string.
-         * <li>({@code language}.length == 2) returns first two characters: first in upper case, second
-         * in lower case.
-         * <li>Otherwise returns first 3 characters: first in upper case, other in lower case.
-         */
-        private String shortenLanguage(@NonNull String language) {
-            if (language.length() < 2) {
-                return "";
-            }
-            if (language.length() == 2) {
-                return String.valueOf(Character.toUpperCase(language.charAt(0))) + Character.toLowerCase(language.charAt(1));
-            }
-            return Character.toUpperCase(language.charAt(0)) + language.substring(1, 3).toLowerCase();
-        }
-
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
             query.moveToPosition(position);
@@ -119,7 +94,7 @@ public class AllStacksFragment extends Fragment implements LoaderManager.LoaderC
                 }
             });
             holder.tvTitle.setText(title);
-            holder.tvLanguage.setText(shortenLanguage(language));
+            holder.tvLanguage.setText(LanguageUtils.shortenLanguage(language));
             holder.tvCountCards.setText(String.valueOf(count));
             holder.ivIcon.getDrawable().setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
             holder.vRoot.setOnClickListener(new View.OnClickListener() {
