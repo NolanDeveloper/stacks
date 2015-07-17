@@ -6,31 +6,32 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.text.InputFilter;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
 
 import com.nolane.stacks.R;
-import com.nolane.stacks.utils.UriUtils;
+
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import butterknife.OnClick;
+import butterknife.OnEditorAction;
 
 import static com.nolane.stacks.provider.CardsContract.Cards;
 
 /**
  * This fragment allows user to edit cards.
- * Requires: <br>
- * data type: {@link Cards#CONTENT_ITEM_TYPE} <br>
- * data parameter: {@link Cards#CARD_FRONT} <br>
- * data parameter: {@link Cards#CARD_BACK}
  */
-public class EditCardFragment extends Fragment implements View.OnClickListener, TextView.OnEditorActionListener {
+public class EditCardFragment extends Fragment {
     // UI elements.
-    private EditText etFront;
-    private EditText etBack;
-    private Button btnDone;
+    @Bind(R.id.et_front)
+    EditText etFront;
+    @Bind(R.id.et_back)
+    EditText etBack;
+    @Bind(R.id.btn_done)
+    Button btnDone;
 
     // Actual values of card that are in database.
     private long id;
@@ -41,16 +42,12 @@ public class EditCardFragment extends Fragment implements View.OnClickListener, 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.frag_edit_card, container, false);
-        etFront = (EditText) view.findViewById(R.id.et_front);
-        etBack = (EditText) view.findViewById(R.id.et_back);
-        btnDone = (Button) view.findViewById(R.id.btn_done);
+        ButterKnife.bind(this, view);
 
         Uri data = getActivity().getIntent().getData();
         id = Long.parseLong(data.getLastPathSegment());
         front = data.getQueryParameter(Cards.CARD_FRONT);
         back = data.getQueryParameter(Cards.CARD_BACK);
-
-        etBack.setOnEditorActionListener(this);
 
         if (null == savedInstanceState) {
             etFront.setText(front);
@@ -65,21 +62,11 @@ public class EditCardFragment extends Fragment implements View.OnClickListener, 
             etBack.setFilters(filters);
         }
 
-        btnDone.setOnClickListener(this);
-
         return view;
     }
 
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        UriUtils.checkDataTypeOrThrow(getActivity(), Cards.CONTENT_ITEM_TYPE);
-        UriUtils.checkSpecifiesParameterOrThrow(getActivity(), Cards.CARD_FRONT);
-        UriUtils.checkSpecifiesParameterOrThrow(getActivity(), Cards.CARD_BACK);
-    }
-
-    @Override
-    public void onClick(View v) {
+    @OnClick(R.id.btn_done)
+    public void finishEditing(View v) {
         final String newFront = etFront.getText().toString();
         final String newBack = etBack.getText().toString();
         if (!newFront.equals(front) || !newBack.equals(back)) {
@@ -98,9 +85,9 @@ public class EditCardFragment extends Fragment implements View.OnClickListener, 
         getActivity().finish();
     }
 
-    @Override
-    public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-        onClick(btnDone);
+    @OnEditorAction(R.id.et_back)
+    public boolean finishEditing() {
+        finishEditing(btnDone);
         return true;
     }
 }
