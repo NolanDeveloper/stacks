@@ -219,7 +219,6 @@ public class TrainingFragment extends Fragment
                 Cards.CARD_PROGRESS,
                 Cards.CARD_LAST_SEEN
         };
-        ;
 
         int ID = 0;
         int FRONT = 1;

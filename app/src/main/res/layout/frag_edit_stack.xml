@@ -58,7 +58,8 @@
             android:hint="@string/hint_language"
             android:text="text to move hint up"
             android:singleLine="true"
-            android:imeOptions="actionDone"/>
+            android:imeOptions="actionDone"
+            android:inputType="textCapWords|textNoSuggestions"/>
 
     </android.support.design.widget.TextInputLayout>
 
