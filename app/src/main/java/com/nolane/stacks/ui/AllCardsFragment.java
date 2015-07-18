@@ -4,6 +4,7 @@ import android.app.Fragment;
 import android.app.LoaderManager;
 import android.content.AsyncTaskLoader;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
@@ -119,10 +120,8 @@ public class AllCardsFragment extends Fragment implements LoaderManager.LoaderCa
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(getActivity(), EditCardActivity.class);
-                    Uri data = Cards.CONTENT_URI
+                    Uri data = Cards.uriToCard(stackId, id)
                             .buildUpon()
-                            .appendPath(String.valueOf(stackId))
-                            .appendPath(String.valueOf(id))
                             .appendQueryParameter(Cards.CARD_FRONT, front)
                             .appendQueryParameter(Cards.CARD_BACK, back)
                             .appendQueryParameter(Cards.CARD_PROGRESS, String.valueOf(progress))
@@ -222,7 +221,7 @@ public class AllCardsFragment extends Fragment implements LoaderManager.LoaderCa
                         ContentValues values = args.getParcelable(EXTRA_VALUES);
                         long stackId = values.getAsLong(Cards.CARD_STACK_ID);
                         long cardId = values.getAsLong(Cards.CARD_ID);
-                        Uri data = Cards.buildUriToCard(stackId, cardId);
+                        Uri data = Cards.uriToCard(stackId, cardId);
                         getActivity().getContentResolver().delete(data, null, null);
                         return values;
                     }
@@ -249,6 +248,7 @@ public class AllCardsFragment extends Fragment implements LoaderManager.LoaderCa
             case RemoveCardQuery._TOKEN:
                 getLoaderManager().destroyLoader(RemoveCardQuery._TOKEN);
                 final ContentValues values = (ContentValues) data;
+                final Context context = getActivity().getApplicationContext();
                 Snackbar.make(getView(), getString(R.string.deleted), Snackbar.LENGTH_LONG)
                         .setAction(R.string.undo, new View.OnClickListener() {
                             @Override
@@ -256,8 +256,7 @@ public class AllCardsFragment extends Fragment implements LoaderManager.LoaderCa
                                 new Thread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        Uri uri = Cards.CONTENT_URI;
-                                        getActivity().getContentResolver().insert(uri, values);
+                                        context.getContentResolver().insert(Cards.CONTENT_URI, values);
                                     }
                                 }).run();
                             }

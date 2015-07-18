@@ -2,7 +2,6 @@ package com.nolane.stacks.ui;
 
 import android.app.Fragment;
 import android.app.LoaderManager;
-import android.content.ContentUris;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
@@ -83,13 +82,12 @@ public class AllStacksFragment extends Fragment implements LoaderManager.LoaderC
             final String language = query.getString(StacksQuery.LANGUAGE);
             final int count = query.getInt(StacksQuery.COUNT_CARDS);
             final int color = query.getInt(StacksQuery.COLOR);
-            final Uri thisStack = ContentUris.withAppendedId(Stacks.CONTENT_URI, id);
+            final Uri thisStack = Stacks.uriToStack(id);
             holder.ibAddCard.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Intent intent = new Intent(getActivity(), AddCardActivity.class);
-                    Uri data = ContentUris.withAppendedId(Stacks.CONTENT_URI, id);
-                    intent.setData(data);
+                    intent.setData(thisStack);
                     startActivity(intent);
                 }
             });

@@ -2,7 +2,6 @@ package com.nolane.stacks.ui;
 
 import android.app.Fragment;
 import android.app.LoaderManager;
-import android.content.ContentUris;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
@@ -88,8 +87,7 @@ public class PickStackFragment extends Fragment implements LoaderManager.LoaderC
                                     @Override
                                     public void onClick(View v) {
                                         Intent intent = new Intent(getActivity(), AddCardActivity.class);
-                                        Uri data = ContentUris.withAppendedId(Stacks.CONTENT_URI, id);
-                                        intent.setData(data);
+                                        intent.setData(Stacks.uriToStack(id));
                                         startActivity(intent);
                                     }
                                 })
@@ -102,7 +100,7 @@ public class PickStackFragment extends Fragment implements LoaderManager.LoaderC
                     @Override
                     public void onClick(View v) {
                         Intent intent = new Intent(getActivity(), TrainingActivity.class);
-                        Uri data = ContentUris.withAppendedId(Stacks.CONTENT_URI, id);
+                        Uri data = Stacks.uriToStack(id);
                         data = UriUtils.insertParameter(data, Stacks.STACK_TITLE, title);
                         intent.setData(data);
                         startActivity(intent);

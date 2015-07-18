@@ -71,6 +71,15 @@ public class CardsContract {
         public static final Uri CONTENT_URI =
                 BASE_CONTENT_URI.buildUpon().appendPath(PATH_STACKS).build();
 
+        /**
+         * Creates uri to partial stack that has id equal {@code stackId}.
+         * @param id Id of stack to create uri to.
+         * @return Uri that points to stack with id equal {@code stackId}.
+         */
+        public static Uri uriToStack(long id) {
+            return ContentUris.withAppendedId(CONTENT_URI, id);
+        }
+
         public static final String CONTENT_TYPE =
                 ContentResolver.CURSOR_DIR_BASE_TYPE + "/vnd." + CONTENT_AUTHORITY + ".stack";
         public static final String CONTENT_ITEM_TYPE =
@@ -107,7 +116,7 @@ public class CardsContract {
          * @param id Id of the stack.
          * @return uri for all cards that belong to the {@code id}.
          */
-        public static Uri buildUriToCardsOfStack(long id) {
+        public static Uri uriToCardsOfStack(long id) {
             return ContentUris.withAppendedId(CONTENT_URI, id);
         }
 
@@ -119,8 +128,8 @@ public class CardsContract {
          * @param cardId  Id of card.
          * @return Uri to the card with id equal to {@code cardId} of stack
          */
-        public static Uri buildUriToCard(long stackId, long cardId) {
-            return ContentUris.withAppendedId(buildUriToCardsOfStack(stackId), cardId);
+        public static Uri uriToCard(long stackId, long cardId) {
+            return ContentUris.withAppendedId(uriToCardsOfStack(stackId), cardId);
         }
 
         public static final String CONTENT_TYPE =

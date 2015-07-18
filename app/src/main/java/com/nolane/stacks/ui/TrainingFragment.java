@@ -236,7 +236,7 @@ public class TrainingFragment extends Fragment
         long stackId = Long.parseLong(getActivity().getIntent().getData().getLastPathSegment());
         switch (id) {
             case PickCardQuery._TOKEN: {
-                final Uri cardsOfStack = Cards.buildUriToCardsOfStack(stackId);
+                final Uri cardsOfStack = Cards.uriToCardsOfStack(stackId);
                 if (Stage.LEARNING == stage) {
                     // Here we use AsyncTaskLoader instead of CursorLoader because we don't need to have
                     // observation on cursor. We just need to make one-shot load.
@@ -284,7 +284,7 @@ public class TrainingFragment extends Fragment
                 break;
             }
             case UpdateProgressQuery._TOKEN: {
-                final Uri uri = ContentUris.withAppendedId(Cards.buildUriToCardsOfStack(stackId), cardId);
+                final Uri uri = ContentUris.withAppendedId(Cards.uriToCardsOfStack(stackId), cardId);
                 final ContentValues values = args.getParcelable(EXTRA_VALUES);
                 return new AsyncTaskLoader<Object>(getActivity()) {
                     @Override
