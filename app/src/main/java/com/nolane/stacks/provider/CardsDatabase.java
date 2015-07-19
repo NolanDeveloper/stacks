@@ -6,8 +6,10 @@ import android.database.sqlite.SQLiteOpenHelper;
 import android.support.annotation.NonNull;
 
 import com.nolane.stacks.R;
-import com.nolane.stacks.provider.CardsContract.CardsColumns;
-import com.nolane.stacks.provider.CardsContract.StacksColumns;
+
+import static com.nolane.stacks.provider.CardsContract.AnswersColumns;
+import static com.nolane.stacks.provider.CardsContract.CardsColumns;
+import static com.nolane.stacks.provider.CardsContract.StacksColumns;
 
 /**
  * This class provides convenient database access. It's used by {@link CardsProvider}
@@ -28,11 +30,13 @@ public class CardsDatabase extends SQLiteOpenHelper {
     interface Tables {
         String STACKS = CardsContract.PATH_STACKS;
         String CARDS = CardsContract.PATH_CARDS;
+        String ANSWERS = CardsContract.PATH_ANSWERS;
     }
 
     // Contractions for REFERENCES clause.
     interface References {
         String STACKS_ID = "REFERENCES " + Tables.STACKS + "(" + StacksColumns.STACK_ID + ") ON DELETE CASCADE";
+        String CARDS_ID = "REFERENCES " + Tables.CARDS + "(" + CardsColumns.CARD_ID + ") ON DELETE CASCADE";
     }
 
     interface Triggers {
@@ -53,20 +57,26 @@ public class CardsDatabase extends SQLiteOpenHelper {
     @Override
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("CREATE TABLE " + Tables.STACKS + "(" +
-                StacksColumns.STACK_ID + " INTEGER PRIMARY KEY, " +
+                StacksColumns.STACK_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 StacksColumns.STACK_TITLE + " TEXT NOT NULL, " +
                 StacksColumns.STACK_MAX_IN_LEARNING + " INTEGER NOT NULL," +
                 StacksColumns.STACK_LANGUAGE + " TEXT NOT NULL," +
                 StacksColumns.STACK_COLOR + " INTEGER NOT NULL)");
 
         db.execSQL("CREATE TABLE " + Tables.CARDS + "(" +
-                CardsColumns.CARD_ID + " INTEGER PRIMARY KEY, " +
+                CardsColumns.CARD_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 CardsColumns.CARD_FRONT + " TEXT NOT NULL, " +
                 CardsColumns.CARD_BACK + " TEXT NOT NULL, " +
                 CardsColumns.CARD_PROGRESS + " INTEGER DEFAULT 0, " +
-                CardsColumns.CARD_LAST_SEEN + " INTEGER DEFAULT 0, " +
-                CardsColumns.CARD_STACK_ID + " INTEGER " + References.STACKS_ID + " ," +
+                CardsColumns.CARD_LAST_SEEN + " TEXT DEFAULT 0, " +
+                CardsColumns.CARD_STACK_ID + " INTEGER " + References.STACKS_ID + " , " +
                 CardsColumns.CARD_IN_LEARNING + " INTEGER NOT NULL)");
+
+        db.execSQL("CREATE TABLE " + Tables.ANSWERS + "(" +
+                AnswersColumns.ANSWER_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
+                AnswersColumns.ANSWER_CARD_ID + " INTEGER " + References.CARDS_ID + " , " +
+                AnswersColumns.ANSWER_TIMESTAMP + " TEXT DEFAULT CURRENT_TIMESTAMP, " +
+                AnswersColumns.ANSWER_ASSUMPTION + " TEXT NOT NULL)");
 
         int defaultMaxProgress = context.getResources().getInteger(R.integer.default_max_progress);
         setMaxProgressTrigger(db, defaultMaxProgress);
@@ -102,10 +112,10 @@ public class CardsDatabase extends SQLiteOpenHelper {
                     " UPDATE " + Tables.CARDS +
                     " SET " + CardsColumns.CARD_IN_LEARNING + " = 1" +
                     " WHERE " + CardsColumns.CARD_ID + " = " +
-                    "(SELECT " + CardsColumns.CARD_ID + " FROM " + Tables.CARDS +
-                    " WHERE " + CardsColumns.CARD_PROGRESS + " != " + value +
-                    " ORDER BY " + CardsColumns.CARD_LAST_SEEN + " ASC " +
-                    " LIMIT 1);" +
+                        "(SELECT " + CardsColumns.CARD_ID + " FROM " + Tables.CARDS +
+                        " WHERE " + CardsColumns.CARD_PROGRESS + " != " + value +
+                        " ORDER BY " + CardsColumns.CARD_LAST_SEEN + " ASC " +
+                        " LIMIT 1);" +
                     " END");
             db.setTransactionSuccessful();
         } finally {

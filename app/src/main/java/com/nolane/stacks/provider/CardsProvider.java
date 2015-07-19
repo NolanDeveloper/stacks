@@ -13,12 +13,13 @@ import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.nolane.stacks.provider.CardsContract.Cards;
-import com.nolane.stacks.provider.CardsContract.CardsColumns;
-import com.nolane.stacks.provider.CardsContract.Stacks;
-import com.nolane.stacks.provider.CardsContract.StacksColumns;
-
 import java.util.Arrays;
+
+import static com.nolane.stacks.provider.CardsContract.Answers;
+import static com.nolane.stacks.provider.CardsContract.Cards;
+import static com.nolane.stacks.provider.CardsContract.CardsColumns;
+import static com.nolane.stacks.provider.CardsContract.Stacks;
+import static com.nolane.stacks.provider.CardsContract.StacksColumns;
 
 /**
  * This class provides access to the database of this application. These methods are implicitly
@@ -34,6 +35,8 @@ public class CardsProvider extends ContentProvider {
     private static final int CARDS_TABLE = 200;
     private static final int CARDS_OF_STACK = 201;
     private static final int CARDS_ID = 202;
+    private static final int ANSWERS_TABLE = 300;
+    private static final int ANSWERS_ID = 301;
 
     private static final UriMatcher URI_MATCHER = new UriMatcher(UriMatcher.NO_MATCH);
 
@@ -44,6 +47,8 @@ public class CardsProvider extends ContentProvider {
         URI_MATCHER.addURI(authority, CardsContract.PATH_CARDS, CARDS_TABLE);
         URI_MATCHER.addURI(authority, CardsContract.PATH_CARDS + "/#", CARDS_OF_STACK);
         URI_MATCHER.addURI(authority, CardsContract.PATH_CARDS + "/#/#", CARDS_ID);
+        URI_MATCHER.addURI(authority, CardsContract.PATH_ANSWERS, ANSWERS_TABLE);
+        URI_MATCHER.addURI(authority, CardsContract.PATH_ANSWERS + "/#", ANSWERS_ID);
     }
 
     private CardsDatabase db;
@@ -78,6 +83,10 @@ public class CardsProvider extends ContentProvider {
                 return Cards.CONTENT_TYPE;
             case CARDS_ID:
                 return Cards.CONTENT_ITEM_TYPE;
+            case ANSWERS_TABLE:
+                return CardsContract.Answers.CONTENT_TYPE;
+            case ANSWERS_ID:
+                return CardsContract.Answers.CONTENT_ITEM_TYPE;
         }
         return null;
     }
@@ -94,16 +103,20 @@ public class CardsProvider extends ContentProvider {
         // The first part of uri is always table name. In other words all table
         // names are at the top of uri hierarchy providing by #URI_MATCHER.
         String table = uri.getPathSegments().get(0);
+
         String groupBy = null;
-        String[] actualProjection = null == projection ? null : Arrays.copyOf(projection, projection.length);
+        String[] actualProjection = null;
+        if (null != projection) {
+            actualProjection = Arrays.copyOf(projection, projection.length);
+        }
         switch (URI_MATCHER.match(uri)) {
             case UriMatcher.NO_MATCH:
                 return null;
-            case STACKS_TABLE:
+            case STACKS_TABLE: {
                 if (TextUtils.isEmpty(sortOrder)) {
                     sortOrder = Stacks.SORT_DEFAULT;
                 }
-                if (null != projection) {
+                if (null != actualProjection) {
                     int countId = Arrays.asList(actualProjection).indexOf(StacksColumns.STACK_COUNT_CARDS);
                     if (-1 != countId) {
                         actualProjection[countId] = "COUNT(" + Cards.CARD_STACK_ID + ")";
@@ -112,7 +125,7 @@ public class CardsProvider extends ContentProvider {
                     }
                 }
                 break;
-            case STACKS_ID: {
+            } case STACKS_ID: {
                 String id = uri.getLastPathSegment();
                 selection = DatabaseUtils.concatenateWhere(selection, Stacks.STACK_ID + " = " + id);
                 break;
@@ -122,9 +135,15 @@ public class CardsProvider extends ContentProvider {
                 selection = DatabaseUtils.concatenateWhere(selection, Cards.CARD_ID + " = " + id);
                 break;
             }
+            case ANSWERS_ID: {
+                String id = uri.getLastPathSegment();
+                selection = DatabaseUtils.concatenateWhere(selection, Answers.ANSWER_ID + " = " + id);
+                break;
+            }
             case CARDS_OF_STACK: {
                 String id = uri.getLastPathSegment();
                 selection = DatabaseUtils.concatenateWhere(selection, Cards.CARD_STACK_ID + " = " + id);
+                break;
             }
         }
         Cursor cursor = db.getReadableDatabase().query(table, actualProjection, selection, selectionArgs, groupBy, null, sortOrder);
@@ -146,6 +165,7 @@ public class CardsProvider extends ContentProvider {
                 return null;
             case STACKS_ID:
             case CARDS_ID:
+            case ANSWERS_ID:
                 throw new IllegalArgumentException("Specified uri points to the row of table. You can't insert into row.");
             case CARDS_OF_STACK:
                 if (values == null) {
@@ -210,6 +230,11 @@ public class CardsProvider extends ContentProvider {
                 selection = DatabaseUtils.concatenateWhere(selection, Cards.CARD_ID + " = " + id);
                 break;
             }
+            case ANSWERS_ID: {
+                String id = uri.getLastPathSegment();
+                selection = DatabaseUtils.concatenateWhere(selection, Answers.ANSWER_ID + " = " + id);
+                break;
+            }
             case CARDS_OF_STACK: {
                 String id = uri.getLastPathSegment();
                 selection = DatabaseUtils.concatenateWhere(selection, Cards.CARD_STACK_ID + " = " + id);
@@ -245,6 +270,11 @@ public class CardsProvider extends ContentProvider {
             case CARDS_ID: {
                 String id = uri.getLastPathSegment();
                 selection = DatabaseUtils.concatenateWhere(selection, Cards.CARD_ID + " = " + id);
+                break;
+            }
+            case ANSWERS_ID: {
+                String id = uri.getLastPathSegment();
+                selection = DatabaseUtils.concatenateWhere(selection, Answers.ANSWER_ID + " = " + id);
                 break;
             }
             case CARDS_OF_STACK: {
@@ -295,8 +325,6 @@ public class CardsProvider extends ContentProvider {
                     throw new IllegalArgumentException("The back is too long. (max len is " + Cards.MAX_BACK_LEN + ")");
                 }
                 break;
-            default:
-                throw new IllegalArgumentException("Can't check unknown uri.");
         }
     }
 }

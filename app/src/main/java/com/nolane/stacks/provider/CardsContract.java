@@ -15,53 +15,52 @@ public class CardsContract {
     // Columns for creating table and making queries.
     interface StacksColumns {
         // The id of column.
-        // (read-only)
         String STACK_ID = "STACK_ID";
         // The Title.
-        // (read/write)
         String STACK_TITLE = "STACK_TITLE";
         // Maximum of cards in "in learning" state.
-        // (read/write)
         String STACK_MAX_IN_LEARNING = "STACK_MAX_IN_LEARNING";
         // The amount of cards in this stack.
-        // (read-only)
         String STACK_COUNT_CARDS = "STACK_COUNT_CARDS";
         // The language of this stack.
-        // (read-write)
         String STACK_LANGUAGE = "STACK_LANGUAGE";
         // The color associated with this stack. Integer value.
-        // (read-write)
         String STACK_COLOR = "STACK_COLOR";
     }
 
     interface CardsColumns {
         // Id column.
-        // (read-only)
         String CARD_ID = "CARD_ID";
         // Front text.
-        // (read/write)
         String CARD_FRONT = "CARD_FRONT";
         // Back text.
-        // (read/write)
         String CARD_BACK = "CARD_BACK";
         // This values symbolizes the degree of knowing of card.
-        // (read/write)
         String CARD_PROGRESS = "CARD_PROGRESS";
         // Unix time when this card was answered last time.
-        // Format is integer meaning the number of seconds since 1970-01-01 00:00:00 UTC.
-        // (read/write)
+        // Format is integer that means the number of milliseconds since 1970-01-01 00:00:00 UTC.
         String CARD_LAST_SEEN = "CARD_LAST_SEEN";
         // Id of the stack this card belongs to.
-        // (read/write-once)
         String CARD_STACK_ID = "CARD_STACK_ID";
         // Flag which shows if card is in learning.
-        // (read/write)
         String CARD_IN_LEARNING = "CARD_IN_LEARNING";
+    }
+
+    interface AnswersColumns {
+        // Id columns.
+        String ANSWER_ID = "ANSWER_ID";
+        // Id of card which was answered..
+        String ANSWER_CARD_ID = "ANSWER_CARD_ID";
+        // The time and date of the answer.
+        String ANSWER_TIMESTAMP = "ANSWER_TIMESTAMP";
+        // User's assumption.
+        String ANSWER_ASSUMPTION = "ANSWER_ASSUMPTION";
     }
 
     // Paths for uris. They are also table names.
     public static final String PATH_STACKS = "STACKS";
     public static final String PATH_CARDS = "CARDS";
+    public static final String PATH_ANSWERS = "ANSWERS";
 
     /**
      * This class holds fields and methods to easily make requests to stacks table of CardsProvider.
@@ -112,7 +111,6 @@ public class CardsContract {
 
         /**
          * Creates uri for all cards that belongs to the {@code id}.
-         *
          * @param id Id of the stack.
          * @return uri for all cards that belong to the {@code id}.
          */
@@ -123,7 +121,6 @@ public class CardsContract {
         /**
          * Creates uri to the card with id equal to {@code cardId} of stack
          * with id equal to {@code stackId}.
-         *
          * @param stackId Id of stack.
          * @param cardId  Id of card.
          * @return Uri to the card with id equal to {@code cardId} of stack
@@ -154,5 +151,28 @@ public class CardsContract {
         public static boolean checkBack(String back) {
             return (null != back) && (back.length() <= MAX_BACK_LEN);
         }
+    }
+
+    /**
+     * This class holds fields and methods to easily make requests to answers table of CardsProvider.
+     */
+    public static class Answers implements AnswersColumns {
+        // Uri pointing to the table of answers.
+        public static final Uri CONTENT_URI =
+                BASE_CONTENT_URI.buildUpon().appendPath(PATH_ANSWERS).build();
+
+        /**
+         * Creates uri for answer with id equal to {@code id}.
+         * @param id Id of the answer.
+         * @return uri Uri for answer with id equal to {@code id}.
+         */
+        public static Uri uriToAnswer(long id) {
+            return ContentUris.withAppendedId(CONTENT_URI, id);
+        }
+
+        public static final String CONTENT_TYPE =
+                ContentResolver.CURSOR_DIR_BASE_TYPE + "/vnd." + CONTENT_AUTHORITY + ".answer";
+        public static final String CONTENT_ITEM_TYPE =
+                ContentResolver.CURSOR_ITEM_BASE_TYPE + "/vnd." + CONTENT_AUTHORITY + ".answer";
     }
 }
