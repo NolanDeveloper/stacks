@@ -3,9 +3,6 @@ package com.nolane.stacks.provider;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.support.annotation.NonNull;
-
-import com.nolane.stacks.R;
 
 import static com.nolane.stacks.provider.CardsContract.AnswersColumns;
 import static com.nolane.stacks.provider.CardsContract.CardsColumns;
@@ -39,10 +36,6 @@ public class CardsDatabase extends SQLiteOpenHelper {
         String CARDS_ID = "REFERENCES " + Tables.CARDS + "(" + CardsColumns.CARD_ID + ") ON DELETE CASCADE";
     }
 
-    interface Triggers {
-        String CARDS_UPDATE = "CARDS_UPDATE";
-    }
-
     public CardsDatabase(Context context) {
         super(context, DATABASE_NAME, null, CURRENT_VERSION);
         this.context = context.getApplicationContext();
@@ -60,8 +53,11 @@ public class CardsDatabase extends SQLiteOpenHelper {
                 StacksColumns.STACK_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 StacksColumns.STACK_TITLE + " TEXT NOT NULL, " +
                 StacksColumns.STACK_MAX_IN_LEARNING + " INTEGER NOT NULL," +
+                StacksColumns.STACK_COUNT_CARDS + " INTEGER DEFAULT 0, " +
+                StacksColumns.STACK_COUNT_IN_LEARNING + " INTEGER DEFAULT 0, " +
                 StacksColumns.STACK_LANGUAGE + " TEXT NOT NULL," +
-                StacksColumns.STACK_COLOR + " INTEGER NOT NULL)");
+                StacksColumns.STACK_COLOR + " INTEGER NOT NULL," +
+                StacksColumns.STACK_DELETED + " INTEGER DEFAULT 0)");
 
         db.execSQL("CREATE TABLE " + Tables.CARDS + "(" +
                 CardsColumns.CARD_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -70,56 +66,19 @@ public class CardsDatabase extends SQLiteOpenHelper {
                 CardsColumns.CARD_PROGRESS + " INTEGER DEFAULT 0, " +
                 CardsColumns.CARD_LAST_SEEN + " TEXT DEFAULT 0, " +
                 CardsColumns.CARD_STACK_ID + " INTEGER " + References.STACKS_ID + " , " +
-                CardsColumns.CARD_IN_LEARNING + " INTEGER NOT NULL)");
+                CardsColumns.CARD_IN_LEARNING + " INTEGER NOT NULL," +
+                CardsColumns.CARD_DELETED + " INTEGER DEFAULT 0)");
 
         db.execSQL("CREATE TABLE " + Tables.ANSWERS + "(" +
                 AnswersColumns.ANSWER_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                 AnswersColumns.ANSWER_CARD_ID + " INTEGER " + References.CARDS_ID + " , " +
                 AnswersColumns.ANSWER_TIMESTAMP + " TEXT DEFAULT CURRENT_TIMESTAMP, " +
-                AnswersColumns.ANSWER_ASSUMPTION + " TEXT NOT NULL)");
-
-        int defaultMaxProgress = context.getResources().getInteger(R.integer.default_max_progress);
-        setMaxProgressTrigger(db, defaultMaxProgress);
+                AnswersColumns.ANSWER_ASSUMPTION + " TEXT NOT NULL," +
+                AnswersColumns.ANSWER_DELETED + " INTEGER DEFAULT 0)");
     }
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         // There is only one version of this db for now. Nowhere to update.
-    }
-
-    /**
-     * This method updates trigger which listens for updates on cards table to
-     * unset flag "in learning" when progress becomes maximum. But the trigger
-     * requires this max value. So use this method each time the maximum progress
-     * value is changed.
-     *
-     * @param value The maximum progress.
-     */
-    public void setMaxProgressTrigger(@NonNull SQLiteDatabase db, int value) {
-        db.beginTransaction();
-        try {
-            db.execSQL("DROP TRIGGER IF EXISTS " + Triggers.CARDS_UPDATE);
-            db.execSQL("CREATE TRIGGER " + Triggers.CARDS_UPDATE +
-                    " AFTER UPDATE OF " + CardsColumns.CARD_PROGRESS +
-                    " ON " + Tables.CARDS +
-                    " WHEN NEW." + CardsColumns.CARD_PROGRESS + " = " + value +
-                    " BEGIN" +
-                    // Unset flag "in learning".
-                    " UPDATE " + Tables.CARDS +
-                    " SET " + CardsColumns.CARD_IN_LEARNING + " = 0" +
-                    " WHERE " + CardsColumns.CARD_ID + " = NEW." + CardsColumns.CARD_ID + ";" +
-                    // And find another card to set "in learning".
-                    " UPDATE " + Tables.CARDS +
-                    " SET " + CardsColumns.CARD_IN_LEARNING + " = 1" +
-                    " WHERE " + CardsColumns.CARD_ID + " = " +
-                        "(SELECT " + CardsColumns.CARD_ID + " FROM " + Tables.CARDS +
-                        " WHERE " + CardsColumns.CARD_PROGRESS + " != " + value +
-                        " ORDER BY " + CardsColumns.CARD_LAST_SEEN + " ASC " +
-                        " LIMIT 1);" +
-                    " END");
-            db.setTransactionSuccessful();
-        } finally {
-            db.endTransaction();
-        }
     }
 }

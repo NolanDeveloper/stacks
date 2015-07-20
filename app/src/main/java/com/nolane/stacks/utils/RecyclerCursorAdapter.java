@@ -10,6 +10,7 @@ import android.support.v7.widget.RecyclerView;
 public abstract class RecyclerCursorAdapter<VH extends RecyclerView.ViewHolder>
         extends RecyclerView.Adapter<VH> {
     // Query which this adapter wraps. This also available in subclasses.
+    @Nullable
     protected Cursor query;
 
     public RecyclerCursorAdapter(@Nullable Cursor query) {

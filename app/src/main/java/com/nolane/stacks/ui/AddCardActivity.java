@@ -26,6 +26,7 @@ public class AddCardActivity extends AppCompatActivity {
         }
         if (null == savedInstanceState) {
             UriUtils.checkDataTypeOrThrow(this, Stacks.CONTENT_ITEM_TYPE);
+            UriUtils.checkSpecifiesParameterOrThrow(this, Stacks.STACK_COUNT_IN_LEARNING);
             getFragmentManager()
                     .beginTransaction()
                     .replace(R.id.fl_root, new AddCardFragment())

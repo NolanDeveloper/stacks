@@ -10,6 +10,7 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.InputFilter;
 import android.view.KeyEvent;
@@ -105,6 +106,41 @@ public class AddCardFragment extends Fragment implements LoaderManager.LoaderCal
         ButterKnife.unbind(this);
     }
 
+    private class InsertCardRunnable implements Runnable {
+        private ContentResolver resolver;
+        private String front;
+        private String back;
+
+        public InsertCardRunnable(@NonNull ContentResolver contentResolver,
+                                  @NonNull String front, @NonNull String back) {
+            this.resolver = contentResolver;
+            this.front = front;
+            this.back = back;
+        }
+
+        @Override
+        public void run() {
+            ContentValues values = new ContentValues();
+            values.put(Cards.CARD_FRONT, front);
+            values.put(Cards.CARD_BACK, back);
+            values.put(Cards.CARD_STACK_ID, stackId);
+            Uri data = getActivity().getIntent().getData();
+            int countInLearning = Integer.valueOf(data.getQueryParameter(Stacks.STACK_COUNT_IN_LEARNING));
+            int maxInLearning = Integer.valueOf(data.getQueryParameter(Stacks.STACK_MAX_IN_LEARNING));
+            boolean inLearning = countInLearning < maxInLearning;
+            values.put(Cards.CARD_IN_LEARNING, inLearning);
+            resolver.insert(Cards.CONTENT_URI, values);
+
+            values.clear();
+            values.put(Stacks.STACK_COUNT_CARDS, Stacks.STACK_COUNT_CARDS + " + 1");
+            if (inLearning) {
+                values.put(Stacks.STACK_COUNT_IN_LEARNING, countInLearning + 1);
+                UriUtils.insertParameter(getActivity(), Stacks.STACK_COUNT_IN_LEARNING, countInLearning + 1);
+            }
+            resolver.update(stack, values, null, null);
+        }
+    }
+
     /**
      * Adds card into database according to the state of the views.
      */
@@ -112,33 +148,9 @@ public class AddCardFragment extends Fragment implements LoaderManager.LoaderCal
         String front = etFront.getText().toString();
         String back = etBack.getText().toString();
         final ContentResolver resolver = getActivity().getContentResolver();
-        if (!cbBidirectional.isChecked()) {
-            final ContentValues values = new ContentValues();
-            values.put(Cards.CARD_FRONT, front);
-            values.put(Cards.CARD_BACK, back);
-            values.put(Cards.CARD_STACK_ID, stackId);
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    resolver.insert(Cards.CONTENT_URI, values);
-                }
-            }).run();
-        } else {
-            final ContentValues valuesOne = new ContentValues();
-            valuesOne.put(Cards.CARD_FRONT, front);
-            valuesOne.put(Cards.CARD_BACK, back);
-            valuesOne.put(Cards.CARD_STACK_ID, stackId);
-            final ContentValues valuesTwo = new ContentValues();
-            valuesTwo.put(Cards.CARD_FRONT, back);
-            valuesTwo.put(Cards.CARD_BACK, front);
-            valuesTwo.put(Cards.CARD_STACK_ID, stackId);
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    resolver.insert(Cards.CONTENT_URI, valuesOne);
-                    resolver.insert(Cards.CONTENT_URI, valuesTwo);
-                }
-            }).run();
+        new Thread(new InsertCardRunnable(resolver, front, back)).run();
+        if (cbBidirectional.isChecked()) {
+            new Thread(new InsertCardRunnable(resolver, back, front)).run();
         }
         etFront.getText().clear();
         etBack.getText().clear();

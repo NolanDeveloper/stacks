@@ -1,6 +1,5 @@
 package com.nolane.stacks.provider;
 
-import android.app.backup.BackupManager;
 import android.content.ContentProvider;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -59,7 +58,6 @@ public class CardsProvider extends ContentProvider {
         try {
             // Perform actual creation.
             db.getWritableDatabase();
-            new BackupManager(getContext()).dataChanged();
             Log.d(LOG_TAG, "Provider was created.");
             return true;
         } catch (SQLiteException e) {
@@ -104,11 +102,6 @@ public class CardsProvider extends ContentProvider {
         // names are at the top of uri hierarchy providing by #URI_MATCHER.
         String table = uri.getPathSegments().get(0);
 
-        String groupBy = null;
-        String[] actualProjection = null;
-        if (null != projection) {
-            actualProjection = Arrays.copyOf(projection, projection.length);
-        }
         switch (URI_MATCHER.match(uri)) {
             case UriMatcher.NO_MATCH:
                 return null;
@@ -116,37 +109,33 @@ public class CardsProvider extends ContentProvider {
                 if (TextUtils.isEmpty(sortOrder)) {
                     sortOrder = Stacks.SORT_DEFAULT;
                 }
-                if (null != actualProjection) {
-                    int countId = Arrays.asList(actualProjection).indexOf(StacksColumns.STACK_COUNT_CARDS);
-                    if (-1 != countId) {
-                        actualProjection[countId] = "COUNT(" + Cards.CARD_STACK_ID + ")";
-                        table += " LEFT OUTER JOIN " + CardsDatabase.Tables.CARDS + " ON " + CardsColumns.CARD_STACK_ID + " = " + StacksColumns.STACK_ID;
-                        groupBy = StacksColumns.STACK_ID;
-                    }
-                }
                 break;
             } case STACKS_ID: {
                 String id = uri.getLastPathSegment();
                 selection = DatabaseUtils.concatenateWhere(selection, Stacks.STACK_ID + " = " + id);
+                selection = DatabaseUtils.concatenateWhere(selection, Stacks.STACK_DELETED + " = 0");
                 break;
             }
             case CARDS_ID: {
                 String id = uri.getLastPathSegment();
                 selection = DatabaseUtils.concatenateWhere(selection, Cards.CARD_ID + " = " + id);
+                selection = DatabaseUtils.concatenateWhere(selection, Cards.CARD_DELETED + " = 0");
                 break;
             }
             case ANSWERS_ID: {
                 String id = uri.getLastPathSegment();
                 selection = DatabaseUtils.concatenateWhere(selection, Answers.ANSWER_ID + " = " + id);
+                selection = DatabaseUtils.concatenateWhere(selection, Answers.ANSWER_DELETED + " = 0");
                 break;
             }
             case CARDS_OF_STACK: {
                 String id = uri.getLastPathSegment();
                 selection = DatabaseUtils.concatenateWhere(selection, Cards.CARD_STACK_ID + " = " + id);
+                selection = DatabaseUtils.concatenateWhere(selection, Cards.CARD_DELETED + " = 0");
                 break;
             }
         }
-        Cursor cursor = db.getReadableDatabase().query(table, actualProjection, selection, selectionArgs, groupBy, null, sortOrder);
+        Cursor cursor = db.getReadableDatabase().query(table, projection, selection, selectionArgs, null, null, sortOrder);
         if ((null != cursor) && (null != getContext())) {
             cursor.setNotificationUri(getContext().getContentResolver(), uri);
         }
@@ -173,30 +162,6 @@ public class CardsProvider extends ContentProvider {
                 }
                 values.put(Cards.CARD_STACK_ID, uri.getLastPathSegment());
                 break;
-            case CARDS_TABLE:
-                if (null == values) {
-                    throw new IllegalArgumentException("values = null");
-                }
-
-                Cursor query = db.getReadableDatabase().query(
-                        CardsDatabase.Tables.STACKS,
-                        new String[]{StacksColumns.STACK_MAX_IN_LEARNING},
-                        StacksColumns.STACK_ID + " = ?",
-                        new String[]{values.getAsString(CardsColumns.CARD_STACK_ID)},
-                        null, null, null);
-                query.moveToFirst();
-                int maxInLearning = query.getInt(0);
-                query.close();
-                query = db.getReadableDatabase().rawQuery(
-                        "SELECT COUNT(*) FROM " + CardsDatabase.Tables.CARDS + " WHERE " +
-                                CardsColumns.CARD_IN_LEARNING + " = 1 AND " +
-                                CardsColumns.CARD_STACK_ID + " = " + values.getAsString(CardsColumns.CARD_STACK_ID),
-                        null);
-                query.moveToFirst();
-                int countInLearning = query.getInt(0);
-                int inLearning = countInLearning < maxInLearning ? 1 : 0;
-                values.put(CardsColumns.CARD_IN_LEARNING, inLearning);
-                break;
         }
         String table = uri.getPathSegments().get(0);
         long id = db.getWritableDatabase().insert(table, null, values);
@@ -206,7 +171,6 @@ public class CardsProvider extends ContentProvider {
         if (CARDS_OF_STACK == URI_MATCHER.match(uri)) {
             getContext().getContentResolver().notifyChange(Stacks.CONTENT_URI, null);
         }
-        new BackupManager(getContext()).dataChanged();
         return uri;
     }
 
@@ -246,7 +210,6 @@ public class CardsProvider extends ContentProvider {
         if (0 < count) {
             getContext().getContentResolver().notifyChange(uri, null);
         }
-        new BackupManager(getContext()).dataChanged();
         return count;
     }
 
@@ -288,7 +251,6 @@ public class CardsProvider extends ContentProvider {
         if (0 < count) {
             getContext().getContentResolver().notifyChange(uri, null);
         }
-        new BackupManager(getContext()).dataChanged();
         return count;
     }
 

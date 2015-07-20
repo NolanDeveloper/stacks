@@ -23,6 +23,7 @@ import android.widget.TextView;
 
 import com.nolane.stacks.R;
 import com.nolane.stacks.utils.ColorUtils;
+import com.nolane.stacks.utils.PreferencesUtils;
 import com.nolane.stacks.utils.UriUtils;
 
 import java.util.Calendar;
@@ -199,7 +200,7 @@ public class TrainingFragment extends Fragment
             int newProgress = cardProgress + (userAssumption.equals(cardBack) ? 1 : -1);
             ContentValues values = new ContentValues();
             // todo: make preference for the bound of progress
-            if (getResources().getInteger(R.integer.default_min_progress) <= newProgress)
+            if (PreferencesUtils.getMinProgress(getActivity()) <= newProgress)
                 values.put(Cards.CARD_PROGRESS, newProgress);
             values.put(Cards.CARD_LAST_SEEN, timeNow);
             arguments.putParcelable(EXTRA_VALUES, values);

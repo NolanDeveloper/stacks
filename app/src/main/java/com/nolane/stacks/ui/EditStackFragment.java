@@ -111,7 +111,9 @@ public class EditStackFragment extends Fragment {
                         new Thread(new Runnable() {
                             @Override
                             public void run() {
-                                context.getContentResolver().delete(data, null, null);
+                                ContentValues values = new ContentValues();
+                                values.put(Stacks.STACK_DELETED, true);
+                                context.getContentResolver().update(data, values, null, null);
                             }
                         }).run();
                         getActivity().finish();
