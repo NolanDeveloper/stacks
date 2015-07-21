@@ -30,12 +30,15 @@ import android.widget.TextView;
 
 import com.nolane.stacks.R;
 import com.nolane.stacks.utils.ColorUtils;
+import com.nolane.stacks.utils.PreferencesUtils;
 import com.nolane.stacks.utils.RecyclerCursorAdapter;
+import com.nolane.stacks.utils.UriUtils;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
 import static com.nolane.stacks.provider.CardsContract.Cards;
+import static com.nolane.stacks.provider.CardsContract.Stacks;
 
 /**
  * This fragment shows all cards to user. The user can remove all edit each card.
@@ -87,7 +90,6 @@ public class AllCardsFragment extends Fragment implements LoaderManager.LoaderCa
             final String front = query.getString(CardsQuery.FRONT);
             final String back = query.getString(CardsQuery.BACK);
             final int progress = query.getInt(CardsQuery.PROGRESS);
-            final long lastSeen = query.getLong(CardsQuery.LAST_SEEN);
             final long stackId = query.getLong(CardsQuery.STACK_ID);
             final long inLearning = query.getInt(CardsQuery.IN_LEARNING);
             holder.tvFront.setText(front);
@@ -104,10 +106,6 @@ public class AllCardsFragment extends Fragment implements LoaderManager.LoaderCa
                             Bundle arguments = new Bundle();
                             ContentValues values = new ContentValues();
                             values.put(Cards.CARD_ID, id);
-                            values.put(Cards.CARD_FRONT, front);
-                            values.put(Cards.CARD_BACK, back);
-                            values.put(Cards.CARD_PROGRESS, progress);
-                            values.put(Cards.CARD_LAST_SEEN, lastSeen);
                             values.put(Cards.CARD_STACK_ID, stackId);
                             values.put(Cards.CARD_IN_LEARNING, inLearning);
                             arguments.putParcelable(EXTRA_VALUES, values);
@@ -175,7 +173,6 @@ public class AllCardsFragment extends Fragment implements LoaderManager.LoaderCa
                 Cards.CARD_FRONT,
                 Cards.CARD_BACK,
                 Cards.CARD_PROGRESS,
-                Cards.CARD_LAST_SEEN,
                 Cards.CARD_STACK_ID,
                 Cards.CARD_IN_LEARNING
         };
@@ -184,9 +181,8 @@ public class AllCardsFragment extends Fragment implements LoaderManager.LoaderCa
         int FRONT = 1;
         int BACK = 2;
         int PROGRESS = 3;
-        int LAST_SEEN = 4;
-        int STACK_ID = 5;
-        int IN_LEARNING = 6;
+        int STACK_ID = 4;
+        int IN_LEARNING = 5;
     }
 
     private interface RemoveCardQuery {
@@ -221,9 +217,35 @@ public class AllCardsFragment extends Fragment implements LoaderManager.LoaderCa
                         ContentValues values = args.getParcelable(EXTRA_VALUES);
                         long stackId = values.getAsLong(Cards.CARD_STACK_ID);
                         long cardId = values.getAsLong(Cards.CARD_ID);
-                        Uri data = Cards.uriToCard(stackId, cardId);
-                        getActivity().getContentResolver().delete(data, null, null);
-                        return values;
+                        boolean inLearning = values.getAsBoolean(Cards.CARD_IN_LEARNING);
+                        Uri uriToCard = Cards.uriToCard(stackId, cardId);
+                        uriToCard = UriUtils.insertParameter(uriToCard, Cards.CARD_IN_LEARNING, inLearning);
+                        values = new ContentValues();
+                        values.put(Cards.CARD_DELETED, true);
+                        int deleted = getContext().getContentResolver().update(uriToCard, values, null, null);
+                        if (0 != deleted) {
+                            values = new ContentValues();
+                            Uri uriToStack = Stacks.uriToStack(stackId);
+                            Cursor stackQuery = getContext().getContentResolver().query(
+                                    uriToStack,
+                                    new String[]{
+                                            Stacks.STACK_COUNT_CARDS,
+                                            Stacks.STACK_COUNT_IN_LEARNING
+                                    },
+                                    null,
+                                    null,
+                                    null);
+                            stackQuery.moveToFirst();
+                            int stackCountCards = stackQuery.getInt(0);
+                            int stackCountInLearning = stackQuery.getInt(0);
+                            values.put(Stacks.STACK_COUNT_CARDS, stackCountCards - 1);
+                            if (inLearning) {
+                                values.put(Stacks.STACK_COUNT_IN_LEARNING, stackCountInLearning - 1);
+                            }
+                            getContext().getContentResolver().update(uriToStack, values, null, null);
+                            PreferencesUtils.notifyDeleted(getActivity());
+                        }
+                        return uriToCard;
                     }
                 };
         }
@@ -247,8 +269,11 @@ public class AllCardsFragment extends Fragment implements LoaderManager.LoaderCa
                 break;
             case RemoveCardQuery._TOKEN:
                 getLoaderManager().destroyLoader(RemoveCardQuery._TOKEN);
-                final ContentValues values = (ContentValues) data;
                 final Context context = getActivity().getApplicationContext();
+                final Uri uriToCard = (Uri) data;
+                String stackId = uriToCard.getPathSegments().get(1);
+                final Uri uriToStack = Stacks.CONTENT_URI.buildUpon().appendPath(stackId).build();
+                final boolean inLearning = Boolean.parseBoolean(uriToCard.getQueryParameter(Cards.CARD_IN_LEARNING));
                 Snackbar.make(getView(), getString(R.string.deleted), Snackbar.LENGTH_LONG)
                         .setAction(R.string.undo, new View.OnClickListener() {
                             @Override
@@ -256,7 +281,15 @@ public class AllCardsFragment extends Fragment implements LoaderManager.LoaderCa
                                 new Thread(new Runnable() {
                                     @Override
                                     public void run() {
-                                        context.getContentResolver().insert(Cards.CONTENT_URI, values);
+                                        ContentValues values = new ContentValues();
+                                        values.put(Cards.CARD_DELETED, false);
+                                        context.getContentResolver().update(uriToCard, values, null, null);
+                                        values.clear();
+                                        values.put(Stacks.STACK_COUNT_CARDS, Stacks.STACK_COUNT_CARDS + " + 1");
+                                        if (inLearning) {
+                                            values.put(Stacks.STACK_COUNT_IN_LEARNING, Stacks.STACK_COUNT_IN_LEARNING + " + 1");
+                                        }
+                                        context.getContentResolver().update(uriToStack, values, null, null);
                                     }
                                 }).run();
                             }

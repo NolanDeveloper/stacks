@@ -36,4 +36,6 @@
     <string name="done">done</string>
     <string name="search">Search</string>
     <string name="general">General</string>
+    <string name="statistics">Statistics</string>
+    <string name="progress">Progress</string>
 </resources>

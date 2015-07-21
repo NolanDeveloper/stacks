@@ -56,12 +56,27 @@
         <activity
             android:name=".ui.AllStacksActivity"/>
 
+        <activity
+            android:name=".ui.StatisticsActivity"/>
+
         <provider
             android:authorities="com.nolane.stacks.provider"
             android:name="com.nolane.stacks.provider.CardsProvider"
             android:exported="false"
             android:readPermission="com.nolane.stacks.provider.READ"
             android:writePermission="com.nolane.stacks.provider.WRITE"/>
+
+        <receiver
+            android:name=".provider.DeleteReceiver">
+
+            <intent-filter >
+
+                <action
+                    android:name="com.nolane.schedule.sendSchedule"/>
+
+            </intent-filter>
+
+        </receiver>
 
         <meta-data
             android:name="com.google.android.backup.api_key"

@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.graphics.PorterDuff;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -22,7 +21,6 @@ import android.widget.TextView;
 import com.nolane.stacks.R;
 import com.nolane.stacks.utils.LanguageUtils;
 import com.nolane.stacks.utils.RecyclerCursorAdapter;
-import com.nolane.stacks.utils.UriUtils;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -74,6 +72,7 @@ public class PickStackFragment extends Fragment implements LoaderManager.LoaderC
             final String language = query.getString(StacksQuery.LANGUAGE);
             final int count = query.getInt(StacksQuery.COUNT_CARDS);
             final int color = query.getInt(StacksQuery.COLOR);
+            final int countInLearning = query.getInt(StacksQuery.COUNT_IN_LEARNING);
             holder.tvTitle.setText(title);
             holder.tvLanguage.setText(LanguageUtils.shortenLanguage(language));
             holder.ivIcon.getDrawable().setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
@@ -87,7 +86,7 @@ public class PickStackFragment extends Fragment implements LoaderManager.LoaderC
                                     @Override
                                     public void onClick(View v) {
                                         Intent intent = new Intent(getActivity(), AddCardActivity.class);
-                                        intent.setData(Stacks.uriToStack(id));
+                                        intent.putExtra(Stacks.STACK_ID, id);
                                         startActivity(intent);
                                     }
                                 })
@@ -100,9 +99,7 @@ public class PickStackFragment extends Fragment implements LoaderManager.LoaderC
                     @Override
                     public void onClick(View v) {
                         Intent intent = new Intent(getActivity(), TrainingActivity.class);
-                        Uri data = Stacks.uriToStack(id);
-                        data = UriUtils.insertParameter(data, Stacks.STACK_TITLE, title);
-                        intent.setData(data);
+                        intent.putExtra(Stacks.STACK_ID, id);
                         startActivity(intent);
                     }
                 });
@@ -139,7 +136,8 @@ public class PickStackFragment extends Fragment implements LoaderManager.LoaderC
                 Stacks.STACK_TITLE,
                 Stacks.STACK_LANGUAGE,
                 Stacks.STACK_COUNT_CARDS,
-                Stacks.STACK_COLOR
+                Stacks.STACK_COLOR,
+                Stacks.STACK_COUNT_IN_LEARNING
         };
 
         int ID = 0;
@@ -147,6 +145,7 @@ public class PickStackFragment extends Fragment implements LoaderManager.LoaderC
         int LANGUAGE = 2;
         int COUNT_CARDS = 3;
         int COLOR = 4;
+        int COUNT_IN_LEARNING = 5;
     }
 
     @Override

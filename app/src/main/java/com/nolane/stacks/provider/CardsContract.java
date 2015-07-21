@@ -22,10 +22,14 @@ public class CardsContract {
         String STACK_MAX_IN_LEARNING = "STACK_MAX_IN_LEARNING";
         // The amount of cards in this stack.
         String STACK_COUNT_CARDS = "STACK_COUNT_CARDS";
+        // The amount of cards in learning stage.
+        String STACK_COUNT_IN_LEARNING = "STACK_COUNT_IN_LEARNING";
         // The language of this stack.
         String STACK_LANGUAGE = "STACK_LANGUAGE";
         // The color associated with this stack. Integer value.
         String STACK_COLOR = "STACK_COLOR";
+        // The flag that shows if this stack is going to be deleted.
+        String STACK_DELETED = "STACK_DELETED";
     }
 
     interface CardsColumns {
@@ -44,6 +48,8 @@ public class CardsContract {
         String CARD_STACK_ID = "CARD_STACK_ID";
         // Flag which shows if card is in learning.
         String CARD_IN_LEARNING = "CARD_IN_LEARNING";
+        // The flag that shows if this card is going to be deleted.
+        String CARD_DELETED = "CARD_DELETED";
     }
 
     interface AnswersColumns {
@@ -54,7 +60,9 @@ public class CardsContract {
         // The time and date of the answer.
         String ANSWER_TIMESTAMP = "ANSWER_TIMESTAMP";
         // User's assumption.
-        String ANSWER_ASSUMPTION = "ANSWER_ASSUMPTION";
+        String ANSWER_RIGHT = "ANSWER_RIGHT";
+        // The flag that shows if this answer is going to be deleted.
+        String ANSWER_DELETED = "ANSWER_DELETED";
     }
 
     // Paths for uris. They are also table names.
@@ -97,6 +105,7 @@ public class CardsContract {
         }
 
         public static boolean checkLanguage(String language) {
+
             return (null != language) && (language.length() <= MAX_LANGUAGE_LEN);
         }
     }

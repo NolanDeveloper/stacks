@@ -10,6 +10,7 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.text.InputFilter;
 import android.view.KeyEvent;
@@ -23,7 +24,6 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.nolane.stacks.R;
-import com.nolane.stacks.utils.UriUtils;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -37,11 +37,11 @@ import static com.nolane.stacks.provider.CardsContract.Stacks;
  * conjunction with {@link AddCardActivity}.
  */
 public class AddCardFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
-    // Uri which points to stack where to put new cards to.
-    private Uri stack;
-
     // Id of the specified stack.
     private long stackId;
+    private int stackCountInLearning;
+    private int stackMaxInLearning;
+    private int stackCountCards;
 
     // UI elements.
     @Bind(R.id.et_front)
@@ -58,8 +58,7 @@ public class AddCardFragment extends Fragment implements LoaderManager.LoaderCal
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        stack = getActivity().getIntent().getData();
-        stackId = Long.parseLong(stack.getLastPathSegment());
+        stackId = getActivity().getIntent().getLongExtra(Stacks.STACK_ID, -1);
     }
 
     @Nullable
@@ -105,38 +104,55 @@ public class AddCardFragment extends Fragment implements LoaderManager.LoaderCal
         ButterKnife.unbind(this);
     }
 
+    private class InsertCardRunnable implements Runnable {
+        private ContentResolver resolver;
+        private String front;
+        private String back;
+
+        public InsertCardRunnable(@NonNull ContentResolver contentResolver,
+                                  @NonNull String front, @NonNull String back) {
+            this.resolver = contentResolver;
+            this.front = front;
+            this.back = back;
+        }
+
+        @Override
+        public void run() {
+            ContentValues values = new ContentValues();
+            values.put(Cards.CARD_FRONT, front);
+            values.put(Cards.CARD_BACK, back);
+            values.put(Cards.CARD_STACK_ID, stackId);
+            Uri data = Stacks.uriToStack(stackId);
+            boolean inLearning = stackCountInLearning < stackMaxInLearning;
+            values.put(Cards.CARD_IN_LEARNING, inLearning);
+            resolver.insert(Cards.CONTENT_URI, values);
+
+            values.clear();
+            stackCountCards += 1;
+            values.put(Stacks.STACK_COUNT_CARDS, stackCountCards);
+            if (inLearning) {
+                stackCountInLearning += 1;
+                values.put(Stacks.STACK_COUNT_IN_LEARNING, stackCountInLearning + 1);
+            }
+            resolver.update(data, values, null, null);
+        }
+    }
+
     /**
      * Adds card into database according to the state of the views.
      */
     public void addCard() {
-        String front = etFront.getText().toString();
-        String back = etBack.getText().toString();
+        final String front = etFront.getText().toString();
+        final String back = etBack.getText().toString();
         final ContentResolver resolver = getActivity().getContentResolver();
         if (!cbBidirectional.isChecked()) {
-            final ContentValues values = new ContentValues();
-            values.put(Cards.CARD_FRONT, front);
-            values.put(Cards.CARD_BACK, back);
-            values.put(Cards.CARD_STACK_ID, stackId);
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    resolver.insert(Cards.CONTENT_URI, values);
-                }
-            }).run();
+            new Thread(new InsertCardRunnable(resolver, front, back)).run();
         } else {
-            final ContentValues valuesOne = new ContentValues();
-            valuesOne.put(Cards.CARD_FRONT, front);
-            valuesOne.put(Cards.CARD_BACK, back);
-            valuesOne.put(Cards.CARD_STACK_ID, stackId);
-            final ContentValues valuesTwo = new ContentValues();
-            valuesTwo.put(Cards.CARD_FRONT, back);
-            valuesTwo.put(Cards.CARD_BACK, front);
-            valuesTwo.put(Cards.CARD_STACK_ID, stackId);
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    resolver.insert(Cards.CONTENT_URI, valuesOne);
-                    resolver.insert(Cards.CONTENT_URI, valuesTwo);
+                    new InsertCardRunnable(resolver, front, back).run();
+                    new InsertCardRunnable(resolver, back, front).run();
                 }
             }).run();
         }
@@ -154,7 +170,9 @@ public class AddCardFragment extends Fragment implements LoaderManager.LoaderCal
 
         // Columns which we need.
         String[] COLUMNS = {
-                Stacks.STACK_TITLE
+                Stacks.STACK_MAX_IN_LEARNING,
+                Stacks.STACK_COUNT_IN_LEARNING,
+                Stacks.STACK_COUNT_CARDS
         };
 
         // Here should be the list of ids. These ids are used in Cursor to get
@@ -162,14 +180,16 @@ public class AddCardFragment extends Fragment implements LoaderManager.LoaderCal
         // name of column without a table in order to easier remember what the
         // id each column corresponds to and to see in the code from which column
         // we are trying to get the value.
-        int TITLE = 0;
+        int MAX_IN_LEARNING = 0;
+        int COUNT_IN_LEARNING = 1;
+        int COUNT_CARDS = 2;
     }
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         // Note: When the loader is the only we do not use switch on #id.
         // Because it is simpler to read.
-        return new CursorLoader(getActivity(), stack, StackQuery.COLUMNS, null, null, Stacks.SORT_DEFAULT);
+        return new CursorLoader(getActivity(), Stacks.uriToStack(stackId), StackQuery.COLUMNS, null, null, null);
     }
 
     @Override
@@ -180,8 +200,9 @@ public class AddCardFragment extends Fragment implements LoaderManager.LoaderCal
             throw new IllegalArgumentException("Loader was failed. (query = null)");
         }
         query.moveToFirst();
-        String title = query.getString(StackQuery.TITLE);
-        UriUtils.insertParameter(getActivity(), Stacks.STACK_TITLE, title);
+        stackCountCards = query.getInt(StackQuery.COUNT_CARDS);
+        stackMaxInLearning = query.getInt(StackQuery.MAX_IN_LEARNING);
+        stackCountInLearning = query.getInt(StackQuery.COUNT_IN_LEARNING);
         btnDone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
