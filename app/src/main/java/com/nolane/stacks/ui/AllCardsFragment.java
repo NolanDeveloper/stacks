@@ -225,11 +225,24 @@ public class AllCardsFragment extends Fragment implements LoaderManager.LoaderCa
                         int deleted = getContext().getContentResolver().update(uriToCard, values, null, null);
                         if (0 != deleted) {
                             values = new ContentValues();
-                            values.put(Stacks.STACK_COUNT_CARDS, Stacks.STACK_COUNT_CARDS + " - 1");
+                            Uri uriToStack = Stacks.uriToStack(stackId);
+                            Cursor stackQuery = getContext().getContentResolver().query(
+                                    uriToStack,
+                                    new String[]{
+                                            Stacks.STACK_COUNT_CARDS,
+                                            Stacks.STACK_COUNT_IN_LEARNING
+                                    },
+                                    null,
+                                    null,
+                                    null);
+                            stackQuery.moveToFirst();
+                            int stackCountCards = stackQuery.getInt(0);
+                            int stackCountInLearning = stackQuery.getInt(0);
+                            values.put(Stacks.STACK_COUNT_CARDS, stackCountCards - 1);
                             if (inLearning) {
-                                values.put(Stacks.STACK_COUNT_IN_LEARNING, Stacks.STACK_COUNT_IN_LEARNING + " - 1");
+                                values.put(Stacks.STACK_COUNT_IN_LEARNING, stackCountInLearning - 1);
                             }
-                            getContext().getContentResolver().update(Stacks.uriToStack(stackId), values, null, null);
+                            getContext().getContentResolver().update(uriToStack, values, null, null);
                             PreferencesUtils.notifyDeleted(getActivity());
                         }
                         return uriToCard;

@@ -60,7 +60,7 @@ public class CardsContract {
         // The time and date of the answer.
         String ANSWER_TIMESTAMP = "ANSWER_TIMESTAMP";
         // User's assumption.
-        String ANSWER_ASSUMPTION = "ANSWER_ASSUMPTION";
+        String ANSWER_RIGHT = "ANSWER_RIGHT";
         // The flag that shows if this answer is going to be deleted.
         String ANSWER_DELETED = "ANSWER_DELETED";
     }
@@ -105,6 +105,7 @@ public class CardsContract {
         }
 
         public static boolean checkLanguage(String language) {
+
             return (null != language) && (language.length() <= MAX_LANGUAGE_LEN);
         }
     }

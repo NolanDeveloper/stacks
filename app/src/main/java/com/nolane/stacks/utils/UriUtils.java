@@ -56,22 +56,7 @@ public class UriUtils {
         if (null == data) {
             throw new IllegalArgumentException("Activity intent don't have data.");
         }
-        String stringValue = value.toString();
-        String parameter = data.getQueryParameter(key);
-        if (null == parameter) {
-            Uri newData = data.buildUpon().appendQueryParameter(key, value.toString()).build();
-            activity.getIntent().setData(newData);
-            return;
-        }
-        if (parameter.equals(stringValue)) {
-            return;
-        }
-        Uri newData = Uri.parse(data.getScheme() + data.getAuthority() + data.getPath());
-        Uri.Builder builder = newData.buildUpon();
-        for (String parameterName : data.getQueryParameterNames()) {
-            builder.appendQueryParameter(parameterName, data.getQueryParameter(parameterName));
-        }
-        activity.getIntent().setData(newData);
+        activity.getIntent().setData(insertParameter(data, key, value));
     }
 
     /**
@@ -94,11 +79,15 @@ public class UriUtils {
         if (parameter.equals(stringValue)) {
             return data;
         }
-        Uri newData = Uri.parse(data.getScheme() + data.getAuthority() + data.getPath());
+        Uri newData = Uri.parse(data.getScheme() + "://" + data.getAuthority() + data.getPath());
         Uri.Builder builder = newData.buildUpon();
         for (String parameterName : data.getQueryParameterNames()) {
-            builder.appendQueryParameter(parameterName, data.getQueryParameter(parameterName));
+            if (parameterName.equals(key)) {
+                builder.appendQueryParameter(key, value.toString());
+            } else {
+                builder.appendQueryParameter(parameterName, data.getQueryParameter(parameterName));
+            }
         }
-        return newData;
+        return builder.build();
     }
 }

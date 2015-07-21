@@ -19,28 +19,28 @@ public class PreferencesUtils {
     }
 
     private static final String KEY_MAX_PROGRESS = "max_progress";
-    public static long getMaxProgress(@NonNull Context context) {
+    public static int getMaxProgress(@NonNull Context context) {
         return getPreferences(context)
-                .getLong(KEY_MAX_PROGRESS,
+                .getInt(KEY_MAX_PROGRESS,
                         context.getResources().getInteger(R.integer.default_max_progress));
     }
-    public static void setMaxProgress(@NonNull Context context, long maxProgress) {
+    public static void setMaxProgress(@NonNull Context context, int maxProgress) {
         getPreferences(context)
                 .edit()
-                .putLong(KEY_MAX_PROGRESS, maxProgress)
+                .putInt(KEY_MAX_PROGRESS, maxProgress)
                 .commit();
     }
 
     private static final String KEY_MIN_PROGRESS = "min_progress";
-    public static long getMinProgress(@NonNull Context context) {
+    public static int getMinProgress(@NonNull Context context) {
         return getPreferences(context)
-                .getLong(KEY_MIN_PROGRESS,
+                .getInt(KEY_MIN_PROGRESS,
                         context.getResources().getInteger(R.integer.default_min_progress));
     }
-    public static void setMinProgress(@NonNull Context context, long minProgress) {
+    public static void setMinProgress(@NonNull Context context, int minProgress) {
         getPreferences(context)
                 .edit()
-                .putLong(KEY_MIN_PROGRESS, minProgress)
+                .putInt(KEY_MIN_PROGRESS, minProgress)
                 .commit();
     }
 
@@ -57,8 +57,8 @@ public class PreferencesUtils {
             Intent intent = new Intent(context, DeleteReceiver.class);
             PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_ONE_SHOT);
             AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-            long oneMinute = 1000 * 60;
-            alarmManager.set(AlarmManager.RTC, System.currentTimeMillis() + oneMinute, pendingIntent);
+            long fiveSeconds = 1000 * 5;
+            alarmManager.set(AlarmManager.RTC, System.currentTimeMillis() + fiveSeconds, pendingIntent);
         }
     }
     public static void deletionDone(@NonNull Context context) {

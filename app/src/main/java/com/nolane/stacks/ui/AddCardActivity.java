@@ -6,27 +6,26 @@ import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 
 import com.nolane.stacks.R;
-import com.nolane.stacks.utils.UriUtils;
 
 import static com.nolane.stacks.provider.CardsContract.Stacks;
 
 /**
- * This activity is for adding new cards into existing stack. <br>
- * Required: <br>
- * data type: {@link Stacks#CONTENT_ITEM_TYPE}
+ * This activity is for adding new cards into existing stack.
  */
 public class AddCardActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_activity);
+        if (-1 == getIntent().getLongExtra(Stacks.STACK_ID, -1)) {
+            throw new IllegalArgumentException("You must pass stack id to start this activity.");
+        }
+
         ActionBar actionBar = getActionBar();
         if (null != actionBar) {
             actionBar.setDisplayHomeAsUpEnabled(true);
         }
         if (null == savedInstanceState) {
-            UriUtils.checkDataTypeOrThrow(this, Stacks.CONTENT_ITEM_TYPE);
-            UriUtils.checkSpecifiesParameterOrThrow(this, Stacks.STACK_COUNT_IN_LEARNING);
             getFragmentManager()
                     .beginTransaction()
                     .replace(R.id.fl_root, new AddCardFragment())

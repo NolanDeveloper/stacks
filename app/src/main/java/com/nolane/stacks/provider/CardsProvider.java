@@ -109,23 +109,27 @@ public class CardsProvider extends ContentProvider {
                 if (TextUtils.isEmpty(sortOrder)) {
                     sortOrder = Stacks.SORT_DEFAULT;
                 }
+                selection = DatabaseUtils.concatenateWhere(selection, Stacks.STACK_DELETED + " = 0");
+                break;
+            } case CARDS_TABLE: {
+                selection = DatabaseUtils.concatenateWhere(selection, Cards.CARD_DELETED + " = 0");
+                break;
+            } case ANSWERS_TABLE: {
+                selection = DatabaseUtils.concatenateWhere(selection, Answers.ANSWER_DELETED + " = 0");
                 break;
             } case STACKS_ID: {
                 String id = uri.getLastPathSegment();
                 selection = DatabaseUtils.concatenateWhere(selection, Stacks.STACK_ID + " = " + id);
-                selection = DatabaseUtils.concatenateWhere(selection, Stacks.STACK_DELETED + " = 0");
                 break;
             }
             case CARDS_ID: {
                 String id = uri.getLastPathSegment();
                 selection = DatabaseUtils.concatenateWhere(selection, Cards.CARD_ID + " = " + id);
-                selection = DatabaseUtils.concatenateWhere(selection, Cards.CARD_DELETED + " = 0");
                 break;
             }
             case ANSWERS_ID: {
                 String id = uri.getLastPathSegment();
                 selection = DatabaseUtils.concatenateWhere(selection, Answers.ANSWER_ID + " = " + id);
-                selection = DatabaseUtils.concatenateWhere(selection, Answers.ANSWER_DELETED + " = 0");
                 break;
             }
             case CARDS_OF_STACK: {
@@ -167,10 +171,7 @@ public class CardsProvider extends ContentProvider {
         long id = db.getWritableDatabase().insert(table, null, values);
         if (-1 == id) return null;
         uri = ContentUris.withAppendedId(uri, id);
-        getContext().getContentResolver().notifyChange(Cards.CONTENT_URI, null);
-        if (CARDS_OF_STACK == URI_MATCHER.match(uri)) {
-            getContext().getContentResolver().notifyChange(Stacks.CONTENT_URI, null);
-        }
+        getContext().getContentResolver().notifyChange(CardsContract.BASE_CONTENT_URI, null);
         return uri;
     }
 
@@ -208,7 +209,7 @@ public class CardsProvider extends ContentProvider {
         String table = uri.getPathSegments().get(0);
         int count = db.getReadableDatabase().delete(table, selection, selectionArgs);
         if (0 < count) {
-            getContext().getContentResolver().notifyChange(uri, null);
+            getContext().getContentResolver().notifyChange(CardsContract.BASE_CONTENT_URI, null);
         }
         return count;
     }
@@ -246,10 +247,11 @@ public class CardsProvider extends ContentProvider {
                 break;
             }
         }
+        uri = Uri.parse(uri.getScheme() + ":" + uri.getSchemeSpecificPart());
         String table = uri.getPathSegments().get(0);
         int count = db.getReadableDatabase().update(table, values, selection, selectionArgs);
         if (0 < count) {
-            getContext().getContentResolver().notifyChange(uri, null);
+            getContext().getContentResolver().notifyChange(CardsContract.BASE_CONTENT_URI, null);
         }
         return count;
     }

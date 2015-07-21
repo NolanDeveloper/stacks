@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.graphics.PorterDuff;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -22,7 +21,6 @@ import android.widget.TextView;
 import com.nolane.stacks.R;
 import com.nolane.stacks.utils.LanguageUtils;
 import com.nolane.stacks.utils.RecyclerCursorAdapter;
-import com.nolane.stacks.utils.UriUtils;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -88,9 +86,7 @@ public class PickStackFragment extends Fragment implements LoaderManager.LoaderC
                                     @Override
                                     public void onClick(View v) {
                                         Intent intent = new Intent(getActivity(), AddCardActivity.class);
-                                        Uri data = UriUtils.insertParameter(Stacks.uriToStack(id),
-                                                Stacks.STACK_COUNT_IN_LEARNING, countInLearning);
-                                        intent.setData(data);
+                                        intent.putExtra(Stacks.STACK_ID, id);
                                         startActivity(intent);
                                     }
                                 })
@@ -103,9 +99,7 @@ public class PickStackFragment extends Fragment implements LoaderManager.LoaderC
                     @Override
                     public void onClick(View v) {
                         Intent intent = new Intent(getActivity(), TrainingActivity.class);
-                        Uri data = Stacks.uriToStack(id);
-                        data = UriUtils.insertParameter(data, Stacks.STACK_TITLE, title);
-                        intent.setData(data);
+                        intent.putExtra(Stacks.STACK_ID, id);
                         startActivity(intent);
                     }
                 });

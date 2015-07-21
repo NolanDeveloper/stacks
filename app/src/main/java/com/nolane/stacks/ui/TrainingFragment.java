@@ -3,7 +3,6 @@ package com.nolane.stacks.ui;
 import android.app.Fragment;
 import android.app.LoaderManager.LoaderCallbacks;
 import android.content.AsyncTaskLoader;
-import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Loader;
 import android.database.Cursor;
@@ -24,15 +23,15 @@ import android.widget.TextView;
 import com.nolane.stacks.R;
 import com.nolane.stacks.utils.ColorUtils;
 import com.nolane.stacks.utils.PreferencesUtils;
-import com.nolane.stacks.utils.UriUtils;
 
-import java.util.Calendar;
+import java.sql.Timestamp;
 import java.util.Random;
 import java.util.concurrent.TimeUnit;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
+import static com.nolane.stacks.provider.CardsContract.Answers;
 import static com.nolane.stacks.provider.CardsContract.Cards;
 import static com.nolane.stacks.provider.CardsContract.Stacks;
 
@@ -65,8 +64,14 @@ public class TrainingFragment extends Fragment
     private static final String EXTRA_CARD_LAST_SEEN = "card.last.seen";
     private static final String EXTRA_STAGE = "stage";
 
+    private static final String EXTRA_RIGHT = "right";
+
     // Key which is used to pass ContentValues though Bundle.
     private static final String EXTRA_VALUES = "values";
+
+    // Id of the stack that user is training.
+    private long stackId;
+    private int stackCountInLearning;
 
     // Stages of this fragment.
     private enum Stage {
@@ -114,7 +119,7 @@ public class TrainingFragment extends Fragment
     private Clock clock = new Clock() {
         @Override
         public long getCurrentTime() {
-            return Calendar.getInstance().getTimeInMillis();
+            return System.currentTimeMillis();
         }
     };
 
@@ -153,24 +158,30 @@ public class TrainingFragment extends Fragment
     @Override
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
+        stackId = getActivity().getIntent().getLongExtra(Stacks.STACK_ID, -1);
         if (null == savedInstanceState) {
             stage = Stage.LEARNING;
-            getLoaderManager().initLoader(PickCardQuery._TOKEN, null, this).forceLoad();
-            UriUtils.checkDataTypeOrThrow(getActivity(), Stacks.CONTENT_ITEM_TYPE);
+            getLoaderManager().initLoader(StackQuery._TOKEN, null, this).forceLoad();
         } else {
             cardId = savedInstanceState.getLong(EXTRA_CARD_ID);
             tvFront.setText(savedInstanceState.getString(EXTRA_CARD_FRONT));
             cardBack = savedInstanceState.getString(EXTRA_CARD_BACK);
             cardProgress = savedInstanceState.getInt(EXTRA_CARD_PROGRESS);
             cardLastSeen = savedInstanceState.getLong(EXTRA_CARD_LAST_SEEN);
+            stackCountInLearning = savedInstanceState.getInt(Stacks.STACK_COUNT_IN_LEARNING);
             vProgressIndicator.setBackgroundColor(ColorUtils.getColorForProgress(getActivity(), cardProgress));
             stage = (Stage) savedInstanceState.getSerializable(EXTRA_STAGE);
             btnDone.setOnClickListener(this);
             // Reconnect to started loaders.
-            if (null != getLoaderManager().getLoader(PickCardQuery._TOKEN))
+            if (null != getLoaderManager().getLoader(StackQuery._TOKEN)) {
+                getLoaderManager().initLoader(StackQuery._TOKEN, null, this);
+            }
+            if (null != getLoaderManager().getLoader(PickCardQuery._TOKEN)) {
                 getLoaderManager().initLoader(PickCardQuery._TOKEN, null, this);
-            if (null != getLoaderManager().getLoader(UpdateProgressQuery._TOKEN))
+            }
+            if (null != getLoaderManager().getLoader(UpdateProgressQuery._TOKEN)) {
                 getLoaderManager().initLoader(UpdateProgressQuery._TOKEN, null, this);
+            }
         }
     }
 
@@ -183,15 +194,16 @@ public class TrainingFragment extends Fragment
         outState.putInt(EXTRA_CARD_PROGRESS, cardProgress);
         outState.putLong(EXTRA_CARD_PROGRESS, cardLastSeen);
         outState.putSerializable(EXTRA_STAGE, stage);
+        outState.putInt(Stacks.STACK_COUNT_IN_LEARNING, stackCountInLearning);
     }
 
     @Override
     public void onClick(View v) {
-        // Turn off button until we did not get next card.
+        // Turn off button until we don't get next card.
         btnDone.setOnClickListener(null);
         long timeNow = clock.getCurrentTime();
         long timeDiff = timeNow - cardLastSeen;
-        long updatePeriod = (long)(0.75 * TimeUnit.DAYS.toMillis(1));
+        long updatePeriod = (long)(0.8 * TimeUnit.DAYS.toMillis(1));
         String userAssumption = etBack.getText().toString();
         etBack.getText().clear();
         if (updatePeriod < timeDiff) {
@@ -202,8 +214,9 @@ public class TrainingFragment extends Fragment
             // todo: make preference for the bound of progress
             if (PreferencesUtils.getMinProgress(getActivity()) <= newProgress)
                 values.put(Cards.CARD_PROGRESS, newProgress);
-            values.put(Cards.CARD_LAST_SEEN, timeNow);
+            values.put(Cards.CARD_LAST_SEEN, new Timestamp(timeNow).toString());
             arguments.putParcelable(EXTRA_VALUES, values);
+            arguments.putBoolean(EXTRA_RIGHT, userAssumption.equals(cardBack));
             getLoaderManager().initLoader(UpdateProgressQuery._TOKEN, arguments, this).forceLoad();
         } else {
             getLoaderManager().initLoader(PickCardQuery._TOKEN, null, this).forceLoad();
@@ -232,9 +245,18 @@ public class TrainingFragment extends Fragment
         int _TOKEN = 1;
     }
 
+    private interface StackQuery {
+        int _TOKEN = 2;
+
+        String[] COLUMNS = new String[] {
+                Stacks.STACK_COUNT_IN_LEARNING
+        };
+
+        int COUNT_IN_LEARNING = 0;
+    }
+
     @Override
     public Loader onCreateLoader(int id, Bundle args) {
-        long stackId = Long.parseLong(getActivity().getIntent().getData().getLastPathSegment());
         switch (id) {
             case PickCardQuery._TOKEN: {
                 final Uri cardsOfStack = Cards.uriToCardsOfStack(stackId);
@@ -250,7 +272,8 @@ public class TrainingFragment extends Fragment
                                     PickCardQuery.COLUMNS,
                                     // Query cards in learning that user haven't seen recently.
                                     Cards.CARD_IN_LEARNING + " = 1 AND " +
-                                            Cards.CARD_LAST_SEEN + " < " + (clock.getCurrentTime() - dayInMills),
+                                            Cards.CARD_LAST_SEEN + " < " +
+                                            (clock.getCurrentTime() - dayInMills),
                                     null,
                                     Cards.SORT_LAST_SEEN
                             );
@@ -285,15 +308,52 @@ public class TrainingFragment extends Fragment
                 break;
             }
             case UpdateProgressQuery._TOKEN: {
-                final Uri uri = ContentUris.withAppendedId(Cards.uriToCardsOfStack(stackId), cardId);
+                final Uri uri = Cards.uriToCard(stackId, cardId);
                 final ContentValues values = args.getParcelable(EXTRA_VALUES);
+                final boolean right = args.getBoolean(EXTRA_RIGHT);
                 return new AsyncTaskLoader<Object>(getActivity()) {
                     @Override
                     public Object loadInBackground() {
-                        return getActivity().getContentResolver().update(uri, values, null, null);
+                        int maxProgress = PreferencesUtils.getMaxProgress(getContext());
+                        if (maxProgress == values.getAsInteger(Cards.CARD_PROGRESS)) {
+                            Cursor restCards = getContext().getContentResolver().query(
+                                    Cards.uriToCardsOfStack(stackId),
+                                    new String[] { Cards.CARD_ID },
+                                    Cards.CARD_IN_LEARNING + " = 0 AND " + Cards.CARD_PROGRESS + " < " + maxProgress,
+                                    null, null);
+                            if (0 != restCards.getCount()) {
+                                restCards.moveToPosition(new Random().nextInt(restCards.getCount()));
+                                long cardId = restCards.getLong(0);
+                                restCards.close();
+                                ContentValues values = new ContentValues();
+                                values.put(Cards.CARD_IN_LEARNING, 1);
+                                getContext().getContentResolver().update(Cards.uriToCard(stackId, cardId), values, null, null);
+                            } else {
+                                restCards.close();
+                                ContentValues values = new ContentValues();
+                                stackCountInLearning -= 1;
+                                values.put(Stacks.STACK_COUNT_IN_LEARNING, stackCountInLearning);
+                                getContext().getContentResolver().update(Stacks.uriToStack(stackId), values, null, null);
+                            }
+                        }
+                        ContentValues answerValues = new ContentValues();
+                        answerValues.put(Answers.ANSWER_CARD_ID, cardId);
+                        answerValues.put(Answers.ANSWER_RIGHT, right);
+                        getContext().getContentResolver().insert(Answers.CONTENT_URI, answerValues);
+                        return getContext().getContentResolver().update(uri, values, null, null);
                     }
                 };
             }
+            case StackQuery._TOKEN:
+                return new AsyncTaskLoader<Cursor>(getActivity()) {
+                    @Override
+                    public Cursor loadInBackground() {
+                        return getContext().getContentResolver().query(
+                                Stacks.uriToStack(stackId),
+                                StackQuery.COLUMNS,
+                                null, null, null, null);
+                    }
+                };
         }
         return null;
     }
@@ -303,11 +363,9 @@ public class TrainingFragment extends Fragment
         if (null == data) {
             throw new IllegalArgumentException("Loader was failed. (query = null)");
         }
-        // All loader here are one-shot. So we need to
-        // prevent them from saving previous results.
-        getLoaderManager().destroyLoader(loader.getId());
         switch (loader.getId()) {
-            case PickCardQuery._TOKEN:
+            case PickCardQuery._TOKEN: {
+                getLoaderManager().destroyLoader(PickCardQuery._TOKEN);
                 Cursor query = (Cursor) data;
                 if (Stage.LEARNING == stage) {
                     // If learning is done.
@@ -346,9 +404,18 @@ public class TrainingFragment extends Fragment
                 // Do not forget to turn button on.
                 btnDone.setOnClickListener(this);
                 break;
-            case UpdateProgressQuery._TOKEN:
+            } case UpdateProgressQuery._TOKEN: {
+                getLoaderManager().destroyLoader(UpdateProgressQuery._TOKEN);
                 getLoaderManager().initLoader(PickCardQuery._TOKEN, null, this).forceLoad();
                 break;
+            } case StackQuery._TOKEN: {
+                getLoaderManager().destroyLoader(PickCardQuery._TOKEN);
+                Cursor query = (Cursor) data;
+                query.moveToFirst();
+                stackCountInLearning = query.getInt(StackQuery.COUNT_IN_LEARNING);
+                getLoaderManager().initLoader(PickCardQuery._TOKEN, null, this).forceLoad();
+                break;
+            }
         }
     }
 

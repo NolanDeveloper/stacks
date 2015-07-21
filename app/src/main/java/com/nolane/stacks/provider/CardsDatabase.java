@@ -42,8 +42,8 @@ public class CardsDatabase extends SQLiteOpenHelper {
     }
 
     @Override
-    public void onConfigure(SQLiteDatabase db) {
-        super.onConfigure(db);
+    public void onOpen(SQLiteDatabase db) {
+        super.onOpen(db);
         db.setForeignKeyConstraintsEnabled(true);
     }
 
@@ -53,28 +53,28 @@ public class CardsDatabase extends SQLiteOpenHelper {
                 StacksColumns.STACK_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 StacksColumns.STACK_TITLE + " TEXT NOT NULL, " +
                 StacksColumns.STACK_MAX_IN_LEARNING + " INTEGER NOT NULL," +
-                StacksColumns.STACK_COUNT_CARDS + " INTEGER DEFAULT 0, " +
-                StacksColumns.STACK_COUNT_IN_LEARNING + " INTEGER DEFAULT 0, " +
+                StacksColumns.STACK_COUNT_CARDS + " INTEGER DEFAULT 0 NOT NULL, " +
+                StacksColumns.STACK_COUNT_IN_LEARNING + " INTEGER DEFAULT 0 NOT NULL, " +
                 StacksColumns.STACK_LANGUAGE + " TEXT NOT NULL," +
                 StacksColumns.STACK_COLOR + " INTEGER NOT NULL," +
-                StacksColumns.STACK_DELETED + " INTEGER DEFAULT 0)");
+                StacksColumns.STACK_DELETED + " INTEGER DEFAULT 0 NOT NULL)");
 
         db.execSQL("CREATE TABLE " + Tables.CARDS + "(" +
                 CardsColumns.CARD_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                 CardsColumns.CARD_FRONT + " TEXT NOT NULL, " +
                 CardsColumns.CARD_BACK + " TEXT NOT NULL, " +
-                CardsColumns.CARD_PROGRESS + " INTEGER DEFAULT 0, " +
-                CardsColumns.CARD_LAST_SEEN + " TEXT DEFAULT 0, " +
+                CardsColumns.CARD_PROGRESS + " INTEGER DEFAULT 0 NOT NULL, " +
+                CardsColumns.CARD_LAST_SEEN + " TEXT DEFAULT 0 NOT NULL, " +
                 CardsColumns.CARD_STACK_ID + " INTEGER " + References.STACKS_ID + " , " +
                 CardsColumns.CARD_IN_LEARNING + " INTEGER NOT NULL," +
-                CardsColumns.CARD_DELETED + " INTEGER DEFAULT 0)");
+                CardsColumns.CARD_DELETED + " INTEGER DEFAULT 0 NOT NULL)");
 
         db.execSQL("CREATE TABLE " + Tables.ANSWERS + "(" +
                 AnswersColumns.ANSWER_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                 AnswersColumns.ANSWER_CARD_ID + " INTEGER " + References.CARDS_ID + " , " +
                 AnswersColumns.ANSWER_TIMESTAMP + " TEXT DEFAULT CURRENT_TIMESTAMP, " +
-                AnswersColumns.ANSWER_ASSUMPTION + " TEXT NOT NULL," +
-                AnswersColumns.ANSWER_DELETED + " INTEGER DEFAULT 0)");
+                AnswersColumns.ANSWER_RIGHT + " INTEGER NOT NULL," +
+                AnswersColumns.ANSWER_DELETED + " INTEGER DEFAULT 0 NOT NULL)");
     }
 
     @Override
