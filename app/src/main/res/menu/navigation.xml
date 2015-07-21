@@ -13,4 +13,8 @@
         android:icon="@drawable/ic_card_multiple"
         android:id="@+id/mi_stacks"
         android:title="@string/stacks"/>
+    <item
+        android:icon="@drawable/ic_statistics"
+        android:id="@+id/mi_statistics"
+        android:title="@string/statistics"/>
 </menu>

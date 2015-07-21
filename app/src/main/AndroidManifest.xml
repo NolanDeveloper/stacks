@@ -56,6 +56,9 @@
         <activity
             android:name=".ui.AllStacksActivity"/>
 
+        <activity
+            android:name=".ui.StatisticsActivity"/>
+
         <provider
             android:authorities="com.nolane.stacks.provider"
             android:name="com.nolane.stacks.provider.CardsProvider"

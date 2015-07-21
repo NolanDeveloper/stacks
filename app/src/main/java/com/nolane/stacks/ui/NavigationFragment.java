@@ -42,6 +42,9 @@ public class NavigationFragment extends Fragment
             case R.id.mi_stacks:
                 itemActivityClass = AllStacksActivity.class;
                 break;
+            case R.id.mi_statistics:
+                itemActivityClass = StatisticsActivity.class;
+                break;
             default:
                 throw new IllegalArgumentException("Unknown menu item id.");
         }
