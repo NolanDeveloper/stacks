@@ -10,6 +10,8 @@ import android.support.annotation.NonNull;
 import com.nolane.stacks.R;
 import com.nolane.stacks.provider.DeleteReceiver;
 
+import java.util.Calendar;
+
 public class PreferencesUtils {
     private static final String NAME = "preferences";
 
@@ -28,7 +30,7 @@ public class PreferencesUtils {
         getPreferences(context)
                 .edit()
                 .putInt(KEY_MAX_PROGRESS, maxProgress)
-                .commit();
+                .apply();
     }
 
     private static final String KEY_MIN_PROGRESS = "min_progress";
@@ -41,7 +43,7 @@ public class PreferencesUtils {
         getPreferences(context)
                 .edit()
                 .putInt(KEY_MIN_PROGRESS, minProgress)
-                .commit();
+                .apply();
     }
 
     private static final String KEY_DELETE_SCHEDULED = "delete_scheduled";
@@ -53,7 +55,7 @@ public class PreferencesUtils {
             getPreferences(context)
                     .edit()
                     .putBoolean(KEY_DELETE_SCHEDULED, true)
-                    .commit();
+                    .apply();
             Intent intent = new Intent(context, DeleteReceiver.class);
             PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_ONE_SHOT);
             AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
@@ -65,6 +67,118 @@ public class PreferencesUtils {
         getPreferences(context)
                 .edit()
                 .putBoolean(KEY_DELETE_SCHEDULED, false)
-                .commit();
+                .apply();
+    }
+
+    private static final String KEY_LAST_ANSWER = "last_answer";
+    private static final String KEY_STREAK = "streak";
+    private static final String KEY_BEST_STREAK = "best_streak";
+    public static void updateStreak(@NonNull Context context) {
+    }
+    public static int getStreak(@NonNull Context context) {
+        Calendar yesterday = Calendar.getInstance();
+        yesterday.add(Calendar.DAY_OF_YEAR, -1);
+        Calendar lastAnswer = Calendar.getInstance();
+        lastAnswer.setTimeInMillis(getPreferences(context).getLong(KEY_LAST_ANSWER, 0));
+        if (yesterday.get(Calendar.YEAR) == lastAnswer.get(Calendar.YEAR)
+                && yesterday.get(Calendar.DAY_OF_YEAR) == lastAnswer.get(Calendar.DAY_OF_YEAR)) {
+            return getPreferences(context).getInt(KEY_STREAK, 0);
+        } else {
+            getPreferences(context)
+                    .edit()
+                    .putInt(KEY_STREAK, 0)
+                    .apply();
+            return 0;
+        }
+    }
+    public static int getBestStreak(@NonNull Context context) {
+        return getPreferences(context).getInt(KEY_BEST_STREAK, 0);
+    }
+
+    private static final String KEY_TOTAL_CARDS = "total_cards";
+    public static void cardWasAdded(@NonNull Context context) {
+        SharedPreferences preferences = getPreferences(context);
+        int totalCards = preferences.getInt(KEY_TOTAL_CARDS, 0);
+        preferences
+                .edit()
+                .putInt(KEY_TOTAL_CARDS, totalCards + 1)
+                .apply();
+    }
+    public static void cardWasDeleted(@NonNull Context context) {
+        SharedPreferences preferences = getPreferences(context);
+        int totalCards = preferences.getInt(KEY_TOTAL_CARDS, 0);
+        preferences
+                .edit()
+                .putInt(KEY_TOTAL_CARDS, totalCards - 1)
+                .apply();
+    }
+    public static int getTotalCards(@NonNull Context context) {
+        return getPreferences(context).getInt(KEY_TOTAL_CARDS, 0);
+    }
+
+    private static final String KEY_TOTAL_PROGRESS = "total_progress";
+    public static void progressUp(@NonNull Context context) {
+        SharedPreferences preferences = getPreferences(context);
+        int totalProgress = preferences.getInt(KEY_TOTAL_PROGRESS, 0);
+        preferences
+                .edit()
+                .putInt(KEY_TOTAL_PROGRESS, totalProgress + 1)
+                .apply();
+    }
+    public static void progressDown(@NonNull Context context) {
+        SharedPreferences preferences = getPreferences(context);
+        int totalProgress = preferences.getInt(KEY_TOTAL_PROGRESS, 0);
+        preferences
+                .edit()
+                .putInt(KEY_TOTAL_PROGRESS, totalProgress - 1)
+                .apply();
+    }
+    public static int getTotalProgress(@NonNull Context context) {
+        return getPreferences(context).getInt(KEY_TOTAL_PROGRESS, 0);
+    }
+
+    private static final String KEY_CARDS_LEARNED = "cards_learned";
+    public static void learnedCard(@NonNull Context context) {
+        SharedPreferences preferences = getPreferences(context);
+        int cardsLearned = preferences.getInt(KEY_CARDS_LEARNED, 0);
+        preferences
+                .edit()
+                .putInt(KEY_CARDS_LEARNED, cardsLearned + 1)
+                .apply();
+    }
+    public static int getCardsLearned(@NonNull Context context) {
+        return getPreferences(context).getInt(KEY_CARDS_LEARNED, 0);
+    }
+
+    public static final String KEY_TOTAL_ANSWERS = "total_answers";
+    public static void newAnswer(@NonNull Context context) {
+        SharedPreferences preferences = getPreferences(context);
+        Calendar today = Calendar.getInstance();
+        Calendar yesterday = Calendar.getInstance();
+        yesterday.add(Calendar.DAY_OF_YEAR, -1);
+        Calendar lastAnswer = Calendar.getInstance();
+        lastAnswer.setTimeInMillis(preferences.getLong(KEY_LAST_ANSWER, 0));
+        int totalAnswers = preferences.getInt(KEY_TOTAL_ANSWERS, 0);
+        if (today.get(Calendar.YEAR) != lastAnswer.get(Calendar.YEAR) ||
+                today.get(Calendar.DAY_OF_YEAR) != lastAnswer.get(Calendar.DAY_OF_YEAR)) {
+            int streak = preferences.getInt(KEY_STREAK, 0) + 1;
+            int bestStreak = preferences.getInt(KEY_BEST_STREAK, 0);
+            preferences
+                    .edit()
+                    .putInt(KEY_STREAK, streak)
+                    .putInt(KEY_BEST_STREAK, Math.max(streak, bestStreak))
+                    .putInt(KEY_TOTAL_ANSWERS, totalAnswers + 1)
+                    .apply();
+        } else if (yesterday.get(Calendar.YEAR) == lastAnswer.get(Calendar.YEAR)
+                && yesterday.get(Calendar.DAY_OF_YEAR) == lastAnswer.get(Calendar.DAY_OF_YEAR)) {
+            preferences
+                    .edit()
+                    .putInt(KEY_STREAK, 0)
+                    .putInt(KEY_TOTAL_ANSWERS, totalAnswers + 1)
+                    .apply();
+        }
+    }
+    public static int getTotalAnswers(@NonNull Context context) {
+        return getPreferences(context).getInt(KEY_TOTAL_ANSWERS, 0);
     }
 }

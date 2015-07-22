@@ -200,6 +200,7 @@ public class TrainingFragment extends Fragment
     @Override
     public void onClick(View v) {
         // Turn off button until we don't get next card.
+        PreferencesUtils.newAnswer(getActivity());
         btnDone.setOnClickListener(null);
         long timeNow = clock.getCurrentTime();
         long timeDiff = timeNow - cardLastSeen;
@@ -209,11 +210,18 @@ public class TrainingFragment extends Fragment
         if (updatePeriod < timeDiff) {
             // Update progress.
             Bundle arguments = new Bundle();
-            int newProgress = cardProgress + (userAssumption.equals(cardBack) ? 1 : -1);
+            boolean guess = userAssumption.equals(cardBack);
+            int newProgress = cardProgress + (guess ? 1 : -1);
             ContentValues values = new ContentValues();
             // todo: make preference for the bound of progress
-            if (PreferencesUtils.getMinProgress(getActivity()) <= newProgress)
+            if (PreferencesUtils.getMinProgress(getActivity()) <= newProgress) {
                 values.put(Cards.CARD_PROGRESS, newProgress);
+                if (guess) {
+                    PreferencesUtils.progressUp(getActivity());
+                } else {
+                    PreferencesUtils.progressDown(getActivity());
+                }
+            }
             values.put(Cards.CARD_LAST_SEEN, new Timestamp(timeNow).toString());
             arguments.putParcelable(EXTRA_VALUES, values);
             arguments.putBoolean(EXTRA_RIGHT, userAssumption.equals(cardBack));
@@ -231,7 +239,7 @@ public class TrainingFragment extends Fragment
                 Cards.CARD_FRONT,
                 Cards.CARD_BACK,
                 Cards.CARD_PROGRESS,
-                Cards.CARD_LAST_SEEN
+                "(strftime('%s', " + Cards.CARD_LAST_SEEN + ") * 1000)"
         };
 
         int ID = 0;
@@ -316,6 +324,8 @@ public class TrainingFragment extends Fragment
                     public Object loadInBackground() {
                         int maxProgress = PreferencesUtils.getMaxProgress(getContext());
                         if (maxProgress == values.getAsInteger(Cards.CARD_PROGRESS)) {
+                            PreferencesUtils.learnedCard(getContext());
+                            values.put(Cards.CARD_IN_LEARNING, 0);
                             Cursor restCards = getContext().getContentResolver().query(
                                     Cards.uriToCardsOfStack(stackId),
                                     new String[] { Cards.CARD_ID },

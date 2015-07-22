@@ -11,8 +11,10 @@ import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.nolane.stacks.R;
+import com.nolane.stacks.utils.PreferencesUtils;
 
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -36,8 +38,20 @@ import static com.nolane.stacks.provider.CardsContract.Answers;
  * This fragment show statistics of user.
  */
 public class StatisticsFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
-
-    @Bind(R.id.lcv_graph)
+    // UI elements.
+    @Bind(R.id.tv_total_cards)
+    TextView tvTotalCards;
+    @Bind(R.id.tv_cards_learned)
+    TextView tvCardsLearned;
+    @Bind(R.id.tv_total_progress)
+    TextView tvTotalProgress;
+    @Bind(R.id.tv_streak)
+    TextView tvStreak;
+    @Bind(R.id.tv_best_streak)
+    TextView tvBestStreak;
+    @Bind(R.id.tv_total_answers)
+    TextView tvTotalAnswers;
+    @Bind(R.id.lcv_answers_per_day)
     LineChartView lcvGraph;
 
     @Nullable
@@ -45,6 +59,12 @@ public class StatisticsFragment extends Fragment implements LoaderManager.Loader
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.frag_statistics, container, false);
         ButterKnife.bind(this, view);
+        tvTotalCards.setText(String.valueOf(PreferencesUtils.getTotalCards(getActivity())));
+        tvTotalProgress.setText(String.valueOf(PreferencesUtils.getTotalProgress(getActivity())));
+        tvCardsLearned.setText(String.valueOf(PreferencesUtils.getCardsLearned(getActivity())));
+        tvStreak.setText(String.valueOf(PreferencesUtils.getStreak(getActivity())));
+        tvBestStreak.setText(String.valueOf(PreferencesUtils.getBestStreak(getActivity())));
+        tvTotalAnswers.setText(String.valueOf(PreferencesUtils.getTotalAnswers(getActivity())));
         getLoaderManager().initLoader(AnswersQuery._TOKEN, null, this);
         return view;
     }
@@ -117,14 +137,17 @@ public class StatisticsFragment extends Fragment implements LoaderManager.Loader
             line.setHasLines(true);
             line.setHasPoints(false);
             data.setLines(Collections.singletonList(line));
-            Axis bottom = new Axis();
-            bottom.setName("days ago");
-            Axis left = new Axis();
-            left.setName("answers");
-            left.setHasLines(true);
-            data.setAxisXBottom(bottom);
-            data.setAxisYLeft(left);
+
+            Axis bottomAxis = new Axis();
+            bottomAxis.setName("days ago");
+            data.setAxisXBottom(bottomAxis);
+
+            Axis leftAxis = new Axis();
+            leftAxis.setName("answers");
+            leftAxis.setHasLines(true);
+            data.setAxisYLeft(leftAxis);
             lcvGraph.setLineChartData(data);
+
         } catch (ParseException e) {
             e.printStackTrace();
         } finally {

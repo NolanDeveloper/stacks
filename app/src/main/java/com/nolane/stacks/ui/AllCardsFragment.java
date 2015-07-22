@@ -24,8 +24,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.nolane.stacks.R;
@@ -49,6 +49,10 @@ public class AllCardsFragment extends Fragment implements LoaderManager.LoaderCa
     public static final String EXTRA_VALUES = "values";
     // Key to deliver query to loader.
     public static final String EXTRA_QUERY = "query";
+
+    private static final String EXTRA_URI = "uri";
+    private static final String EXTRA_COUNT_CARDS = "count-cards";
+    private static final String EXTRA_COUNT_IN_LEARNING = "count-in-learning";
 
     /**
      * Adapter for RecyclerView.
@@ -132,8 +136,8 @@ public class AllCardsFragment extends Fragment implements LoaderManager.LoaderCa
     }
 
     // UI elements.
-    @Bind(R.id.iv_no_cards)
-    ImageView ivNoCards;
+    @Bind(R.id.fl_no_cards)
+    FrameLayout flNoCards;
     @Bind(R.id.rv_cards)
     RecyclerView rvCards;
 
@@ -159,7 +163,7 @@ public class AllCardsFragment extends Fragment implements LoaderManager.LoaderCa
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
         getLoaderManager().initLoader(CardsQuery._TOKEN, null, this);
-        // Catch started loader.
+        // Catch started loaders.
         if (null != getLoaderManager().getLoader(RemoveCardQuery._TOKEN)) {
             getLoaderManager().initLoader(RemoveCardQuery._TOKEN, null, this);
         }
@@ -223,29 +227,31 @@ public class AllCardsFragment extends Fragment implements LoaderManager.LoaderCa
                         values = new ContentValues();
                         values.put(Cards.CARD_DELETED, true);
                         int deleted = getContext().getContentResolver().update(uriToCard, values, null, null);
-                        if (0 != deleted) {
-                            values = new ContentValues();
-                            Uri uriToStack = Stacks.uriToStack(stackId);
-                            Cursor stackQuery = getContext().getContentResolver().query(
-                                    uriToStack,
-                                    new String[]{
-                                            Stacks.STACK_COUNT_CARDS,
-                                            Stacks.STACK_COUNT_IN_LEARNING
-                                    },
-                                    null,
-                                    null,
-                                    null);
-                            stackQuery.moveToFirst();
-                            int stackCountCards = stackQuery.getInt(0);
-                            int stackCountInLearning = stackQuery.getInt(0);
-                            values.put(Stacks.STACK_COUNT_CARDS, stackCountCards - 1);
-                            if (inLearning) {
-                                values.put(Stacks.STACK_COUNT_IN_LEARNING, stackCountInLearning - 1);
-                            }
-                            getContext().getContentResolver().update(uriToStack, values, null, null);
-                            PreferencesUtils.notifyDeleted(getActivity());
+                        values = new ContentValues();
+                        Uri uriToStack = Stacks.uriToStack(stackId);
+                        Cursor stackQuery = getContext().getContentResolver().query(
+                                uriToStack,
+                                new String[]{
+                                        Stacks.STACK_COUNT_CARDS,
+                                        Stacks.STACK_COUNT_IN_LEARNING
+                                },
+                                null,
+                                null,
+                                null);
+                        stackQuery.moveToFirst();
+                        int stackCountCards = stackQuery.getInt(0);
+                        int stackCountInLearning = stackQuery.getInt(0);
+                        values.put(Stacks.STACK_COUNT_CARDS, stackCountCards - 1);
+                        if (inLearning) {
+                            values.put(Stacks.STACK_COUNT_IN_LEARNING, stackCountInLearning - 1);
                         }
-                        return uriToCard;
+                        getContext().getContentResolver().update(uriToStack, values, null, null);
+                        PreferencesUtils.notifyDeleted(getActivity());
+                        Bundle result = new Bundle();
+                        result.putParcelable(EXTRA_URI, uriToCard);
+                        result.putInt(EXTRA_COUNT_CARDS, stackCountCards);
+                        result.putInt(EXTRA_COUNT_IN_LEARNING, stackCountCards);
+                        return result;
                     }
                 };
         }
@@ -261,19 +267,23 @@ public class AllCardsFragment extends Fragment implements LoaderManager.LoaderCa
             case CardsQuery._TOKEN:
                 Cursor query = (Cursor) data;
                 if (0 != query.getCount()) {
-                    ivNoCards.setVisibility(View.INVISIBLE);
+                    flNoCards.setVisibility(View.INVISIBLE);
                     ((CardsAdapter) rvCards.getAdapter()).setCursor(query);
                 } else {
-                    ivNoCards.setVisibility(View.VISIBLE);
+                    flNoCards.setVisibility(View.VISIBLE);
                 }
                 break;
             case RemoveCardQuery._TOKEN:
+                Bundle result = (Bundle) data;
+                final int countCards = result.getInt(EXTRA_COUNT_CARDS);
+                final int countInLearning = result.getInt(EXTRA_COUNT_IN_LEARNING);
                 getLoaderManager().destroyLoader(RemoveCardQuery._TOKEN);
                 final Context context = getActivity().getApplicationContext();
-                final Uri uriToCard = (Uri) data;
+                final Uri uriToCard = result.getParcelable(EXTRA_URI);
                 String stackId = uriToCard.getPathSegments().get(1);
                 final Uri uriToStack = Stacks.CONTENT_URI.buildUpon().appendPath(stackId).build();
                 final boolean inLearning = Boolean.parseBoolean(uriToCard.getQueryParameter(Cards.CARD_IN_LEARNING));
+                PreferencesUtils.cardWasDeleted(getActivity());
                 Snackbar.make(getView(), getString(R.string.deleted), Snackbar.LENGTH_LONG)
                         .setAction(R.string.undo, new View.OnClickListener() {
                             @Override
@@ -281,13 +291,14 @@ public class AllCardsFragment extends Fragment implements LoaderManager.LoaderCa
                                 new Thread(new Runnable() {
                                     @Override
                                     public void run() {
+                                        PreferencesUtils.cardWasAdded(getActivity());
                                         ContentValues values = new ContentValues();
                                         values.put(Cards.CARD_DELETED, false);
                                         context.getContentResolver().update(uriToCard, values, null, null);
                                         values.clear();
-                                        values.put(Stacks.STACK_COUNT_CARDS, Stacks.STACK_COUNT_CARDS + " + 1");
+                                        values.put(Stacks.STACK_COUNT_CARDS, countCards);
                                         if (inLearning) {
-                                            values.put(Stacks.STACK_COUNT_IN_LEARNING, Stacks.STACK_COUNT_IN_LEARNING + " + 1");
+                                            values.put(Stacks.STACK_COUNT_IN_LEARNING, countInLearning);
                                         }
                                         context.getContentResolver().update(uriToStack, values, null, null);
                                     }

@@ -10,12 +10,26 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
-    <ImageView
-        android:id="@+id/iv_no_cards"
+    <FrameLayout
+        android:id="@+id/fl_no_cards"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:src="@drawable/no_cards"
-        android:scaleType="centerCrop"
-        android:visibility="invisible"/>
+        android:visibility="invisible">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:src="@drawable/no_cards"
+            android:scaleType="centerCrop"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="150dp"
+            android:layout_gravity="center_horizontal"
+            android:textSize="@dimen/abc_text_size_title_material"
+            android:text="@string/no_cards"/>
+
+    </FrameLayout>
 
 </FrameLayout>

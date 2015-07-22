@@ -76,13 +76,13 @@
 
     <ImageButton
         android:id="@+id/ib_add_card"
-        android:layout_width="64dp"
-        android:layout_height="64dp"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
         android:layout_gravity="right|center_vertical"
         android:src="@drawable/ic_plus"
         android:tint="@color/accent"
-        android:padding="16dp"
+        android:padding="8dp"
         android:scaleType="centerCrop"
-        android:background="?android:attr/selectableItemBackground"/>
+        android:background="?attr/selectableItemBackgroundBorderless"/>
 
 </FrameLayout>

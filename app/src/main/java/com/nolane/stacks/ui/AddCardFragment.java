@@ -24,6 +24,7 @@ import android.widget.ImageButton;
 import android.widget.TextView;
 
 import com.nolane.stacks.R;
+import com.nolane.stacks.utils.PreferencesUtils;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -145,9 +146,11 @@ public class AddCardFragment extends Fragment implements LoaderManager.LoaderCal
         final String front = etFront.getText().toString();
         final String back = etBack.getText().toString();
         final ContentResolver resolver = getActivity().getContentResolver();
+        PreferencesUtils.cardWasAdded(getActivity());
         if (!cbBidirectional.isChecked()) {
             new Thread(new InsertCardRunnable(resolver, front, back)).run();
         } else {
+            PreferencesUtils.cardWasAdded(getActivity());
             new Thread(new Runnable() {
                 @Override
                 public void run() {

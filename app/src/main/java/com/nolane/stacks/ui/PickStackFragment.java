@@ -81,7 +81,7 @@ public class PickStackFragment extends Fragment implements LoaderManager.LoaderC
                 holder.root.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        Snackbar.make(getView(), getString(R.string.no_cards), Snackbar.LENGTH_SHORT)
+                        Snackbar.make(getView(), getString(R.string.no_cards_first_cap), Snackbar.LENGTH_SHORT)
                                 .setAction(R.string.add_card, new View.OnClickListener() {
                                     @Override
                                     public void onClick(View v) {
