@@ -7,21 +7,28 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.text.format.DateUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.github.mikephil.charting.charts.LineChart;
-import com.github.mikephil.charting.data.Entry;
-import com.github.mikephil.charting.data.LineData;
-import com.github.mikephil.charting.data.LineDataSet;
 import com.nolane.stacks.R;
 
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.TreeMap;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import lecho.lib.hellocharts.model.Axis;
+import lecho.lib.hellocharts.model.Line;
+import lecho.lib.hellocharts.model.LineChartData;
+import lecho.lib.hellocharts.model.PointValue;
+import lecho.lib.hellocharts.view.LineChartView;
 
 import static com.nolane.stacks.provider.CardsContract.Answers;
 
@@ -30,8 +37,8 @@ import static com.nolane.stacks.provider.CardsContract.Answers;
  */
 public class StatisticsFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
-    @Bind(R.id.lc_graph)
-    LineChart lcGraph;
+    @Bind(R.id.lcv_graph)
+    LineChartView lcvGraph;
 
     @Nullable
     @Override
@@ -73,19 +80,56 @@ public class StatisticsFragment extends Fragment implements LoaderManager.Loader
             nothingToShow();
             return;
         }
-        TreeMap<String, Integer> data = new TreeMap<>();
-        while (query.moveToNext()) {
-            boolean right = query.getInt(AnswersQuery.RIGHT) != 0;
-            String date = query.getString(AnswersQuery.DATE);
-            int count = data.containsKey(date) ? data.get(date) : 0;
-            data.put(date, count + 1);
+        LineChartData data = new LineChartData();
+        ArrayList<PointValue> points = new ArrayList<>();
+        Calendar c = Calendar.getInstance();
+        c.add(Calendar.MONTH, -1);
+        int monthAgo = c.get(Calendar.DAY_OF_YEAR);
+        c = Calendar.getInstance();
+        int n = 0;
+        while (monthAgo != c.get(Calendar.DAY_OF_YEAR)) {
+            points.add(new PointValue(n, 0.f));
+            n -= 1;
+            c.add(Calendar.DATE, -1);
         }
-        ArrayList<String> xValues = new ArrayList<>(data.keySet());
-        ArrayList<Entry> points = new ArrayList<>();
-        for (java.util.Map.Entry<String, Integer> entry : data.entrySet()) {
-            points.add(new Entry(entry.getValue(), xValues.indexOf(entry.getKey())));
+        long now = System.currentTimeMillis();
+        try {
+            DateFormat SQLiteDate = new SimpleDateFormat("yyyy-MM-dd");
+            while (query.moveToNext()) {
+                boolean right = query.getInt(AnswersQuery.RIGHT) != 0;
+                Date date = SQLiteDate.parse(query.getString(AnswersQuery.DATE));
+                long offset = (date.getTime() - now) / DateUtils.DAY_IN_MILLIS;
+                int pos = 0;
+                while (pos < points.size() && points.get(pos).getX() != offset) {
+                    pos++;
+                }
+                if (pos == points.size()) {
+                    continue;
+                }
+                PointValue point = points.get(pos);
+                point.set(offset, point.getY() + 1);
+            }
+            Line line = new Line(points);
+            int color = getResources().getColor(R.color.accent);
+            line.setColor(color);
+            line.setCubic(true);
+            line.setFilled(true);
+            line.setHasLines(true);
+            line.setHasPoints(false);
+            data.setLines(Collections.singletonList(line));
+            Axis bottom = new Axis();
+            bottom.setName("days ago");
+            Axis left = new Axis();
+            left.setName("answers");
+            left.setHasLines(true);
+            data.setAxisXBottom(bottom);
+            data.setAxisYLeft(left);
+            lcvGraph.setLineChartData(data);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        } finally {
+            query.close();
         }
-        lcGraph.setData(new LineData(xValues.toArray(new String[xValues.size()]), new LineDataSet(points, "label")));
     }
 
     private void nothingToShow() {
