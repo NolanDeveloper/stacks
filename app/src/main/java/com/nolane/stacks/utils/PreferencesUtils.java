@@ -78,10 +78,13 @@ public class PreferencesUtils {
     public static int getStreak(@NonNull Context context) {
         Calendar yesterday = Calendar.getInstance();
         yesterday.add(Calendar.DAY_OF_YEAR, -1);
+        Calendar today = Calendar.getInstance();
         Calendar lastAnswer = Calendar.getInstance();
         lastAnswer.setTimeInMillis(getPreferences(context).getLong(KEY_LAST_ANSWER, 0));
         if (yesterday.get(Calendar.YEAR) == lastAnswer.get(Calendar.YEAR)
-                && yesterday.get(Calendar.DAY_OF_YEAR) == lastAnswer.get(Calendar.DAY_OF_YEAR)) {
+                && yesterday.get(Calendar.DAY_OF_YEAR) == lastAnswer.get(Calendar.DAY_OF_YEAR)
+                || today.get(Calendar.YEAR) == lastAnswer.get(Calendar.YEAR)
+                && today.get(Calendar.DAY_OF_YEAR) == lastAnswer.get(Calendar.DAY_OF_YEAR)) {
             return getPreferences(context).getInt(KEY_STREAK, 0);
         } else {
             getPreferences(context)
@@ -159,8 +162,8 @@ public class PreferencesUtils {
         Calendar lastAnswer = Calendar.getInstance();
         lastAnswer.setTimeInMillis(preferences.getLong(KEY_LAST_ANSWER, 0));
         int totalAnswers = preferences.getInt(KEY_TOTAL_ANSWERS, 0);
-        if (today.get(Calendar.YEAR) != lastAnswer.get(Calendar.YEAR) ||
-                today.get(Calendar.DAY_OF_YEAR) != lastAnswer.get(Calendar.DAY_OF_YEAR)) {
+        if (yesterday.get(Calendar.YEAR) == lastAnswer.get(Calendar.YEAR)
+                && yesterday.get(Calendar.DAY_OF_YEAR) == lastAnswer.get(Calendar.DAY_OF_YEAR)) {
             int streak = preferences.getInt(KEY_STREAK, 0) + 1;
             int bestStreak = preferences.getInt(KEY_BEST_STREAK, 0);
             preferences
@@ -169,12 +172,17 @@ public class PreferencesUtils {
                     .putInt(KEY_BEST_STREAK, Math.max(streak, bestStreak))
                     .putInt(KEY_TOTAL_ANSWERS, totalAnswers + 1)
                     .apply();
-        } else if (yesterday.get(Calendar.YEAR) == lastAnswer.get(Calendar.YEAR)
-                && yesterday.get(Calendar.DAY_OF_YEAR) == lastAnswer.get(Calendar.DAY_OF_YEAR)) {
+        } else if (today.get(Calendar.YEAR) != lastAnswer.get(Calendar.YEAR)
+                || today.get(Calendar.DAY_OF_YEAR) != lastAnswer.get(Calendar.DAY_OF_YEAR)) {
             preferences
                     .edit()
-                    .putInt(KEY_STREAK, 0)
                     .putInt(KEY_TOTAL_ANSWERS, totalAnswers + 1)
+                    .apply();
+        } else {
+            preferences
+                    .edit()
+                    .putInt(KEY_TOTAL_ANSWERS, totalAnswers + 1)
+                    .putInt(KEY_STREAK, 1)
                     .apply();
         }
     }

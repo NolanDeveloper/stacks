@@ -147,8 +147,8 @@ public class StatisticsFragment extends Fragment implements LoaderManager.Loader
             leftAxis.setName("answers");
             leftAxis.setHasLines(true);
             data.setAxisYLeft(leftAxis);
-            lcvGraph.setLineChartData(data);
 
+            lcvGraph.setLineChartData(data);
         } catch (ParseException e) {
             e.printStackTrace();
         } finally {
