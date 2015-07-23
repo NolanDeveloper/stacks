@@ -43,6 +43,7 @@ public class EditCardFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.frag_edit_card, container, false);
         ButterKnife.bind(this, view);
+        getActivity().setTitle(getString(R.string.edit));
 
         Uri data = getActivity().getIntent().getData();
         id = Long.parseLong(data.getLastPathSegment());

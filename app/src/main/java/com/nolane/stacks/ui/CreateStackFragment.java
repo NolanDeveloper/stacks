@@ -74,6 +74,7 @@ public class CreateStackFragment extends Fragment implements LoaderManager.Loade
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.frag_create_stack, container, false);
         ButterKnife.bind(this, view);
+        getActivity().setTitle(getString(R.string.create_stack));
 
         minMaxInLearning = getResources().getInteger(R.integer.min_max_in_learning);
         maxMaxInLearning = getResources().getInteger(R.integer.max_max_in_learning);

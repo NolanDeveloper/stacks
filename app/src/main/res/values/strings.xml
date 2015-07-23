@@ -39,4 +39,12 @@
     <string name="general">General</string>
     <string name="statistics">Statistics</string>
     <string name="progress">Progress</string>
+    <string name="total_cards">total cards</string>
+    <string name="cards_learned">cards learned</string>
+    <string name="total_progress">total progress</string>
+    <string name="streak">streak</string>
+    <string name="best_streak">best streak</string>
+    <string name="total_answers">total answers</string>
+    <string name="edit">Edit</string>
+    <string name="create_stack">Create stack</string>
 </resources>

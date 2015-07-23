@@ -65,6 +65,7 @@ public class StatisticsFragment extends Fragment implements LoaderManager.Loader
         tvStreak.setText(String.valueOf(PreferencesUtils.getStreak(getActivity())));
         tvBestStreak.setText(String.valueOf(PreferencesUtils.getBestStreak(getActivity())));
         tvTotalAnswers.setText(String.valueOf(PreferencesUtils.getTotalAnswers(getActivity())));
+        getActivity().setTitle(R.string.statistics);
         getLoaderManager().initLoader(AnswersQuery._TOKEN, null, this);
         return view;
     }

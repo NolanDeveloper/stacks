@@ -7,7 +7,7 @@
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical">
 
         <TableLayout
@@ -21,7 +21,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="total cards"
+                    android:text="@string/total_cards"
                     android:layout_marginRight="8dp"/>
 
                 <TextView
@@ -37,7 +37,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="cards learned"
+                    android:text="@string/cards_learned"
                     android:layout_marginRight="8dp"/>
 
                 <TextView
@@ -53,7 +53,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="total progress"
+                    android:text="@string/total_progress"
                     android:layout_marginRight="8dp"/>
 
                 <TextView
@@ -69,7 +69,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="streak"
+                    android:text="@string/streak"
                     android:layout_marginRight="8dp"/>
 
                 <TextView
@@ -85,7 +85,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="best streak"
+                    android:text="@string/best_streak"
                     android:layout_marginRight="8dp"/>
 
                 <TextView
@@ -101,7 +101,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="total answers"
+                    android:text="@string/total_answers"
                     android:layout_marginRight="8dp"/>
 
                 <TextView

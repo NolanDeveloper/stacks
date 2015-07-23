@@ -88,7 +88,7 @@ public class AllCardsFragment extends Fragment implements LoaderManager.LoaderCa
         }
 
         @Override
-        public void onBindViewHolder(ViewHolder holder, int position) {
+        public void onBindViewHolder(ViewHolder holder, final int position) {
             query.moveToPosition(position);
             final long id = query.getLong(CardsQuery.ID);
             final String front = query.getString(CardsQuery.FRONT);
@@ -102,20 +102,13 @@ public class AllCardsFragment extends Fragment implements LoaderManager.LoaderCa
             holder.ibRemove.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    new Thread(new Runnable() {
-                        @Override
-                        public void run() {
-                            // We need to save all information about card that we want to remove to
-                            // be able to restore it in the future.
-                            Bundle arguments = new Bundle();
-                            ContentValues values = new ContentValues();
-                            values.put(Cards.CARD_ID, id);
-                            values.put(Cards.CARD_STACK_ID, stackId);
-                            values.put(Cards.CARD_IN_LEARNING, inLearning);
-                            arguments.putParcelable(EXTRA_VALUES, values);
-                            getLoaderManager().initLoader(RemoveCardQuery._TOKEN, arguments, AllCardsFragment.this).forceLoad();
-                        }
-                    }).run();
+                    Bundle arguments = new Bundle();
+                    ContentValues values = new ContentValues();
+                    values.put(Cards.CARD_ID, id);
+                    values.put(Cards.CARD_STACK_ID, stackId);
+                    values.put(Cards.CARD_IN_LEARNING, inLearning);
+                    arguments.putParcelable(EXTRA_VALUES, values);
+                    getLoaderManager().initLoader(RemoveCardQuery._TOKEN, arguments, AllCardsFragment.this).forceLoad();
                 }
             });
             holder.root.setOnClickListener(new View.OnClickListener() {
@@ -146,10 +139,10 @@ public class AllCardsFragment extends Fragment implements LoaderManager.LoaderCa
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.frag_all_cards, container, false);
         ButterKnife.bind(this, view);
+        getActivity().setTitle(getString(R.string.cards));
         rvCards.setLayoutManager(new GridLayoutManager(getActivity(),
                 getResources().getInteger(R.integer.all_cards_columns), GridLayoutManager.VERTICAL, false));
         rvCards.setAdapter(new CardsAdapter(null));
-        getActivity().setTitle(getString(R.string.cards));
         return view;
     }
 

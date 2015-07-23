@@ -60,6 +60,7 @@ public class EditStackFragment extends Fragment implements LoaderManager.LoaderC
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.frag_edit_stack, container, false);
         ButterKnife.bind(this, view);
+        getActivity().setTitle(getString(R.string.edit));
         if (null == savedInstanceState) {
             InputFilter[] filterArray = new InputFilter[1];
             filterArray[0] = new InputFilter.LengthFilter(Stacks.MAX_TITLE_LEN);
