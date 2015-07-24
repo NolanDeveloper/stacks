@@ -238,8 +238,9 @@ public class AllCardsFragment extends Fragment implements LoaderManager.LoaderCa
                         if (inLearning) {
                             values.put(Stacks.STACK_COUNT_IN_LEARNING, stackCountInLearning - 1);
                         }
-                        getContext().getContentResolver().update(uriToStack, values, null, null);
-                        PreferencesUtils.notifyDeleted(getActivity());
+                        if (1 == getContext().getContentResolver().update(uriToStack, values, null, null)) {
+                            PreferencesUtils.notifyDeleted(getActivity());
+                        }
                         Bundle result = new Bundle();
                         result.putParcelable(EXTRA_URI, uriToCard);
                         result.putInt(EXTRA_COUNT_CARDS, stackCountCards);
