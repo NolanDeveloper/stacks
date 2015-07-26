@@ -9,7 +9,7 @@
     <string name="back">back</string>
     <string name="front">front</string>
     <string name="no_cards_first_cap">No cards</string>
-    <string name="no_cards">no cards</string>
+    <string name="no_cards">cards you add appear here</string>
     <string name="failed">Failed</string>
     <string name="all_done">You learned all cards for today!</string>
     <string name="training">Training</string>

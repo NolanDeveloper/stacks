@@ -13,8 +13,7 @@
     <FrameLayout
         android:id="@+id/fl_no_cards"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:visibility="invisible">
+        android:layout_height="match_parent">
 
         <ImageView
             android:layout_width="match_parent"
