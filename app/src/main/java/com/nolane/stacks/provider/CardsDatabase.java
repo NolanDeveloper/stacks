@@ -64,15 +64,14 @@ public class CardsDatabase extends SQLiteOpenHelper {
                 CardsColumns.CARD_FRONT + " TEXT NOT NULL, " +
                 CardsColumns.CARD_BACK + " TEXT NOT NULL, " +
                 CardsColumns.CARD_PROGRESS + " INTEGER DEFAULT 0 NOT NULL, " +
-                CardsColumns.CARD_LAST_SEEN + " TEXT DEFAULT 0 NOT NULL, " +
+                CardsColumns.CARD_NEXT_SHOWING + " INTEGER DEFAULT 0 NOT NULL, " +
                 CardsColumns.CARD_STACK_ID + " INTEGER " + References.STACKS_ID + " , " +
-                CardsColumns.CARD_IN_LEARNING + " INTEGER NOT NULL," +
                 CardsColumns.CARD_DELETED + " INTEGER DEFAULT 0 NOT NULL)");
 
         db.execSQL("CREATE TABLE " + Tables.ANSWERS + "(" +
                 AnswersColumns.ANSWER_ID + " INTEGER PRIMARY KEY AUTOINCREMENT," +
                 AnswersColumns.ANSWER_CARD_ID + " INTEGER " + References.CARDS_ID + " , " +
-                AnswersColumns.ANSWER_TIMESTAMP + " TEXT DEFAULT CURRENT_TIMESTAMP, " +
+                AnswersColumns.ANSWER_TIME + " LONG DEFAULT(strftime('%s','now')) NOT NULL, " +
                 AnswersColumns.ANSWER_RIGHT + " INTEGER NOT NULL," +
                 AnswersColumns.ANSWER_DELETED + " INTEGER DEFAULT 0 NOT NULL)");
     }

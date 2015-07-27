@@ -12,7 +12,13 @@ public class CardsContract {
     public static final String CONTENT_AUTHORITY = "com.nolane.stacks.provider";
     public static final Uri BASE_CONTENT_URI = Uri.parse("content://" + CONTENT_AUTHORITY);
 
-    // Columns for creating table and making queries.
+    /*
+    Stack is the big group of cards that user wants to separate from other ones.
+    Usually he will have only one stack. But he can create as many as he wish.
+    For the sake of clarity it's necessary to say that stacks aren't boxes.
+    Box is just sign of progress for card. Each stack has N boxes and boxes
+    aren't shared among stacks.
+     */
     interface StacksColumns {
         // The id of column.
         String STACK_ID = "STACK_ID";
@@ -32,6 +38,10 @@ public class CardsContract {
         String STACK_DELETED = "STACK_DELETED";
     }
 
+    /*
+    Cards are objects that has front and back inscriptions. Front one is shown to
+    user. Back one is guessed by user.
+     */
     interface CardsColumns {
         // Id column.
         String CARD_ID = "CARD_ID";
@@ -39,15 +49,16 @@ public class CardsContract {
         String CARD_FRONT = "CARD_FRONT";
         // Back text.
         String CARD_BACK = "CARD_BACK";
-        // This values symbolizes the degree of knowing of card.
+        // The number of box where this card is.
+        // 0 - means card is out of learning.
+        // N is amount of boxes
+        // 1..N - means card is in learning.
+        // N+1 - means card is learned.
         String CARD_PROGRESS = "CARD_PROGRESS";
-        // Unix time when this card was answered last time.
-        // Format is integer that means the number of milliseconds since 1970-01-01 00:00:00 UTC.
-        String CARD_LAST_SEEN = "CARD_LAST_SEEN";
+        // Unix time when this card is going to be shown.
+        String CARD_NEXT_SHOWING = "CARD_NEXT_SHOWING";
         // Id of the stack this card belongs to.
         String CARD_STACK_ID = "CARD_STACK_ID";
-        // Flag which shows if card is in learning.
-        String CARD_IN_LEARNING = "CARD_IN_LEARNING";
         // The flag that shows if this card is going to be deleted.
         String CARD_DELETED = "CARD_DELETED";
     }
@@ -55,10 +66,10 @@ public class CardsContract {
     interface AnswersColumns {
         // Id columns.
         String ANSWER_ID = "ANSWER_ID";
-        // Id of card which was answered..
+        // Id of card which was answered.
         String ANSWER_CARD_ID = "ANSWER_CARD_ID";
-        // The time and date of the answer.
-        String ANSWER_TIMESTAMP = "ANSWER_TIMESTAMP";
+        // Unix time when answer was done.
+        String ANSWER_TIME = "ANSWER_TIME";
         // User's assumption.
         String ANSWER_RIGHT = "ANSWER_RIGHT";
         // The flag that shows if this answer is going to be deleted.
@@ -146,7 +157,7 @@ public class CardsContract {
         // Sorting orders.
         public static final String SORT_FRONT = CardsColumns.CARD_FRONT + " DESC";
         public static final String SORT_BACK = CardsColumns.CARD_BACK + " DESC";
-        public static final String SORT_LAST_SEEN = CardsColumns.CARD_LAST_SEEN + " ASC";
+        public static final String SORT_NEXT_SHOWING = CardsColumns.CARD_NEXT_SHOWING + " ASC";
 
         // Maximum length of front text.
         public static final int MAX_FRONT_LEN = 60;
