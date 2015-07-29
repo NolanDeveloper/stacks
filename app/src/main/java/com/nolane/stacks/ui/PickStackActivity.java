@@ -10,7 +10,7 @@ public class PickStackActivity extends BaseNavigationDrawerActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (null == savedInstanceState) {
+        if (null == getMainFragment()) {
             setMainFragment(new PickStackFragment());
         }
     }

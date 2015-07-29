@@ -1,16 +1,11 @@
 package com.nolane.stacks.ui;
 
 import android.app.Fragment;
-import android.app.LoaderManager;
-import android.content.CursorLoader;
 import android.content.Intent;
-import android.content.Loader;
-import android.database.Cursor;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.PorterDuff;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.FloatingActionButton;
@@ -25,24 +20,28 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.nolane.stacks.R;
-import com.nolane.stacks.utils.LanguageUtils;
-import com.nolane.stacks.utils.RecyclerCursorAdapter;
+import com.nolane.stacks.provider.CardsDAO;
+import com.nolane.stacks.provider.CursorWrapper;
+import com.nolane.stacks.provider.Stack;
+import com.nolane.stacks.utils.GeneralUtils;
+import com.nolane.stacks.utils.RecyclerCursorWrapperAdapter;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-
-import static com.nolane.stacks.provider.CardsContract.Stacks;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
+import rx.schedulers.Schedulers;
 
 /**
  * This fragment shows list of all stacks. When user clicks at one of them {@link EditStackActivity}
  * is opened to allow editing.
  */
-public class AllStacksFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class AllStacksFragment extends Fragment {
     /**
      * Adapter for the RecyclerView.
      */
-    class StacksAdapter extends RecyclerCursorAdapter<StacksAdapter.ViewHolder> {
+    class StacksWrapperAdapter extends RecyclerCursorWrapperAdapter<Stack, StacksWrapperAdapter.ViewHolder> {
         public class ViewHolder extends RecyclerView.ViewHolder {
             View vRoot;
             @Bind(R.id.ib_add_card)
@@ -63,45 +62,35 @@ public class AllStacksFragment extends Fragment implements LoaderManager.LoaderC
             }
         }
 
-        public StacksAdapter(@Nullable Cursor query) {
+        public StacksWrapperAdapter(@Nullable CursorWrapper<Stack> query) {
             super(query);
         }
 
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.item_stack_1, parent, false);
+            LayoutInflater inflater = LayoutInflater.from(parent.getContext());
+            View view = inflater.inflate(R.layout.item_stack_1, parent, false);
             return new ViewHolder(view);
         }
 
+        @SuppressWarnings("ConstantConditions")
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
-            query.moveToPosition(position);
-            final long id = query.getLong(StacksQuery.ID);
-            final String title = query.getString(StacksQuery.TITLE);
-            final String language = query.getString(StacksQuery.LANGUAGE);
-            final int count = query.getInt(StacksQuery.COUNT_CARDS);
-            final int color = query.getInt(StacksQuery.COLOR);
-            final int countInLearning = query.getInt(StacksQuery.COUNT_IN_LEARNING);
-            final int maxInLearning = query.getInt(StacksQuery.MAX_IN_LEARNING);
-            final Uri thisStack = Stacks.uriToStack(id);
+            final Stack stack = query.getAtPosition(position);
+            holder.tvTitle.setText(stack.title);
+            holder.tvCountCards.setText(String.valueOf(stack.countCards));
+            holder.ivIcon.getDrawable().setColorFilter(stack.color, PorterDuff.Mode.SRC_ATOP);
+            holder.tvLanguage.setText(GeneralUtils.shortenLanguage(stack.language));
             holder.ibAddCard.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(getActivity(), AddCardActivity.class);
-                    intent.putExtra(Stacks.STACK_ID, id);
-                    startActivity(intent);
+                    AddCardActivity.start(getActivity(), stack.id);
                 }
             });
-            holder.tvTitle.setText(title);
-            holder.tvLanguage.setText(LanguageUtils.shortenLanguage(language));
-            holder.tvCountCards.setText(String.valueOf(count));
-            holder.ivIcon.getDrawable().setColorFilter(color, PorterDuff.Mode.SRC_ATOP);
             holder.vRoot.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent intent = new Intent(getActivity(), EditStackActivity.class);
-                    intent.putExtra(Stacks.STACK_ID, id);
-                    startActivity(intent);
+                    EditStackActivity.start(getActivity(), stack);
                 }
             });
         }
@@ -112,6 +101,14 @@ public class AllStacksFragment extends Fragment implements LoaderManager.LoaderC
     RecyclerView rvStacks;
     @Bind(R.id.fab)
     FloatingActionButton fab;
+
+    private StacksWrapperAdapter adapter;
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setRetainInstance(true);
+    }
 
     @Nullable
     @Override
@@ -130,7 +127,7 @@ public class AllStacksFragment extends Fragment implements LoaderManager.LoaderC
         ___|___|___|
         ___|___|___|
         But the most right is too narrow to be visible
-        so it looks pretty good.
+        so it looks appropriate.
          */
         rvStacks.addItemDecoration(new RecyclerView.ItemDecoration() {
             @Override
@@ -147,26 +144,35 @@ public class AllStacksFragment extends Fragment implements LoaderManager.LoaderC
                     };
                     c.drawLines(points, paint);
                 }
-                super.onDraw(c, parent, state);
             }
         });
-        rvStacks.setAdapter(new StacksAdapter(null));
+        if (null == adapter) {
+            adapter = new StacksWrapperAdapter(null);
+        }
+        rvStacks.setAdapter(adapter);
+
         return view;
     }
 
-    /**
-     * Start CreateStackActivity.
-     */
-    @OnClick(R.id.fab)
-    public void createStack() {
-        Intent intent = new Intent(getActivity(), CreateStackActivity.class);
-        startActivity(intent);
-    }
-
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        getLoaderManager().initLoader(StacksQuery._TOKEN, null, this);
+    public void onStart() {
+        super.onStart();
+        CardsDAO.getInstance()
+                .listStacks()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<CursorWrapper<Stack>>() {
+                    @Override
+                    public void call(CursorWrapper<Stack> stackCursorWrapper) {
+                        adapter.setCursorWrapper(stackCursorWrapper);
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        throwable.printStackTrace();
+                        getActivity().finish();
+                    }
+                });
     }
 
     @Override
@@ -175,43 +181,11 @@ public class AllStacksFragment extends Fragment implements LoaderManager.LoaderC
         ButterKnife.unbind(this);
     }
 
-    private interface StacksQuery {
-        int _TOKEN = 0;
-
-        String[] COLUMNS = {
-                Stacks.STACK_ID,
-                Stacks.STACK_TITLE,
-                Stacks.STACK_LANGUAGE,
-                Stacks.STACK_COUNT_CARDS,
-                Stacks.STACK_COLOR,
-                Stacks.STACK_COUNT_IN_LEARNING,
-                Stacks.STACK_MAX_IN_LEARNING
-        };
-
-        int ID = 0;
-        int TITLE = 1;
-        int LANGUAGE = 2;
-        int COUNT_CARDS = 3;
-        int COLOR = 4;
-        int COUNT_IN_LEARNING = 5;
-        int MAX_IN_LEARNING = 6;
-    }
-
-    @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return new CursorLoader(getActivity(), Stacks.CONTENT_URI, StacksQuery.COLUMNS, null, null, null);
-    }
-
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor query) {
-        if (null == query) {
-            throw new IllegalArgumentException("Loader was failed. (query = null)");
-        }
-        ((StacksAdapter) rvStacks.getAdapter()).setCursor(query);
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-
+    /**
+     * Start CreateStackActivity.
+     */
+    @OnClick(R.id.fab)
+    public void createStack() {
+        startActivity(new Intent(getActivity(), CreateStackActivity.class));
     }
 }

@@ -1,19 +1,20 @@
 package com.nolane.stacks.utils;
 
-import android.database.Cursor;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.RecyclerView;
+
+import com.nolane.stacks.provider.CursorWrapper;
 
 /**
  * Base class for recycler view adapters which use cursors.
  */
-public abstract class RecyclerCursorAdapter<VH extends RecyclerView.ViewHolder>
+public abstract class RecyclerCursorWrapperAdapter<T, VH extends RecyclerView.ViewHolder>
         extends RecyclerView.Adapter<VH> {
     // Query which this adapter wraps. This also available in subclasses.
     @Nullable
-    protected Cursor query;
+    protected CursorWrapper<T> query;
 
-    public RecyclerCursorAdapter(@Nullable Cursor query) {
+    public RecyclerCursorWrapperAdapter(@Nullable CursorWrapper<T> query) {
         super();
         this.query = query;
     }
@@ -27,7 +28,7 @@ public abstract class RecyclerCursorAdapter<VH extends RecyclerView.ViewHolder>
         }
     }
 
-    public void setCursor(@Nullable Cursor query) {
+    public void setCursorWrapper(@Nullable CursorWrapper<T> query) {
         if (this.query == query)
             return;
         if (null != this.query) {

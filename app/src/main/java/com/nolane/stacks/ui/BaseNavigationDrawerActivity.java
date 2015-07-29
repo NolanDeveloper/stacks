@@ -57,19 +57,16 @@ public abstract class BaseNavigationDrawerActivity extends AppCompatActivity {
             isDrawerOpened = savedInstanceState.getBoolean(EXTRA_IS_DRAWER_OPENED);
         }
 
-        navigationFragment = new NavigationFragment();
-        getFragmentManager()
-                .beginTransaction()
-                .replace(R.id.fl_navigation, navigationFragment)
-                .commit();
+        navigationFragment = (NavigationFragment) getFragmentManager().findFragmentById(R.id.fl_navigation);
+        if (null == navigationFragment) {
+            navigationFragment = new NavigationFragment();
+            getFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.fl_navigation, navigationFragment)
+                    .commit();
+        }
 
-
-        actionBarDrawerToggle = new ActionBarDrawerToggle(
-                this,
-                dlRoot,
-                null,
-                0,
-                0) {
+        actionBarDrawerToggle = new ActionBarDrawerToggle(this, dlRoot, null, 0, 0) {
 
             /** Called when a drawer has settled in a completely closed state. */
             public void onDrawerClosed(View view) {

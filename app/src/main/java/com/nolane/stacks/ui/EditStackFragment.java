@@ -2,18 +2,10 @@ package com.nolane.stacks.ui;
 
 import android.app.AlertDialog;
 import android.app.Fragment;
-import android.app.LoaderManager;
-import android.content.ContentValues;
-import android.content.Context;
-import android.content.CursorLoader;
 import android.content.DialogInterface;
-import android.content.Loader;
-import android.database.Cursor;
 import android.graphics.drawable.ColorDrawable;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.text.InputFilter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,26 +14,21 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 
 import com.nolane.stacks.R;
-import com.nolane.stacks.utils.PreferencesUtils;
+import com.nolane.stacks.provider.CardsDAO;
+import com.nolane.stacks.provider.CardsDatabase.Tables;
+import com.nolane.stacks.provider.Stack;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import butterknife.OnEditorAction;
-
-import static com.nolane.stacks.provider.CardsContract.Stacks;
+import rx.schedulers.Schedulers;
 
 /**
  * This fragment allows user to edit stack.
  */
-public class EditStackFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
-    // Id of the stack that we edit.
-    private long stackId;
-
-    // Actual values of stack.
-    private String title;
-    private String language;
-    private int color;
+public class EditStackFragment extends Fragment {
+    private Stack stack;
 
     // UI elements.
     @Bind(R.id.et_title)
@@ -55,29 +42,34 @@ public class EditStackFragment extends Fragment implements LoaderManager.LoaderC
     @Bind(R.id.btn_done)
     Button btnDone;
 
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setRetainInstance(true);
+        stack = (Stack) getActivity().getIntent().getSerializableExtra(Tables.STACKS);
+    }
+
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.frag_edit_stack, container, false);
         ButterKnife.bind(this, view);
         getActivity().setTitle(getString(R.string.edit));
-        if (null == savedInstanceState) {
-            InputFilter[] filterArray = new InputFilter[1];
-            filterArray[0] = new InputFilter.LengthFilter(Stacks.MAX_TITLE_LEN);
-            etTitle.setFilters(filterArray);
-
-            filterArray = new InputFilter[1];
-            filterArray[0] = new InputFilter.LengthFilter(Stacks.MAX_LANGUAGE_LEN);
-            etLanguage.setFilters(filterArray);
-        }
+//            todo:
+//            InputFilter[] filterArray = new InputFilter[1];
+//            filterArray[0] = new InputFilter.LengthFilter(Stacks.MAX_TITLE_LEN);
+//            etTitle.setFilters(filterArray);
+//
+//            filterArray = new InputFilter[1];
+//            filterArray[0] = new InputFilter.LengthFilter(Stacks.MAX_LANGUAGE_LEN);
+//            etLanguage.setFilters(filterArray);
         return view;
     }
 
     @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        stackId = getActivity().getIntent().getLongExtra(Stacks.STACK_ID, -1);
-        getLoaderManager().initLoader(StackQuery._TOKEN, null, this);
+    public void onDestroyView() {
+        super.onDestroyView();
+        ButterKnife.unbind(this);
     }
 
     @OnClick(R.id.btn_done)
@@ -85,18 +77,12 @@ public class EditStackFragment extends Fragment implements LoaderManager.LoaderC
         final String newTitle = etTitle.getText().toString();
         final String newLanguage = etLanguage.getText().toString();
         final int newColor = ((ColorDrawable) ibPickColor.getDrawable()).getColor();
-        if (!newTitle.equals(title) || !newLanguage.equals(language) || color != newColor) {
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    Uri uri = Stacks.uriToStack(stackId);
-                    ContentValues values = new ContentValues();
-                    values.put(Stacks.STACK_TITLE, newTitle);
-                    values.put(Stacks.STACK_LANGUAGE, newLanguage);
-                    values.put(Stacks.STACK_COLOR, newColor);
-                    getActivity().getContentResolver().update(uri, values, null, null);
-                }
-            }).run();
+        //noinspection ConstantConditions
+        if (!newTitle.equals(stack.title) || !newLanguage.equals(stack.language) || stack.color != newColor) {
+            CardsDAO.getInstance()
+                    .changeStack(stack.id, newTitle, newLanguage, newColor)
+                    .subscribeOn(Schedulers.io())
+                    .subscribe();
         }
         getActivity().finish();
     }
@@ -115,17 +101,10 @@ public class EditStackFragment extends Fragment implements LoaderManager.LoaderC
                 .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        final Context context = getActivity().getApplicationContext();
-                        final Uri data = Stacks.uriToStack(stackId);
-                        new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                ContentValues values = new ContentValues();
-                                values.put(Stacks.STACK_DELETED, true);
-                                context.getContentResolver().update(data, values, null, null);
-                                PreferencesUtils.notifyDeleted(getActivity());
-                            }
-                        }).run();
+                        CardsDAO.getInstance()
+                                .deleteStack(stack.id)
+                                .subscribeOn(Schedulers.io())
+                                .subscribe();
                         getActivity().finish();
                     }
                 })
@@ -141,50 +120,5 @@ public class EditStackFragment extends Fragment implements LoaderManager.LoaderC
                 ibPickColor.setImageDrawable(new ColorDrawable(color));
             }
         }).show();
-    }
-
-    interface StackQuery {
-        int _TOKEN = 0;
-
-        String[] COLUMNS = {
-                Stacks.STACK_TITLE,
-                Stacks.STACK_LANGUAGE,
-                Stacks.STACK_COLOR
-        };
-
-        int TITLE = 0;
-        int LANGUAGE = 1;
-        int COLOR = 2;
-    }
-
-    @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return new CursorLoader(
-                getActivity(),
-                Stacks.uriToStack(stackId),
-                StackQuery.COLUMNS,
-                null, null, null);
-    }
-
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor query) {
-        if (null == query) {
-            throw new IllegalArgumentException("Loader was failed. (query = null)");
-        }
-        if (0 == query.getCount()) {
-            throw new IllegalArgumentException("Loader was failed. (no such stack)");
-        }
-        query.moveToFirst();
-        title = query.getString(StackQuery.TITLE);
-        language = query.getString(StackQuery.LANGUAGE);
-        color = query.getInt(StackQuery.COLOR);
-        etTitle.setText(title);
-        etLanguage.setText(language);
-        ibPickColor.setImageDrawable(new ColorDrawable(color));
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-
     }
 }

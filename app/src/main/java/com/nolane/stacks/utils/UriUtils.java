@@ -7,6 +7,8 @@ import android.support.annotation.NonNull;
 /**
  * This class contains helper function that are connected with databases
  * or providers.
+ *
+ * todo: get rid of this file
  */
 public class UriUtils {
     /**
@@ -61,7 +63,7 @@ public class UriUtils {
 
     /**
      * Inserts parameter to uri. If such parameter already exists updates its value.
-     * Otherwise appends it. So we can store loaded data in there and don't requyry this information
+     * Otherwise appends it. So we can store loaded data in there and don't requery this information
      * time after time in new activities and fragments. This function is similar to it's overloaded
      * analog but it can insert parameter into uri explicitly. So we can use this to call start
      * new activities with desired parameters.

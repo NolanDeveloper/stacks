@@ -1,14 +1,10 @@
 package com.nolane.stacks.utils;
 
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.content.Context;
-import android.content.Intent;
 import android.content.SharedPreferences;
 import android.support.annotation.NonNull;
 
 import com.nolane.stacks.R;
-import com.nolane.stacks.provider.DeleteReceiver;
 
 import java.util.Calendar;
 
@@ -43,30 +39,6 @@ public class PreferencesUtils {
         getPreferences(context)
                 .edit()
                 .putInt(KEY_MIN_PROGRESS, minProgress)
-                .apply();
-    }
-
-    private static final String KEY_DELETE_SCHEDULED = "delete_scheduled";
-    public static void notifyDeleted(@NonNull Context context) {
-        context = context.getApplicationContext();
-        boolean deleteScheduled = getPreferences(context)
-                .getBoolean(KEY_DELETE_SCHEDULED, false);
-        if (!deleteScheduled) {
-            getPreferences(context)
-                    .edit()
-                    .putBoolean(KEY_DELETE_SCHEDULED, true)
-                    .apply();
-            Intent intent = new Intent(context, DeleteReceiver.class);
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, intent, PendingIntent.FLAG_ONE_SHOT);
-            AlarmManager alarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
-            long fiveSeconds = 1000 * 5;
-            alarmManager.set(AlarmManager.RTC, System.currentTimeMillis() + fiveSeconds, pendingIntent);
-        }
-    }
-    public static void deletionDone(@NonNull Context context) {
-        getPreferences(context)
-                .edit()
-                .putBoolean(KEY_DELETE_SCHEDULED, false)
                 .apply();
     }
 

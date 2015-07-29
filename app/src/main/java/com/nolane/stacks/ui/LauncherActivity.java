@@ -1,17 +1,18 @@
 package com.nolane.stacks.ui;
 
-import android.app.LoaderManager;
-import android.content.CursorLoader;
 import android.content.Intent;
-import android.content.Loader;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 
 import com.nolane.stacks.R;
+import com.nolane.stacks.provider.CardsDAO;
+import com.nolane.stacks.provider.CursorWrapper;
+import com.nolane.stacks.provider.Stack;
 
-import static com.nolane.stacks.provider.CardsContract.Stacks;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
+import rx.schedulers.Schedulers;
 
 /**
  * This activity is required to start different activities on launch by condition.
@@ -20,51 +21,36 @@ import static com.nolane.stacks.provider.CardsContract.Stacks;
  * some information on the start and showing app logo over float screen during this
  * process.
  */
-public class LauncherActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+public class LauncherActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.act_launcher);
         ActionBar actionBar = getSupportActionBar();
         if (null != actionBar && actionBar.isShowing()) actionBar.hide();
-        getLoaderManager().initLoader(StacksQuery._TOKEN, null, this);
-    }
-
-    private interface StacksQuery {
-        int _TOKEN = 0;
-
-        // Columns which we need.
-        String[] COLUMNS = {
-                Stacks.STACK_ID
-        };
-
-        int ID = 0;
-    }
-
-    @Override
-    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        return new CursorLoader(this, Stacks.CONTENT_URI, StacksQuery.COLUMNS, null, null, null);
-    }
-
-    @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor query) {
-        if (null == query) {
-            throw new IllegalArgumentException("Loader was failed. (query = null)");
-        }
-        // If there is no stacks we start CreateFirstStackActivity
-        // otherwise we start TrainingActivity.
-        if (0 == query.getCount()) {
-            Intent intent = new Intent(getBaseContext(), CreateFirstStackActivity.class);
-            startActivity(intent);
-        } else {
-            Intent intent = new Intent(getBaseContext(), PickStackActivity.class);
-            startActivity(intent);
-        }
-        finish();
-    }
-
-    @Override
-    public void onLoaderReset(Loader<Cursor> loader) {
-
+        CardsDAO.getInstance()
+                .listStacks()
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<CursorWrapper<Stack>>() {
+                    @Override
+                    public void call(CursorWrapper<Stack> query) {
+                        if (0 == query.getCount()) {
+                            Intent intent = new Intent(getBaseContext(),
+                                                       CreateFirstStackActivity.class);
+                            startActivity(intent);
+                        } else {
+                            Intent intent = new Intent(getBaseContext(), PickStackActivity.class);
+                            startActivity(intent);
+                        }
+                        finish();
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        throwable.printStackTrace();
+                        finish();
+                    }
+                });
     }
 }

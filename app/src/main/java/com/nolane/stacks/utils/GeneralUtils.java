@@ -6,10 +6,17 @@ import android.support.annotation.NonNull;
 
 import com.nolane.stacks.R;
 
-/**
- * This class contains some useful function for working with colors.
- */
-public class ColorUtils {
+import java.util.Arrays;
+
+public class GeneralUtils {
+    public static boolean equals(Object a, Object b) {
+        return (a == null) ? (b == null) : a.equals(b);
+    }
+
+    public static int hash(Object... objects) {
+        return Arrays.hashCode(objects);
+    }
+
     // Help function that interpolates values.
     private static float interpolate(float a, float b, float proportion) {
         return a + (b - a) * proportion;
@@ -58,9 +65,34 @@ public class ColorUtils {
             throw new IllegalStateException("Maximum progress <= minimal progress of card.");
         }
         float proportion = (float) (cardProgress - minProgress) / (maxProgress - minProgress);
-        return ColorUtils.interpolateColor(
+        return interpolateColor(
                 context.getResources().getColor(R.color.bad_progress),
                 context.getResources().getColor(R.color.good_progress),
                 proportion);
+    }
+
+    /**
+     * Shortens names of languages. <br>
+     * Examples: <br>
+     *     Russian -> Rus <br>
+     *     russian -> Rus <br>
+     *     rUssian -> Rus <br>
+     *     Ru -> Ru <br>
+     *     ru -> Ru <br>
+     *     r -> [empty string]
+     * @param language Full language name.
+     * @return <li>({@code language}.length < 2) returns empty string.
+     * <li>({@code language}.length == 2) returns first two characters: first in upper case, second
+     * in lower case.
+     * <li>Otherwise returns first 3 characters: first in upper case, other in lower case.
+     */
+    public static String shortenLanguage(@NonNull String language) {
+        if (language.length() < 2) {
+            return "";
+        }
+        if (language.length() == 2) {
+            return String.valueOf(Character.toUpperCase(language.charAt(0))) + Character.toLowerCase(language.charAt(1));
+        }
+        return Character.toUpperCase(language.charAt(0)) + language.substring(1, 3).toLowerCase();
     }
 }

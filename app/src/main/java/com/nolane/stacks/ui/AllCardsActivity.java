@@ -13,11 +13,10 @@ public class AllCardsActivity extends BaseNavigationDrawerActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (null == savedInstanceState) {
+        fragment = getMainFragment();
+        if (null == fragment) {
             fragment = new AllCardsFragment();
             setMainFragment(fragment);
-        } else {
-            fragment = getMainFragment();
         }
     }
 
