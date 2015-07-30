@@ -18,8 +18,6 @@ import com.nolane.stacks.provider.CardsDatabase.StacksColumns;
 import com.nolane.stacks.provider.CursorWrapper;
 import com.nolane.stacks.utils.GeneralUtils;
 
-import java.util.Random;
-
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -45,8 +43,6 @@ public class TrainingFragment extends Fragment {
     Button btnDone;
 
     private CursorWrapper<Card> studyCards;
-
-    private Random random = new Random();
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -77,9 +73,7 @@ public class TrainingFragment extends Fragment {
                         @Override
                         public void call(CursorWrapper<Card> cardCursorWrapper) {
                             studyCards = cardCursorWrapper;
-                            if (nextCard()) {
-                                showCard();
-                            }
+                            showNextCard();
                         }
                     }, new Action1<Throwable>() {
                         @Override
@@ -95,6 +89,12 @@ public class TrainingFragment extends Fragment {
 //            filter[0] = new InputFilter.LengthFilter(Cards.MAX_BACK_LEN);
 //            etBack.setFilters(filter);
         return view;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        ButterKnife.unbind(this);
     }
 
     private boolean nextCard() {
@@ -114,9 +114,16 @@ public class TrainingFragment extends Fragment {
                 GeneralUtils.getColorForProgress(getActivity(), card.progress));
     }
 
+    private void showNextCard() {
+        if (nextCard()) {
+            showCard();
+        }
+    }
+
     @OnClick(R.id.btn_done)
     public void checkUserVariant() {
         String userVariant = etBack.getText().toString();
+        etBack.setText(null);
         Card card = studyCards.get();
         if (userVariant.equalsIgnoreCase(card.back)) {
             CardsDAO.getInstance()
@@ -129,7 +136,6 @@ public class TrainingFragment extends Fragment {
                     .subscribeOn(Schedulers.io())
                     .subscribe();
         }
-        nextCard();
-        showCard();
+        showNextCard();
     }
 }

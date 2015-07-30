@@ -24,6 +24,12 @@ public class CursorWrapper<T> {
         }
     }
 
+    private void checkPosition() {
+        if (cursor.isBeforeFirst() || cursor.isAfterLast()) {
+            throw new IndexOutOfBoundsException("Cursor position is out of bounds.");
+        }
+    }
+
     public CursorWrapper(@NonNull Cursor cursor, @NonNull ModelFactory<T> factory) {
         this.cursor = cursor;
         this.factory = factory;
@@ -45,6 +51,7 @@ public class CursorWrapper<T> {
     @NonNull
     public T get() {
         checkNotClosed();
+        checkPosition();
         if (null == cachedRow) cachedRow = factory.wrapRow(cursor);
         return cachedRow;
     }

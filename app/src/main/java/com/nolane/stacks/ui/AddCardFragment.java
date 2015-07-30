@@ -2,9 +2,9 @@ package com.nolane.stacks.ui;
 
 import android.app.AlertDialog;
 import android.app.Fragment;
-import android.content.ContentResolver;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TextInputLayout;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +19,7 @@ import com.nolane.stacks.R;
 import com.nolane.stacks.provider.Card;
 import com.nolane.stacks.provider.CardsDAO;
 import com.nolane.stacks.provider.CardsDatabase;
+import com.nolane.stacks.utils.BaseTextWatcher;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -36,6 +37,10 @@ public class AddCardFragment extends Fragment {
     private long stackId;
 
     // UI elements.
+    @Bind(R.id.til_front)
+    TextInputLayout tilFront;
+    @Bind(R.id.til_back)
+    TextInputLayout tilBack;
     @Bind(R.id.et_front)
     EditText etFront;
     @Bind(R.id.et_back)
@@ -60,6 +65,8 @@ public class AddCardFragment extends Fragment {
         View view = inflater.inflate(R.layout.frag_add_card, container, false);
         ButterKnife.bind(this, view);
 
+        getActivity().setTitle(getString(R.string.add_card));
+
         btnDone.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -74,20 +81,24 @@ public class AddCardFragment extends Fragment {
             }
         });
 
-        getActivity().setTitle(getString(R.string.add_card));
+        etFront.addTextChangedListener(new BaseTextWatcher() {
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (!Card.checkFront(s)) {
+                    etFront.setError(getString(R.string.too_long));
+                }
+            }
+        });
+        etBack.addTextChangedListener(new BaseTextWatcher() {
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (!Card.checkBack(s)) {
+                    etBack.setError(getString(R.string.too_long));
+                }
+            }
+        });
 
-        if (null == savedInstanceState) {
-            etFront.setText("");
-
-//          todo: add filter everywhere... or notify user with .setError() on TextInputLayout
-//            InputFilter[] filters = new InputFilter[1];
-//            filters[0] = new InputFilter.LengthFilter(Cards.MAX_FRONT_LEN);
-//            etFront.setFilters(filters);
-//
-//            filters = new InputFilter[1];
-//            filters[0] = new InputFilter.LengthFilter(Cards.MAX_BACK_LEN);
-//            etBack.setFilters(filters);
-        }
+        if (null == savedInstanceState) etFront.setText("");
         return view;
     }
 
@@ -112,7 +123,9 @@ public class AddCardFragment extends Fragment {
     public void addCard() {
         final String front = etFront.getText().toString();
         final String back = etBack.getText().toString();
-        final ContentResolver resolver = getActivity().getContentResolver();
+        if (!Card.checkFront(front) || !Card.checkBack(back)) {
+            return;
+        }
         btnDone.setActivated(false);
         etFront.setActivated(false);
         etBack.setActivated(false);
@@ -133,8 +146,7 @@ public class AddCardFragment extends Fragment {
                 }, new Action1<Throwable>() {
                     @Override
                     public void call(Throwable throwable) {
-                        // something went wrong...
-                        // todo: think about it
+                        throw new Error(throwable);
                     }
                 });
     }

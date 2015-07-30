@@ -28,11 +28,6 @@ public class AddCardActivity extends AppCompatActivity {
             throw new IllegalArgumentException("You must pass stack id to start this activity.");
         }
 
-//        todo: check if up back button works without this code
-//        ActionBar actionBar = getActionBar();
-//        if (null != actionBar) {
-//            actionBar.setDisplayHomeAsUpEnabled(true);
-//        }
         Fragment fragment = getFragmentManager().findFragmentById(R.id.fl_root);
         if (null == fragment) {
             fragment = new AddCardFragment();

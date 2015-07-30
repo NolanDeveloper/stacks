@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TextInputLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,7 @@ import com.nolane.stacks.R;
 import com.nolane.stacks.provider.CardsDAO;
 import com.nolane.stacks.provider.CardsDatabase.Tables;
 import com.nolane.stacks.provider.Stack;
+import com.nolane.stacks.utils.BaseTextWatcher;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -31,6 +33,10 @@ public class EditStackFragment extends Fragment {
     private Stack stack;
 
     // UI elements.
+    @Bind(R.id.til_title)
+    TextInputLayout tilTitle;
+    @Bind(R.id.til_language)
+    TextInputLayout tilLanguage;
     @Bind(R.id.et_title)
     EditText etTitle;
     @Bind(R.id.et_language)
@@ -55,14 +61,28 @@ public class EditStackFragment extends Fragment {
         View view = inflater.inflate(R.layout.frag_edit_stack, container, false);
         ButterKnife.bind(this, view);
         getActivity().setTitle(getString(R.string.edit));
-//            todo:
-//            InputFilter[] filterArray = new InputFilter[1];
-//            filterArray[0] = new InputFilter.LengthFilter(Stacks.MAX_TITLE_LEN);
-//            etTitle.setFilters(filterArray);
-//
-//            filterArray = new InputFilter[1];
-//            filterArray[0] = new InputFilter.LengthFilter(Stacks.MAX_LANGUAGE_LEN);
-//            etLanguage.setFilters(filterArray);
+        etTitle.setText(stack.title);
+        etLanguage.setText(stack.language);
+        //noinspection ConstantConditions
+        ibPickColor.setImageDrawable(new ColorDrawable(stack.color));
+
+        etTitle.addTextChangedListener(new BaseTextWatcher() {
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (!Stack.checkTitle(s)) {
+                    etTitle.setError(getString(R.string.too_long));
+                }
+            }
+        });
+        etLanguage.addTextChangedListener(new BaseTextWatcher() {
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (!Stack.checkLanguage(s)) {
+                    etLanguage.setError(getString(R.string.too_long));
+                }
+            }
+        });
+
         return view;
     }
 
@@ -73,10 +93,13 @@ public class EditStackFragment extends Fragment {
     }
 
     @OnClick(R.id.btn_done)
-    public void finishEditing(View v) {
+    public void done(View v) {
         final String newTitle = etTitle.getText().toString();
         final String newLanguage = etLanguage.getText().toString();
         final int newColor = ((ColorDrawable) ibPickColor.getDrawable()).getColor();
+        if (!Stack.checkTitle(newTitle) || !Stack.checkLanguage(newLanguage)) {
+            return;
+        }
         //noinspection ConstantConditions
         if (!newTitle.equals(stack.title) || !newLanguage.equals(stack.language) || stack.color != newColor) {
             CardsDAO.getInstance()
@@ -88,8 +111,8 @@ public class EditStackFragment extends Fragment {
     }
 
     @OnEditorAction(R.id.et_language)
-    public boolean finishEditing() {
-        finishEditing(btnDone);
+    public boolean done() {
+        done(btnDone);
         return true;
     }
 

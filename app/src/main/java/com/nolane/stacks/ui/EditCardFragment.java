@@ -3,6 +3,7 @@ package com.nolane.stacks.ui;
 import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TextInputLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,7 @@ import com.nolane.stacks.R;
 import com.nolane.stacks.provider.Card;
 import com.nolane.stacks.provider.CardsDAO;
 import com.nolane.stacks.provider.CardsDatabase;
+import com.nolane.stacks.utils.BaseTextWatcher;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -25,6 +27,10 @@ import rx.schedulers.Schedulers;
  */
 public class EditCardFragment extends Fragment {
     // UI elements.
+    @Bind(R.id.til_front)
+    TextInputLayout tilFront;
+    @Bind(R.id.til_back)
+    TextInputLayout tilBack;
     @Bind(R.id.et_front)
     EditText etFront;
     @Bind(R.id.et_back)
@@ -49,25 +55,36 @@ public class EditCardFragment extends Fragment {
         getActivity().setTitle(getString(R.string.edit));
 
         etFront.setText(card.front);
-        etFront.requestFocus();
         etBack.setText(card.back);
 
-//            todo:...
-//            InputFilter[] filters = new InputFilter[1];
-//            filters[0] = new InputFilter.LengthFilter(Cards.MAX_FRONT_LEN);
-//            etFront.setFilters(filters);
-//
-//            filters = new InputFilter[1];
-//            filters[0] = new InputFilter.LengthFilter(Cards.MAX_BACK_LEN);
-//            etBack.setFilters(filters);
+        etFront.addTextChangedListener(new BaseTextWatcher() {
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (!Card.checkFront(s)) {
+                    etFront.setError(getString(R.string.too_long));
+                }
+            }
+        });
+
+        etBack.addTextChangedListener(new BaseTextWatcher() {
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (!Card.checkBack(s)) {
+                    etBack.setError(getString(R.string.too_long));
+                }
+            }
+        });
 
         return view;
     }
 
     @OnClick(R.id.btn_done)
-    public void finishEditing(View v) {
+    public void done(View v) {
         final String newFront = etFront.getText().toString();
         final String newBack = etBack.getText().toString();
+        if (!Card.checkFront(newFront) || !Card.checkBack(newBack)) {
+            return;
+        }
         if (!newFront.equals(card.front) || !newBack.equals(card.back)) {
             CardsDAO.getInstance().changeCard(card.id, newFront, newBack)
                     .subscribeOn(Schedulers.io())
@@ -77,8 +94,8 @@ public class EditCardFragment extends Fragment {
     }
 
     @OnEditorAction(R.id.et_back)
-    public boolean finishEditing() {
-        finishEditing(btnDone);
+    public boolean done() {
+        done(btnDone);
         return true;
     }
 }

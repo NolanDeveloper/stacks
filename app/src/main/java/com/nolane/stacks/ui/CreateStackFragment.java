@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.TextInputLayout;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +19,7 @@ import android.widget.TextView;
 import com.nolane.stacks.R;
 import com.nolane.stacks.provider.CardsDAO;
 import com.nolane.stacks.provider.Stack;
+import com.nolane.stacks.utils.BaseTextWatcher;
 
 import org.adw.library.widgets.discreteseekbar.DiscreteSeekBar;
 
@@ -35,6 +37,10 @@ import rx.schedulers.Schedulers;
  */
 public class CreateStackFragment extends Fragment {
     // UI elements.
+    @Bind(R.id.til_title)
+    TextInputLayout tilTitle;
+    @Bind(R.id.til_language)
+    TextInputLayout tilLanguage;
     @Bind(R.id.et_title)
     EditText etTitle;
     @Bind(R.id.et_language)
@@ -93,6 +99,23 @@ public class CreateStackFragment extends Fragment {
             }
         });
 
+        etTitle.addTextChangedListener(new BaseTextWatcher() {
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (!Stack.checkTitle(s)) {
+                    etTitle.setError(getString(R.string.too_long));
+                }
+            }
+        });
+        etLanguage.addTextChangedListener(new BaseTextWatcher() {
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (!Stack.checkLanguage(s)) {
+                    etLanguage.setError(getString(R.string.too_long));
+                }
+            }
+        });
+
         sbMaxInLearning.setMin(minMaxInLearning);
         sbMaxInLearning.setMax(maxMaxInLearning);
         int defaultMaxInLearning = getResources().getInteger(R.integer.default_max_in_learning);
@@ -100,6 +123,12 @@ public class CreateStackFragment extends Fragment {
         color = ((ColorDrawable) ibPickColor.getDrawable()).getColor();
 
         return view;
+    }
+
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        ButterKnife.unbind(this);
     }
 
     /**
@@ -146,7 +175,9 @@ public class CreateStackFragment extends Fragment {
         String title = etTitle.getText().toString();
         String language = etLanguage.getText().toString();
         int maxInLearning = sbMaxInLearning.getProgress();
-        int color = ((ColorDrawable) ibPickColor.getDrawable()).getColor();
+        if (!Stack.checkTitle(title) || !Stack.checkLanguage(language)) {
+            return;
+        }
         CardsDAO.getInstance()
                 .createStack(title, language, maxInLearning, color)
                 .subscribeOn(Schedulers.io())

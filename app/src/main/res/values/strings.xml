@@ -47,4 +47,5 @@
     <string name="total_answers">total answers</string>
     <string name="edit">Edit</string>
     <string name="create_stack">Create stack</string>
+    <string name="too_long">Too long</string>
 </resources>

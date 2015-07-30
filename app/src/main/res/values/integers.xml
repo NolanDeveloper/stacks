@@ -3,8 +3,7 @@
     <integer name="min_max_in_learning">25</integer>
     <integer name="max_max_in_learning">100</integer>
     <integer name="default_max_in_learning">40</integer>
-    <integer name="default_max_progress">25</integer>
-    <integer name="default_min_progress">-25</integer>
+    <integer name="default_max_progress">4</integer>
     <integer name="pick_stack_columns">2</integer>
     <integer name="all_cards_columns">2</integer>
     <integer name="all_stacks_columns">1</integer>

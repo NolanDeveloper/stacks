@@ -8,6 +8,9 @@ import com.nolane.stacks.R;
 
 import java.util.Arrays;
 
+/**
+ * Some utility functions.
+ */
 public class GeneralUtils {
     public static boolean equals(Object a, Object b) {
         return (a == null) ? (b == null) : a.equals(b);
@@ -56,15 +59,14 @@ public class GeneralUtils {
      * @return Color which represents current progress.
      */
     public static int getColorForProgress(@NonNull Context context, int cardProgress) {
-        int minProgress = context.getResources().getInteger(R.integer.default_min_progress);
         int maxProgress = context.getResources().getInteger(R.integer.default_max_progress);
-        if (cardProgress < minProgress || maxProgress < cardProgress) {
+        if (cardProgress < 0 || (maxProgress + 1) < cardProgress) {
             throw new IllegalArgumentException("The progress of card is out of limits.");
         }
-        if (maxProgress <= minProgress) {
-            throw new IllegalStateException("Maximum progress <= minimal progress of card.");
+        if (maxProgress <= 0) {
+            throw new IllegalStateException("Maximum progress <= 0.");
         }
-        float proportion = (float) (cardProgress - minProgress) / (maxProgress - minProgress);
+        float proportion = (float) cardProgress / (maxProgress + 1);
         return interpolateColor(
                 context.getResources().getColor(R.color.bad_progress),
                 context.getResources().getColor(R.color.good_progress),

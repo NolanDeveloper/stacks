@@ -55,6 +55,16 @@ public class Stack implements Serializable {
         }
     }
 
+    private static final int MAX_TITLE_LEN = 30;
+    public static boolean checkTitle(@NonNull CharSequence title) {
+        return title.length() <= MAX_TITLE_LEN;
+    }
+
+    private static final int MAX_LANGUAGE_LEN = 20;
+    public static boolean checkLanguage(@NonNull CharSequence language) {
+        return language.length() < MAX_LANGUAGE_LEN;
+    }
+
     @NonNull
     public final Long id;
     @Nullable
@@ -73,6 +83,12 @@ public class Stack implements Serializable {
     public Stack(@NonNull Long id, @Nullable String title, @Nullable Integer maxInLearning,
                  @Nullable Integer countCards, @Nullable Integer countInLearning,
                  @Nullable String language, @Nullable Integer color) {
+        if ((null != title) && !checkTitle(title)) {
+            throw new IllegalArgumentException("Title is too long.");
+        }
+        if ((null != language) && !checkLanguage(language)) {
+            throw new IllegalArgumentException("Language is too long.");
+        }
         this.id = id;
         this.title = title;
         this.maxInLearning = maxInLearning;

@@ -43,6 +43,16 @@ public class Card implements Serializable {
         }
     }
 
+    public static final int MAX_FRONT_LEN = 40;
+    public static boolean checkFront(@NonNull CharSequence front) {
+        return front.length() < MAX_FRONT_LEN;
+    }
+
+    public static final int MAX_BACK_LEN = 40;
+    public static boolean checkBack(@NonNull CharSequence back) {
+        return back.length() < MAX_BACK_LEN;
+    }
+
     @NonNull
     public final Long id;
     @Nullable
@@ -58,6 +68,12 @@ public class Card implements Serializable {
 
     public Card(@NonNull Long id, @Nullable String front, @Nullable String back,
                 @Nullable Integer progress, @Nullable Long nextShowing, @Nullable Long stackId) {
+        if ((null != front) && !checkFront(front)) {
+            throw new IllegalArgumentException("Front text is too long.");
+        }
+        if ((null != back) && !checkBack(back)) {
+            throw new IllegalArgumentException("Back text is too long.");
+        }
         this.id = id;
         this.front = front;
         this.back = back;

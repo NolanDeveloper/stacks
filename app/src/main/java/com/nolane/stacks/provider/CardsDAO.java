@@ -11,7 +11,7 @@ import android.support.annotation.Nullable;
 import com.nolane.stacks.provider.CardsDatabase.CardsColumns;
 import com.nolane.stacks.provider.CardsDatabase.StacksColumns;
 import com.nolane.stacks.provider.CardsDatabase.Tables;
-import com.nolane.stacks.utils.PreferencesUtils;
+import com.nolane.stacks.utils.PrefUtils;
 
 import java.util.ArrayList;
 import java.util.concurrent.Callable;
@@ -107,14 +107,13 @@ public class CardsDAO {
                 if (!query.moveToFirst()) {
                     throw new IllegalArgumentException("No stack with id = " + stackId);
                 }
-                ;
                 int countInLearning = query.getInt(0);
                 int maxInLearning= query.getInt(1);
                 query.close();
                 Card[] result = new Card[bidirectional ? 2 : 1];
                 result[0] = addCard(stackId, front, back, countInLearning < maxInLearning);
                 if (bidirectional) {
-                    result[1] = addCard(stackId, front, back, countInLearning + 1 < maxInLearning);
+                    result[1] = addCard(stackId, back, front, countInLearning + 1 < maxInLearning);
                 }
                 return result;
             }
@@ -173,16 +172,18 @@ public class CardsDAO {
                                 CardsColumns.CARD_PROGRESS
                         }, CardsColumns.CARD_ID + " = " + cardId,
                         null, null, null, null);
-                if (0 == query.getCount()) {
+                if (!query.moveToFirst()) {
                     throw new IllegalArgumentException("No card with id = " + cardId);
                 }
-                query.moveToFirst();
                 long stackId = query.getLong(0);
                 int progress = query.getInt(1);
                 query.close();
-                int maxProgress = PreferencesUtils.getMaxProgress(context);
+                int maxProgress = PrefUtils.getMaxProgress();
                 ContentValues values = new ContentValues();
                 values.put(CardsColumns.CARD_PROGRESS, progress + 1);
+                values.put(CardsColumns.CARD_NEXT_SHOWING,
+                        System.currentTimeMillis() +
+                                (progress + 1) * PrefUtils.getSessionPeriod() * 3600000);
                 int affected = db.getWritableDatabase().update(
                         Tables.CARDS, values, CardsColumns.CARD_ID + " = " + cardId, null);
                 if (0 == affected) {
@@ -197,7 +198,7 @@ public class CardsDAO {
                                     CardsColumns.CARD_PROGRESS + " = 0",
                             null, null, null, null, "1");
                     // if we have postponed card
-                    if (!query.moveToFirst()) {
+                    if (query.moveToFirst()) {
                         long nextCardIdToLearn = query.getLong(0);
                         query.close();
                         values.clear();
@@ -226,7 +227,9 @@ public class CardsDAO {
             @Override
             public Void call() throws Exception {
                 ContentValues values = new ContentValues();
-                values.put(CardsColumns.CARD_PROGRESS, 0);
+                values.put(CardsColumns.CARD_PROGRESS, 1);
+                values.put(CardsColumns.CARD_NEXT_SHOWING,
+                           System.currentTimeMillis() + PrefUtils.getSessionPeriod());
                 int affected = db.getWritableDatabase().update(
                         Tables.CARDS,
                         values,
@@ -241,7 +244,8 @@ public class CardsDAO {
     }
 
     @NonNull
-    public Observable<CursorWrapper<Card>> listCards(@Nullable final Long stackId, @Nullable final String search) {
+    public Observable<CursorWrapper<Card>> listCards(@Nullable final Long stackId,
+                                                     @Nullable final String search) {
         return makeObservable(new Callable<CursorWrapper<Card>>() {
             @Override
             public CursorWrapper<Card> call() throws Exception {
@@ -289,7 +293,7 @@ public class CardsDAO {
         return makeObservable(new Callable<CursorWrapper<Card>>() {
             @Override
             public CursorWrapper<Card> call() throws Exception {
-                String selection = System.currentTimeMillis() + " < " + CardsColumns.CARD_NEXT_SHOWING;
+                String selection =  CardsColumns.CARD_NEXT_SHOWING + " < " + System.currentTimeMillis();
                 selection = DatabaseUtils.concatenateWhere(selection,
                         CardsColumns.CARD_STACK_ID + " = " + stackId);
                 Cursor query = db.getReadableDatabase().query(
@@ -318,7 +322,7 @@ public class CardsDAO {
                 int progress = query.getInt(0);
                 long stackId = query.getLong(1);
                 query.close();
-                int maxProgress = PreferencesUtils.getMaxProgress(context);
+                int maxProgress = PrefUtils.getMaxProgress();
 
                 SQLiteDatabase transaction = db.getWritableDatabase();
                 transaction.beginTransaction();
