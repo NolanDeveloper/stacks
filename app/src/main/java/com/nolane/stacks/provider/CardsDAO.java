@@ -229,7 +229,7 @@ public class CardsDAO {
                 ContentValues values = new ContentValues();
                 values.put(CardsColumns.CARD_PROGRESS, 1);
                 values.put(CardsColumns.CARD_NEXT_SHOWING,
-                           System.currentTimeMillis() + PrefUtils.getSessionPeriod());
+                           System.currentTimeMillis() + PrefUtils.getSessionPeriod() * 3600000);
                 int affected = db.getWritableDatabase().update(
                         Tables.CARDS,
                         values,

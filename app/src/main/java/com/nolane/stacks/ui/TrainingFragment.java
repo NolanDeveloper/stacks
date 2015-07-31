@@ -16,7 +16,7 @@ import com.nolane.stacks.provider.Card;
 import com.nolane.stacks.provider.CardsDAO;
 import com.nolane.stacks.provider.CardsDatabase.StacksColumns;
 import com.nolane.stacks.provider.CursorWrapper;
-import com.nolane.stacks.utils.GeneralUtils;
+import com.nolane.stacks.utils.BaseTextWatcher;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -33,14 +33,14 @@ public class TrainingFragment extends Fragment {
     private long stackId;
 
     // UI elements.
-    @Bind(R.id.v_progress_indicator)
-    View vProgressIndicator;
-    @Bind(R.id.tv_front)
-    TextView tvFront;
+    @Bind(R.id.cov_card)
+    CardObserverView covCard;
     @Bind(R.id.et_back)
     EditText etBack;
     @Bind(R.id.btn_done)
     Button btnDone;
+
+    public boolean firstCard = true;
 
     private CursorWrapper<Card> studyCards;
 
@@ -60,8 +60,16 @@ public class TrainingFragment extends Fragment {
         etBack.setOnEditorActionListener(new TextView.OnEditorActionListener() {
             @Override
             public boolean onEditorAction(TextView v, int actionId, KeyEvent event) {
-                checkUserVariant();
+                checkAnswer();
                 return true;
+            }
+        });
+        etBack.addTextChangedListener(new BaseTextWatcher() {
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                if (!Card.checkBack(s)) {
+                    etBack.setError(getString(R.string.too_long));
+                }
             }
         });
         if (null == studyCards) {
@@ -84,10 +92,6 @@ public class TrainingFragment extends Fragment {
         } else {
             showCard();
         }
-//            todo:
-//            InputFilter[] filter = new InputFilter[1];
-//            filter[0] = new InputFilter.LengthFilter(Cards.MAX_BACK_LEN);
-//            etBack.setFilters(filter);
         return view;
     }
 
@@ -95,6 +99,12 @@ public class TrainingFragment extends Fragment {
     public void onDestroyView() {
         super.onDestroyView();
         ButterKnife.unbind(this);
+    }
+
+    private void showNextCard() {
+        if (nextCard()) {
+            showCard();
+        }
     }
 
     private boolean nextCard() {
@@ -109,33 +119,36 @@ public class TrainingFragment extends Fragment {
     @SuppressWarnings("ConstantConditions")
     private void showCard() {
         Card card = studyCards.get();
-        tvFront.setText(card.front);
-        vProgressIndicator.setBackgroundColor(
-                GeneralUtils.getColorForProgress(getActivity(), card.progress));
-    }
-
-    private void showNextCard() {
-        if (nextCard()) {
-            showCard();
+        if (firstCard) {
+            covCard.setCard(card.front, card.back);
+            firstCard = false;
+        } else {
+            covCard.nextCard(card.front, card.back);
         }
     }
 
     @OnClick(R.id.btn_done)
-    public void checkUserVariant() {
-        String userVariant = etBack.getText().toString();
+    public void checkAnswer() {
+        String answer = etBack.getText().toString();
+        if (!Card.checkBack(answer)) return;
+        if (covCard.isFlipped()) {
+            showNextCard();
+            return;
+        }
         etBack.setText(null);
         Card card = studyCards.get();
-        if (userVariant.equalsIgnoreCase(card.back)) {
+        if (answer.equalsIgnoreCase(card.back)) {
             CardsDAO.getInstance()
                     .promoteCard(card.id)
                     .subscribeOn(Schedulers.io())
                     .subscribe();
+            showNextCard();
         } else {
             CardsDAO.getInstance()
                     .returnCard(card.id)
                     .subscribeOn(Schedulers.io())
                     .subscribe();
+            covCard.flip();
         }
-        showNextCard();
     }
 }
