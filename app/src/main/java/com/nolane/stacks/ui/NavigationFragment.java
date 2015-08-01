@@ -45,6 +45,12 @@ public class NavigationFragment extends Fragment
             case R.id.mi_statistics:
                 itemActivityClass = StatisticsActivity.class;
                 break;
+            case R.id.mi_settings:
+                // todo: implement
+                throw new IllegalStateException("Not implemented yet");
+            case R.id.mi_about:
+                itemActivityClass = AboutActivity.class;
+                break;
             default:
                 throw new IllegalArgumentException("Unknown menu item id.");
         }

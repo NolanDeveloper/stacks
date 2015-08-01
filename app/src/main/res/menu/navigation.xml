@@ -1,20 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu
     xmlns:android="http://schemas.android.com/apk/res/android">
+
     <item
         android:icon="@drawable/ic_eye"
         android:id="@+id/mi_training"
         android:title="@string/training"/>
+
     <item
         android:icon="@drawable/ic_card"
         android:id="@+id/mi_cards"
         android:title="@string/cards"/>
+
     <item
         android:icon="@drawable/ic_card_multiple"
         android:id="@+id/mi_stacks"
         android:title="@string/stacks"/>
+
     <item
         android:icon="@drawable/ic_statistics"
         android:id="@+id/mi_statistics"
         android:title="@string/statistics"/>
+
+    <item
+        android:icon="@drawable/ic_settings"
+        android:id="@+id/mi_settings"
+        android:title="@string/settings"/>
+
+    <item
+        android:icon="@drawable/ic_info"
+        android:id="@+id/mi_about"
+        android:title="@string/about"/>
+
 </menu>

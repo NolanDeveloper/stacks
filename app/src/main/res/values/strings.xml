@@ -29,8 +29,14 @@
     <string name="remove">Remove</string>
     <string name="ask_delete">Delete stack?</string>
     <string name="color">Color</string>
-    <string name="speed_help">Speed is amount cards you can learn at the same time. More speed means more cards in less days, but also more time to repeat them every day.</string>
-    <string name="bidirectional_help">"Bidirectional means that two cards will be created. One is that you want to create and the flipped one. "</string>
+    <string name="speed_help">
+        Speed is amount cards you can learn at the same time. More speed means more cards in less
+        days, but also more time to repeat them every day.
+    </string>
+    <string name="bidirectional_help">
+        Bidirectional means that two cards will be created. One is that you want to create and
+        the flipped one.
+    </string>
     <string name="ok">OK</string>
     <string name="no">Cancel</string>
     <string name="cancel">Cancel</string>
@@ -49,4 +55,16 @@
     <string name="create_stack">Create stack</string>
     <string name="too_long">Too long</string>
     <string name="no_cards_now">No cards to learn for now</string>
+    <string name="about">About</string>
+    <string name="settings">Settings</string>
+    <string name="about_text">
+        Post emensos insuperabilis expeditionis eventus languentibus
+        partium animis, quas periculorum varietas fregerat et laborum, nondum tubarum cessante
+        clangore vel milite locato per stationes hibernas, fortunae saevientis procellae tempestates
+        alias rebus infudere communibus per multa illa et dira facinora Caesaris Galli, qui ex
+        squalore imo miseriarum in aetatis adultae primitiis ad principale culmen insperato saltu p
+        rovectus ultra terminos potestatis delatae procurrens asperitate nimia cuncta foedabat.
+        Propinquitate enim regiae stirpis gentilitateque etiam tum Constantini nominis efferebatur
+        in fastus, si plus valuisset, ausurus hostilia in auctorem suae felicitatis, ut videbatur.
+    </string>
 </resources>

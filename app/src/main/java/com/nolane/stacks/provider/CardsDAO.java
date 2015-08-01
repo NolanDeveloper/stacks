@@ -348,10 +348,10 @@ public class CardsDAO {
                 query.close();
                 String sql = "UPDATE " + Tables.STACKS + " SET ";
                 sql += StacksColumns.STACK_COUNT_CARDS + " = " +
-                        StacksColumns.STACK_COUNT_CARDS + " - 1";
+                       StacksColumns.STACK_COUNT_CARDS + " - 1";
                 if ((0 != progress) && (maxProgress != progress)) {
                     sql += ", " + StacksColumns.STACK_COUNT_IN_LEARNING + " = " +
-                            StacksColumns.STACK_COUNT_IN_LEARNING + " - 1";
+                           StacksColumns.STACK_COUNT_IN_LEARNING + " - 1";
                 }
                 sql += " WHERE " + StacksColumns.STACK_ID + " = " + stackId;
                 transaction.execSQL(sql);
@@ -367,7 +367,7 @@ public class CardsDAO {
 
                 String sql = "UPDATE " + Tables.STACKS + " SET ";
                 sql += StacksColumns.STACK_COUNT_CARDS + " = " +
-                        StacksColumns.STACK_COUNT_CARDS + " - 1 ";
+                       StacksColumns.STACK_COUNT_CARDS + " - 1 ";
                 sql += "WHERE " + StacksColumns.STACK_ID + " = " + stackId;
                 transaction.execSQL(sql);
             }

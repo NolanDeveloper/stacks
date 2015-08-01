@@ -60,6 +60,9 @@
         <activity
             android:name=".ui.StatisticsActivity"/>
 
+        <activity
+            android:name=".ui.AboutActivity"/>
+
         <meta-data
             android:name="com.google.android.backup.api_key"
             android:value="AEdPqrEAAAAIrofR_Ayyu6Tnw5KkLC83sa2iqDi4scG2Dk0gTg" />
