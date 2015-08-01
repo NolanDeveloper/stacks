@@ -127,35 +127,39 @@ public class PickStackFragment extends Fragment {
                         GridLayoutManager.VERTICAL, false));
         if (null == adapter) {
             adapter = new StacksWrapperAdapter();
-
-            CardsDAO.getInstance()
-                    .listStacks()
-                    .zipWith(CardsDAO.getInstance().countCardsToLearn(),
-                            new Func2<List<Stack>, Map<Long,Integer>, List<Pair<Stack, Integer>>>() {
-                                @Override
-                                public List<Pair<Stack, Integer>> call(List<Stack> stacks, Map<Long, Integer> countCards) {
-                                    List<Pair<Stack, Integer>> result = new ArrayList<>(stacks.size());
-                                    for (Stack stack : stacks) {
-                                        result.add(new Pair<>(stack, countCards.get(stack.id)));
-                                    }
-                                    return result;
-                                }
-                            })
-                    .subscribeOn(Schedulers.io())
-                    .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new Action1<List<Pair<Stack, Integer>>>() {
-                        @Override
-                        public void call(List<Pair<Stack, Integer>> pairs) {
-                            adapter.setData(pairs);
-                        }
-                    }, new Action1<Throwable>() {
-                        @Override
-                        public void call(Throwable throwable) {
-                            throw new Error(throwable);
-                        }
-                    });
         }
         rvStacks.setAdapter(adapter);
         return view;
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        CardsDAO.getInstance()
+                .listStacks()
+                .zipWith(CardsDAO.getInstance().countCardsToLearn(),
+                        new Func2<List<Stack>, Map<Long,Integer>, List<Pair<Stack, Integer>>>() {
+                            @Override
+                            public List<Pair<Stack, Integer>> call(List<Stack> stacks, Map<Long, Integer> countCards) {
+                                List<Pair<Stack, Integer>> result = new ArrayList<>(stacks.size());
+                                for (Stack stack : stacks) {
+                                    result.add(new Pair<>(stack, countCards.get(stack.id)));
+                                }
+                                return result;
+                            }
+                        })
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe(new Action1<List<Pair<Stack, Integer>>>() {
+                    @Override
+                    public void call(List<Pair<Stack, Integer>> pairs) {
+                        adapter.setData(pairs);
+                    }
+                }, new Action1<Throwable>() {
+                    @Override
+                    public void call(Throwable throwable) {
+                        throw new Error(throwable);
+                    }
+                });
     }
 }

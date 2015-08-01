@@ -313,72 +313,77 @@ public class CardsDAO {
         });
     }
 
+    private void deleteCard(long cardId) {
+        Cursor query = db.getReadableDatabase().query(
+                Tables.CARDS,
+                new String[]{
+                        CardsColumns.CARD_PROGRESS,
+                        CardsColumns.CARD_STACK_ID
+                },
+                CardsColumns.CARD_ID + " = " + cardId,
+                null, null, null, null);
+        if (!query.moveToFirst()) {
+            throw new IllegalArgumentException("No card with id = " + cardId);
+        }
+        int progress = query.getInt(0);
+        long stackId = query.getLong(1);
+        query.close();
+        int maxProgress = PrefUtils.getMaxProgress();
+
+        SQLiteDatabase transaction = db.getWritableDatabase();
+        transaction.beginTransaction();
+        try {
+            transaction.delete(
+                    Tables.CARDS, CardsColumns.CARD_ID + " = " + cardId, null);
+
+            query = db.getReadableDatabase().query(
+                    Tables.CARDS,
+                    new String[] {
+                            CardsColumns.CARD_ID
+                    }, CardsColumns.CARD_STACK_ID + " = " + stackId + " AND " +
+                            CardsColumns.CARD_PROGRESS + " = 0",
+                    null, null, null, null, "1");
+            ContentValues values = new ContentValues();
+            if (!query.moveToFirst()) {
+                query.close();
+                String sql = "UPDATE " + Tables.STACKS + " SET ";
+                sql += StacksColumns.STACK_COUNT_CARDS + " = " +
+                        StacksColumns.STACK_COUNT_CARDS + " - 1";
+                if ((0 != progress) && (maxProgress != progress)) {
+                    sql += ", " + StacksColumns.STACK_COUNT_IN_LEARNING + " = " +
+                            StacksColumns.STACK_COUNT_IN_LEARNING + " - 1";
+                }
+                sql += " WHERE " + StacksColumns.STACK_ID + " = " + stackId;
+                transaction.execSQL(sql);
+            } else {
+                long nextCardIdToLearn = query.getLong(0);
+                query.close();
+                values.put(CardsColumns.CARD_PROGRESS, 1);
+                transaction.update(
+                        Tables.CARDS,
+                        values,
+                        CardsColumns.CARD_ID + " = " + nextCardIdToLearn,
+                        null);
+
+                String sql = "UPDATE " + Tables.STACKS + " SET ";
+                sql += StacksColumns.STACK_COUNT_CARDS + " = " +
+                        StacksColumns.STACK_COUNT_CARDS + " - 1 ";
+                sql += "WHERE " + StacksColumns.STACK_ID + " = " + stackId;
+                transaction.execSQL(sql);
+            }
+            transaction.setTransactionSuccessful();
+        } finally {
+            transaction.endTransaction();
+        }
+    }
+
     @NonNull
-    public Observable<Void> deleteCard(final long cardId) {
+    public Observable<Void> deleteCards(@NonNull final Iterable<Long> cardIds) {
         return makeObservable(new Callable<Void>() {
             @Override
             public Void call() throws Exception {
-                Cursor query = db.getReadableDatabase().query(
-                        Tables.CARDS,
-                        new String[]{
-                                CardsColumns.CARD_PROGRESS,
-                                CardsColumns.CARD_STACK_ID
-                        },
-                        CardsColumns.CARD_ID + " = " + cardId,
-                        null, null, null, null);
-                if (!query.moveToFirst()) {
-                    throw new IllegalArgumentException("No card with id = " + cardId);
-                }
-                int progress = query.getInt(0);
-                long stackId = query.getLong(1);
-                query.close();
-                int maxProgress = PrefUtils.getMaxProgress();
-
-                SQLiteDatabase transaction = db.getWritableDatabase();
-                transaction.beginTransaction();
-                try {
-                    transaction.delete(
-                            Tables.CARDS, CardsColumns.CARD_ID + " = " + cardId, null);
-
-
-                    query = db.getReadableDatabase().query(
-                            Tables.CARDS,
-                            new String[] {
-                                    CardsColumns.CARD_ID
-                            }, CardsColumns.CARD_STACK_ID + " = " + stackId + " AND " +
-                                    CardsColumns.CARD_PROGRESS + " = 0",
-                            null, null, null, null, "1");
-                    ContentValues values = new ContentValues();
-                    if (!query.moveToFirst()) {
-                        query.close();
-                        String sql = "UPDATE " + Tables.STACKS + " SET ";
-                        sql += StacksColumns.STACK_COUNT_CARDS + " = " +
-                               StacksColumns.STACK_COUNT_CARDS + " - 1";
-                        if ((0 != progress) && (maxProgress != progress)) {
-                            sql += ", " + StacksColumns.STACK_COUNT_IN_LEARNING + " = " +
-                                          StacksColumns.STACK_COUNT_IN_LEARNING + " - 1";
-                        }
-                        sql += " WHERE " + StacksColumns.STACK_ID + " = " + stackId;
-                        transaction.execSQL(sql);
-                    } else {
-                        long nextCardIdToLearn = query.getLong(0);
-                        query.close();
-                        values.put(CardsColumns.CARD_PROGRESS, 1);
-                        transaction.update(
-                                Tables.CARDS,
-                                values,
-                                CardsColumns.CARD_ID + " = " + nextCardIdToLearn,
-                                null);
-
-                        String sql = "UPDATE " + Tables.STACKS + " SET ";
-                        sql += StacksColumns.STACK_COUNT_CARDS + " = " +
-                               StacksColumns.STACK_COUNT_CARDS + " - 1 ";
-                        sql += "WHERE " + StacksColumns.STACK_ID + " = " + stackId;
-                        transaction.execSQL(sql);
-                    }
-                    transaction.setTransactionSuccessful();
-                } finally {
-                    transaction.endTransaction();
+                for (Long id : cardIds) {
+                    deleteCard(id);
                 }
                 return null;
             }

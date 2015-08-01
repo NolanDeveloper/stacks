@@ -4,6 +4,7 @@ import android.app.Fragment;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
@@ -24,6 +25,12 @@ import com.nolane.stacks.provider.CardsDAO;
 import com.nolane.stacks.provider.CursorWrapper;
 import com.nolane.stacks.utils.GeneralUtils;
 import com.nolane.stacks.utils.RecyclerCursorWrapperAdapter;
+
+import java.util.ArrayList;
+import java.util.SortedSet;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.TreeSet;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -62,6 +69,9 @@ public class AllCardsFragment extends Fragment {
 
         public CardsAdapter(@Nullable CursorWrapper<Card> query) {
             super(query);
+            hiddenPositions = new TreeSet<>();
+            hiddenIds = new ArrayList<>();
+            timer = new Timer();
         }
 
         @Override
@@ -71,29 +81,26 @@ public class AllCardsFragment extends Fragment {
             return new ViewHolder(item);
         }
 
-        private Subscription removing;
+        private Timer timer;
+        private SortedSet<Integer> hiddenPositions;
+        private ArrayList<Long> hiddenIds;
+        private Integer lastAddedPosition;
 
-        @SuppressWarnings("ConstantConditions")
+        private final int UNDO_PERIOD = 4000;
+
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
-            final Card card = query.getAtPosition(position);
+            final int actualPosition = position + hiddenPositions.headSet(position + 1).size();
+            assert query != null;
+            final Card card = query.getAtPosition(actualPosition);
+            assert null != card.progress;
             holder.vProgressIndicator.setBackgroundColor(GeneralUtils.getColorForProgress(getActivity(), card.progress));
             holder.tvFront.setText(card.front);
             holder.tvBack.setText(card.back);
             holder.ibRemove.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (null != removing) removing.unsubscribe();
-                    removing = CardsDAO.getInstance()
-                            .deleteCard(card.id)
-                            .subscribeOn(Schedulers.io())
-                            .observeOn(AndroidSchedulers.mainThread())
-                            .subscribe(new Action1<Void>() {
-                                @Override
-                                public void call(Void aVoid) {
-                                    queryCards(null);
-                                }
-                            });
+                    removeItem(actualPosition);
                 }
             });
             holder.vRoot.setOnClickListener(new View.OnClickListener() {
@@ -102,6 +109,64 @@ public class AllCardsFragment extends Fragment {
                     EditCardActivity.start(getActivity(), card);
                 }
             });
+        }
+
+        private void removeItem(int position) {
+            hideItem(position);
+            //noinspection ResourceType
+            Snackbar.make(
+                    getView(),
+                    getString(R.string.deleted),
+                    UNDO_PERIOD)
+                    .setAction(R.string.undo, new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            undo();
+                        }
+                    }).show();
+            restartTimer();
+        }
+
+        private void undo() {
+            hiddenPositions.remove(lastAddedPosition);
+            hiddenIds.remove(hiddenIds.size() - 1);
+            if (hiddenPositions.isEmpty()) timer.cancel();
+            notifyDataSetChanged();
+        }
+
+        public void restartTimer() {
+            // get ids for positions
+            timer.cancel();
+            timer = new Timer();
+            timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    CardsDAO.getInstance()
+                            .deleteCards(hiddenIds)
+                            .observeOn(AndroidSchedulers.mainThread())
+                            .subscribe(new Action1<Void>() {
+                                @Override
+                                public void call(Void aVoid) {
+                                    hiddenPositions.clear();
+                                    hiddenIds.clear();
+                                    notifyDataSetChanged();
+                                }
+                            });
+                }
+            }, (long) (1.1 * UNDO_PERIOD));
+        }
+
+        @Override
+        public int getItemCount() {
+            return super.getItemCount() - hiddenPositions.size();
+        }
+
+        public void hideItem(int position) {
+            lastAddedPosition = position;
+            hiddenPositions.add(lastAddedPosition);
+            assert null != query;
+            hiddenIds.add(query.getAtPosition(position).id);
+            notifyDataSetChanged();
         }
     }
 
