@@ -4,8 +4,10 @@ import android.app.Fragment;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,15 +16,18 @@ import android.widget.TextView;
 
 import com.nolane.stacks.R;
 import com.nolane.stacks.provider.CardsDAO;
-import com.nolane.stacks.provider.CursorWrapper;
 import com.nolane.stacks.provider.Stack;
 import com.nolane.stacks.utils.GeneralUtils;
-import com.nolane.stacks.utils.RecyclerCursorWrapperAdapter;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
+import rx.functions.Func2;
 import rx.schedulers.Schedulers;
 
 /**
@@ -33,7 +38,7 @@ public class PickStackFragment extends Fragment {
     /**
      * Adapter for the RecyclerView.
      */
-    public class StacksWrapperAdapter extends RecyclerCursorWrapperAdapter<Stack, StacksWrapperAdapter.ViewHolder> {
+    public class StacksWrapperAdapter extends RecyclerView.Adapter<StacksWrapperAdapter.ViewHolder> {
         public class ViewHolder extends RecyclerView.ViewHolder {
             View vRoot;
             @Bind(R.id.iv_icon)
@@ -52,9 +57,8 @@ public class PickStackFragment extends Fragment {
             }
         }
 
-        public StacksWrapperAdapter(@Nullable CursorWrapper<Stack> query) {
-            super(query);
-        }
+        @Nullable
+        private List<Pair<Stack, Integer>> data = null;
 
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -66,17 +70,36 @@ public class PickStackFragment extends Fragment {
         @SuppressWarnings("ConstantConditions")
         @Override
         public void onBindViewHolder(ViewHolder holder, final int position) {
-            final Stack stack = query.getAtPosition(position);
+            Pair<Stack, Integer> dataItem = data.get(position);
+            final Stack stack = dataItem.first;
+            final int count = null != dataItem.second ? dataItem.second : 0;
             holder.tvTitle.setText(stack.title);
-            holder.tvCountCards.setText(String.valueOf(stack.countCards));
             holder.tvLanguage.setText(GeneralUtils.shortenLanguage(stack.language));
             holder.ivIcon.getDrawable().setColorFilter(stack.color, PorterDuff.Mode.SRC_ATOP);
             holder.vRoot.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    TrainingActivity.start(getActivity(), stack.id);
+                    if (0 != count) {
+                        TrainingActivity.start(getActivity(), stack.id);
+                    } else {
+                        Snackbar.make(
+                                getView(),
+                                getString(R.string.no_cards_now),
+                                Snackbar.LENGTH_SHORT).show();
+                    }
                 }
             });
+            holder.tvCountCards.setText(String.valueOf(count));
+        }
+
+        @Override
+        public int getItemCount() {
+            return null == data ? 0 : data.size();
+        }
+
+        public void setData(@Nullable List<Pair<Stack, Integer>> data) {
+            this.data = data;
+            notifyDataSetChanged();
         }
     }
 
@@ -103,15 +126,27 @@ public class PickStackFragment extends Fragment {
                         getResources().getInteger(R.integer.pick_stack_columns),
                         GridLayoutManager.VERTICAL, false));
         if (null == adapter) {
-            adapter = new StacksWrapperAdapter(null);
+            adapter = new StacksWrapperAdapter();
+
             CardsDAO.getInstance()
                     .listStacks()
+                    .zipWith(CardsDAO.getInstance().countCardsToLearn(),
+                            new Func2<List<Stack>, Map<Long,Integer>, List<Pair<Stack, Integer>>>() {
+                                @Override
+                                public List<Pair<Stack, Integer>> call(List<Stack> stacks, Map<Long, Integer> countCards) {
+                                    List<Pair<Stack, Integer>> result = new ArrayList<>(stacks.size());
+                                    for (Stack stack : stacks) {
+                                        result.add(new Pair<>(stack, countCards.get(stack.id)));
+                                    }
+                                    return result;
+                                }
+                            })
                     .subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new Action1<CursorWrapper<Stack>>() {
+                    .subscribe(new Action1<List<Pair<Stack, Integer>>>() {
                         @Override
-                        public void call(CursorWrapper<Stack> stackCursorWrapper) {
-                            adapter.setCursorWrapper(stackCursorWrapper);
+                        public void call(List<Pair<Stack, Integer>> pairs) {
+                            adapter.setData(pairs);
                         }
                     }, new Action1<Throwable>() {
                         @Override

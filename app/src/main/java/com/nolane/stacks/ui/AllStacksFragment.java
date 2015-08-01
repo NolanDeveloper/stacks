@@ -21,10 +21,10 @@ import android.widget.TextView;
 
 import com.nolane.stacks.R;
 import com.nolane.stacks.provider.CardsDAO;
-import com.nolane.stacks.provider.CursorWrapper;
 import com.nolane.stacks.provider.Stack;
 import com.nolane.stacks.utils.GeneralUtils;
-import com.nolane.stacks.utils.RecyclerCursorWrapperAdapter;
+
+import java.util.List;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -41,7 +41,7 @@ public class AllStacksFragment extends Fragment {
     /**
      * Adapter for the RecyclerView.
      */
-    class StacksWrapperAdapter extends RecyclerCursorWrapperAdapter<Stack, StacksWrapperAdapter.ViewHolder> {
+    class StacksWrapperAdapter extends RecyclerView.Adapter<StacksWrapperAdapter.ViewHolder> {
         public class ViewHolder extends RecyclerView.ViewHolder {
             View vRoot;
             @Bind(R.id.ib_add_card)
@@ -62,9 +62,8 @@ public class AllStacksFragment extends Fragment {
             }
         }
 
-        public StacksWrapperAdapter(@Nullable CursorWrapper<Stack> query) {
-            super(query);
-        }
+        @Nullable
+        private List<Stack> data;
 
         @Override
         public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
@@ -76,7 +75,7 @@ public class AllStacksFragment extends Fragment {
         @SuppressWarnings("ConstantConditions")
         @Override
         public void onBindViewHolder(ViewHolder holder, int position) {
-            final Stack stack = query.getAtPosition(position);
+            final Stack stack = data.get(position);
             holder.tvTitle.setText(stack.title);
             holder.tvCountCards.setText(String.valueOf(stack.countCards));
             holder.ivIcon.getDrawable().setColorFilter(stack.color, PorterDuff.Mode.SRC_ATOP);
@@ -93,6 +92,16 @@ public class AllStacksFragment extends Fragment {
                     EditStackActivity.start(getActivity(), stack);
                 }
             });
+        }
+
+        @Override
+        public int getItemCount() {
+            return null == data ? 0 : data.size();
+        }
+
+        public void setData(@Nullable List<Stack> data) {
+            this.data = data;
+            notifyDataSetChanged();
         }
     }
 
@@ -147,7 +156,7 @@ public class AllStacksFragment extends Fragment {
             }
         });
         if (null == adapter) {
-            adapter = new StacksWrapperAdapter(null);
+            adapter = new StacksWrapperAdapter();
         }
         rvStacks.setAdapter(adapter);
 
@@ -161,10 +170,10 @@ public class AllStacksFragment extends Fragment {
                 .listStacks()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<CursorWrapper<Stack>>() {
+                .subscribe(new Action1<List<Stack>>() {
                     @Override
-                    public void call(CursorWrapper<Stack> stackCursorWrapper) {
-                        adapter.setCursorWrapper(stackCursorWrapper);
+                    public void call(List<Stack> data) {
+                        adapter.setData(data);
                     }
                 }, new Action1<Throwable>() {
                     @Override

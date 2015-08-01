@@ -7,8 +7,9 @@ import android.support.v7.app.AppCompatActivity;
 
 import com.nolane.stacks.R;
 import com.nolane.stacks.provider.CardsDAO;
-import com.nolane.stacks.provider.CursorWrapper;
 import com.nolane.stacks.provider.Stack;
+
+import java.util.List;
 
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
@@ -32,10 +33,10 @@ public class LauncherActivity extends AppCompatActivity {
                 .listStacks()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(new Action1<CursorWrapper<Stack>>() {
+                .subscribe(new Action1<List<Stack>>() {
                     @Override
-                    public void call(CursorWrapper<Stack> query) {
-                        if (0 == query.getCount()) {
+                    public void call(List<Stack> data) {
+                        if (0 == data.size()) {
                             Intent intent = new Intent(getBaseContext(),
                                                        CreateFirstStackActivity.class);
                             startActivity(intent);

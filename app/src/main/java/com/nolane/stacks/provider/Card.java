@@ -9,7 +9,7 @@ import com.nolane.stacks.utils.GeneralUtils;
 import java.io.Serializable;
 
 public class Card implements Serializable {
-    public static class CardsFactory implements CursorWrapper.ModelFactory<Card> {
+    public static class CardFactory implements CursorWrapper.ModelFactory<Card> {
         private int id;
         private int front;
         private int back;

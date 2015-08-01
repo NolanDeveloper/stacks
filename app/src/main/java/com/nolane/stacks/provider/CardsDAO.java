@@ -14,6 +14,9 @@ import com.nolane.stacks.provider.CardsDatabase.Tables;
 import com.nolane.stacks.utils.PrefUtils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 
 import rx.Observable;
@@ -265,19 +268,26 @@ public class CardsDAO {
                 String[] selectionArgsArr = selectionArgs.toArray(new String[selectionArgs.size()]);
                 Cursor query = db.getReadableDatabase().query(
                         Tables.CARDS, null, selection, selectionArgsArr, null, null, null);
-                return new CursorWrapper<>(query, new Card.CardsFactory());
+                return new CursorWrapper<>(query, new Card.CardFactory());
             }
         });
     }
 
     @NonNull
-    public Observable<CursorWrapper<Stack>> listStacks() {
-        return makeObservable(new Callable<CursorWrapper<Stack>>() {
+    public Observable<List<Stack>> listStacks() {
+        return makeObservable(new Callable<List<Stack>>() {
             @Override
-            public CursorWrapper<Stack> call() throws Exception {
+            public List<Stack> call() throws Exception {
                 Cursor query = db.getReadableDatabase().query(
                         Tables.STACKS, null, null, null, null, null, null);
-                return new CursorWrapper<>(query, new Stack.StackFactory());
+                Stack.StackFactory factory = new Stack.StackFactory();
+                List<Stack> result = new ArrayList<>(query.getCount());
+                factory.prepare(query);
+                while (query.moveToNext()) {
+                    result.add(factory.wrapRow(query));
+                }
+                query.close();
+                return result;
             }
         });
     }
@@ -293,12 +303,12 @@ public class CardsDAO {
         return makeObservable(new Callable<CursorWrapper<Card>>() {
             @Override
             public CursorWrapper<Card> call() throws Exception {
-                String selection =  CardsColumns.CARD_NEXT_SHOWING + " < " + System.currentTimeMillis();
+                String selection = CardsColumns.CARD_NEXT_SHOWING + " < " + System.currentTimeMillis();
                 selection = DatabaseUtils.concatenateWhere(selection,
                         CardsColumns.CARD_STACK_ID + " = " + stackId);
                 Cursor query = db.getReadableDatabase().query(
                         Tables.CARDS, null, selection, null, null, null, null);
-                return new CursorWrapper<>(query, new Card.CardsFactory());
+                return new CursorWrapper<>(query, new Card.CardFactory());
             }
         });
     }
@@ -383,6 +393,32 @@ public class CardsDAO {
                 db.getWritableDatabase().delete(
                         Tables.STACKS, StacksColumns.STACK_ID + " = " + stackId, null);
                 return null;
+            }
+        });
+    }
+
+    /**
+     * Counts amount of cards that are ready to be learned.
+     * @return Map: key is id of stack, value is amount of cards to learn.
+     */
+    @NonNull
+    public Observable<Map<Long, Integer>> countCardsToLearn() {
+        return makeObservable(new Callable<Map<Long, Integer>>() {
+            @Override
+            public Map<Long, Integer> call() throws Exception {
+                Cursor query = db.getReadableDatabase().query(
+                        Tables.CARDS,
+                        new String[] { CardsColumns.CARD_STACK_ID, "count()" },
+                        CardsColumns.CARD_NEXT_SHOWING + " < " + System.currentTimeMillis(),
+                        null,
+                        CardsColumns.CARD_STACK_ID,
+                        null, null);
+                Map<Long, Integer> result = new HashMap<>(query.getCount());
+                while (query.moveToNext()) {
+                    result.put(query.getLong(0), query.getInt(1));
+                }
+                query.close();
+                return result;
             }
         });
     }

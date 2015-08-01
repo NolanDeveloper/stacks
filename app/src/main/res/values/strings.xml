@@ -48,4 +48,5 @@
     <string name="edit">Edit</string>
     <string name="create_stack">Create stack</string>
     <string name="too_long">Too long</string>
+    <string name="no_cards_now">No cards to learn for now</string>
 </resources>
