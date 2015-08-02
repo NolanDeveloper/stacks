@@ -17,14 +17,12 @@ import com.nolane.stacks.R;
  */
 public class NavigationFragment extends Fragment
         implements NavigationView.OnNavigationItemSelectedListener {
-    // UI elements.
-    private NavigationView nv;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         ViewGroup view = (ViewGroup) inflater.inflate(R.layout.frag_navigation, container, false);
-        nv = (NavigationView) view.findViewById(R.id.nv);
+        NavigationView nv = (NavigationView) view.findViewById(R.id.nv);
         nv.setNavigationItemSelectedListener(this);
         return view;
     }
@@ -48,10 +46,11 @@ public class NavigationFragment extends Fragment
             case R.id.mi_settings:
                 // todo: implement
                 throw new IllegalStateException("Not implemented yet");
-            case R.id.mi_about:
-                itemActivityClass = AboutActivity.class;
-                break;
-            default:
+            case R.id.mi_about: {
+                Intent intent = new Intent(getActivity(), AboutActivity.class);
+                startActivity(intent);
+                return true;
+            } default:
                 throw new IllegalArgumentException("Unknown menu item id.");
         }
         if (itemActivityClass.isInstance(getActivity())) {

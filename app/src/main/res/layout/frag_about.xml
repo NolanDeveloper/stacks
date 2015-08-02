@@ -53,7 +53,39 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="@string/about_text"/>
+                        android:text="@string/about_text"
+                        android:autoLink="web"/>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:gravity="center">
+
+                        <ImageView
+                            android:id="@+id/iv_send_email"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:layout_gravity="center_vertical"
+                            android:src="@drawable/ic_email"/>
+
+                        <ImageView
+                            android:id="@+id/iv_open_github"
+                            android:layout_width="40dp"
+                            android:layout_height="40dp"
+                            android:layout_marginLeft="16dp"
+                            android:layout_gravity="center_vertical"
+                            android:src="@drawable/ic_github"/>
+
+                        <ImageView
+                            android:id="@+id/iv_open_google_play"
+                            android:layout_width="115dp"
+                            android:layout_height="40dp"
+                            android:layout_marginLeft="16dp"
+                            android:layout_gravity="center_vertical"
+                            android:src="@drawable/ic_google_play"/>
+
+                    </LinearLayout>
 
                 </LinearLayout>
 

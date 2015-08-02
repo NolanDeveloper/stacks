@@ -58,13 +58,9 @@
     <string name="about">About</string>
     <string name="settings">Settings</string>
     <string name="about_text">
-        Post emensos insuperabilis expeditionis eventus languentibus
-        partium animis, quas periculorum varietas fregerat et laborum, nondum tubarum cessante
-        clangore vel milite locato per stationes hibernas, fortunae saevientis procellae tempestates
-        alias rebus infudere communibus per multa illa et dira facinora Caesaris Galli, qui ex
-        squalore imo miseriarum in aetatis adultae primitiis ad principale culmen insperato saltu p
-        rovectus ultra terminos potestatis delatae procurrens asperitate nimia cuncta foedabat.
-        Propinquitate enim regiae stirpis gentilitateque etiam tum Constantini nominis efferebatur
-        in fastus, si plus valuisset, ausurus hostilia in auctorem suae felicitatis, ut videbatur.
+        Hi! My name is Denis and I am the author of this app. Surely you have explored with all the
+        functionality, and do you have any suggestions and wishes. Perhaps you found a bug in the
+        program or in the text. If you have any questions and want to contact me, you can do so by
+        sending an email, or opening issue at GitHub or just leaving comment at GooglePlay.
     </string>
 </resources>
